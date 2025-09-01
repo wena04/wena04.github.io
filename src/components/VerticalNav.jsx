@@ -12,7 +12,7 @@ const VerticalNav = () => {
   return (
     <div className="vertical-nav">
       <div className="logo">
-        <h2>Amelia Li</h2>
+        <h2>Anthony Wen</h2>
       </div>
 
       <div className="menu-icon" onClick={toggleMenu}>
