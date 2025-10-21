@@ -74,6 +74,24 @@ nav {
   margin-bottom: 2rem;
 }
 
+/* Planet 3D Styling */
+.planet-container {
+  width: 100%;
+  max-width: 400px;
+  height: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+}
+
+.introContainer .sec1 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 2;
+}
+
 @media (min-width: 768px) {
   .main-content {
     margin-left: 200px;
