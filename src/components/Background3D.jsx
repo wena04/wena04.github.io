@@ -12,78 +12,100 @@ const Background3D = () => {
     if (!mountRef.current) return;
     const mountEl = mountRef.current;
 
-    // 1. SETUP
+    // --- 1. CORE SETUP ---
     const scene = new THREE.Scene();
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-    camera.position.z = 5; // Camera fixed position
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000,
+    );
+    camera.position.z = 2.8;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(width, height);
+    renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
+    renderer.toneMappingExposure = 1.3;
     mountEl.appendChild(renderer.domElement);
 
-    // 2. POST-PROCESSING (Glow)
     const composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
-    const bloomPass = new UnrealBloomPass(
-      new THREE.Vector2(width, height),
-      1.5,
-      0.4,
-      0.1
+    composer.addPass(
+      new UnrealBloomPass(
+        new THREE.Vector2(window.innerWidth, window.innerHeight),
+        1.4,
+        0.4,
+        0.1,
+      ),
     );
-    composer.addPass(bloomPass);
 
-    // 3. PLANET GROUP
     const celestialGroup = new THREE.Group();
-    // Start planet far away
-    celestialGroup.position.z = -20;
     scene.add(celestialGroup);
 
-    // Noise Texture for Rocky Look
-    const createNoiseTexture = () => {
-      const size = 512;
+    // --- 2. SOFT MOON TEXTURE GENERATION ---
+    const createSoftMoonTexture = () => {
+      const size = 1024;
       const canvas = document.createElement("canvas");
       canvas.width = size;
       canvas.height = size;
       const ctx = canvas.getContext("2d");
-      const imgData = ctx.createImageData(size, size);
-      for (let i = 0; i < imgData.data.length; i += 4) {
-        const val = Math.random() * 255;
-        imgData.data[i] = val;
-        imgData.data[i + 1] = val;
-        imgData.data[i + 2] = val;
-        imgData.data[i + 3] = 255;
+
+      // Warm Golden-Orange Base
+      ctx.fillStyle = "#e69138";
+      ctx.fillRect(0, 0, size, size);
+
+      // Layer 1: Soft Cloud-like noise for color variation
+      for (let i = 0; i < 40; i++) {
+        const x = Math.random() * size;
+        const y = Math.random() * size;
+        const radius = Math.random() * 400 + 100;
+        const grad = ctx.createRadialGradient(x, y, 0, x, y, radius);
+        grad.addColorStop(0, "rgba(70, 30, 10, 0.4)");
+        grad.addColorStop(1, "rgba(70, 30, 10, 0)");
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
       }
-      ctx.putImageData(imgData, 0, 0);
+
+      // Layer 2: Sparse, Shallow Craters
+      for (let i = 0; i < 150; i++) {
+        const x = Math.random() * size;
+        const y = Math.random() * size;
+        const radius = Math.random() * 40 + 5;
+        const grad = ctx.createRadialGradient(x, y, 0, x, y, radius);
+        grad.addColorStop(0, "rgba(255, 200, 100, 0.3)");
+        grad.addColorStop(1, "rgba(255, 200, 100, 0)");
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
       const tex = new THREE.CanvasTexture(canvas);
-      tex.wrapS = THREE.RepeatWrapping;
-      tex.wrapT = THREE.RepeatWrapping;
+      tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
       return tex;
     };
 
+    // --- 3. PLANET ASSEMBLY ---
     const planet = new THREE.Mesh(
-      new THREE.SphereGeometry(1.5, 64, 64),
+      new THREE.SphereGeometry(1, 128, 128),
       new THREE.MeshStandardMaterial({
-        color: 0xff6b35,
-        bumpMap: createNoiseTexture(),
-        bumpScale: 0.05,
+        map: createSoftMoonTexture(),
         roughness: 0.8,
-        metalness: 0.2,
-        emissive: 0xff2200,
-        emissiveIntensity: 0.1,
-      })
+        metalness: 0.1,
+        emissive: 0xff4500, // Warm internal glow
+        emissiveIntensity: 0.15,
+      }),
     );
     celestialGroup.add(planet);
 
-    // Atmosphere Halo
+    // Subtle Atmosphere
     const atmoMat = new THREE.ShaderMaterial({
       transparent: true,
       side: THREE.BackSide,
-      uniforms: { glowColor: { value: new THREE.Color(0xff8c42) } },
+      uniforms: { glowColor: { value: new THREE.Color(0xff6b35) } },
       vertexShader: `
         varying vec3 vN;
         void main() {
@@ -95,16 +117,16 @@ const Background3D = () => {
         uniform vec3 glowColor;
         varying vec3 vN;
         void main() {
-          float i = pow(0.7 - dot(vN, vec3(0,0,1)), 4.0);
+          float i = pow(0.65 - dot(vN, vec3(0,0,1)), 4.0);
           gl_FragColor = vec4(glowColor, i);
         }
       `,
     });
     celestialGroup.add(
-      new THREE.Mesh(new THREE.SphereGeometry(1.65, 64, 64), atmoMat)
+      new THREE.Mesh(new THREE.SphereGeometry(1.05, 64, 64), atmoMat),
     );
 
-    // Ring Particles
+    // Ring Particles (Kept from current version)
     const pGeo = new THREE.BufferGeometry();
     const count = 8000;
     const pos = new Float32Array(count * 3);
@@ -130,7 +152,7 @@ const Background3D = () => {
         transparent: true,
         opacity: 0.6,
         blending: THREE.AdditiveBlending,
-      })
+      }),
     );
     rings.rotation.x = Math.PI / 3;
     celestialGroup.add(rings);
@@ -142,14 +164,15 @@ const Background3D = () => {
     sunLight.position.set(5, 3, 5);
     scene.add(sunLight);
 
-    // 4. ANIMATION & INTERACTION STATE
+    // --- 4. ANIMATION & INTERACTION STATE ---
     let scrollPercent = 0;
     let isDragging = false;
     let previousMousePosition = { x: 0, y: 0 };
     let rotationVelocity = { x: 0, y: 0 };
 
     const handleScroll = () => {
-      const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollable =
+        document.documentElement.scrollHeight - window.innerHeight;
       scrollPercent = scrollable > 0 ? window.scrollY / scrollable : 0;
     };
 
@@ -187,16 +210,20 @@ const Background3D = () => {
     const animate = () => {
       requestAnimationFrame(animate);
 
-      // --- SCROLLYTELLING LOGIC ---
-      const phase1End = 0.2;
-      const zoomProgress = Math.min(scrollPercent / phase1End, 1);
-      const targetZ = THREE.MathUtils.lerp(-20, 0, zoomProgress);
+      // Scrollytelling: Zoom In (0-20%) -> Slide Left (20-100%)
+      const zoomProgress = Math.min(scrollPercent * 5, 1);
+      const moveProgress = Math.max((scrollPercent - 0.2) * 1.25, 0);
 
-      const phase2Progress = Math.max((scrollPercent - phase1End) / (1 - phase1End), 0);
-      const targetX = THREE.MathUtils.lerp(0, -3.5, phase2Progress);
-
-      celestialGroup.position.z = THREE.MathUtils.lerp(celestialGroup.position.z, targetZ, 0.05);
-      celestialGroup.position.x = THREE.MathUtils.lerp(celestialGroup.position.x, targetX, 0.05);
+      celestialGroup.position.z = THREE.MathUtils.lerp(
+        -15,
+        0,
+        zoomProgress,
+      );
+      celestialGroup.position.x = THREE.MathUtils.lerp(
+        0,
+        -2.5,
+        moveProgress,
+      );
 
       // --- DRAG & COASTING LOGIC ---
       if (!isDragging) {
@@ -243,7 +270,7 @@ const Background3D = () => {
         position: "fixed",
         inset: 0,
         zIndex: -1,
-        background: "radial-gradient(circle at center, #1a1a1a 0%, #000 100%)",
+        background: "black",
         cursor: "grab",
       }}
     />

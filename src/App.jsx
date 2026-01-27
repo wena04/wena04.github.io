@@ -22,20 +22,19 @@ function App() {
           We use pointer-events: none on the layout wrappers 
           so that clicks on empty space pass through to the 3D background.
       */}
-      <main 
-        className="main-content" 
-        style={{ 
-          position: "relative", 
+      <main
+        className="main-content"
+        style={{
+          position: "relative",
           zIndex: 1,
-          pointerEvents: "none" 
+          pointerEvents: "none",
         }}
       >
-        
         {/* 
             Each section content needs pointer-events: auto 
             to be interactive (links, buttons, etc.)
         */}
-        
+
         <section id="hero">
           <div style={{ pointerEvents: "auto" }}>
             <Hero />
