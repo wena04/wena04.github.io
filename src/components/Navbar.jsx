@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState("");
+  const [activeSection, setActiveSection] = useState("hero");
 
   useEffect(() => {
     const handleScroll = () => {
       const sections = ["hero", "about", "projects", "contact"];
-      const scrollPosition = window.scrollY + 100;
+      const scrollPosition = window.scrollY + 150; // Offset for navbar height
 
       for (const section of sections) {
         const element = document.getElementById(section);
@@ -37,10 +37,26 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="navbar">
+    <nav
+      className="navbar"
+      style={{
+        position: "fixed",
+        top: 0,
+        width: "100%",
+        zIndex: 100,
+        background: "rgba(0, 0, 0, 0.5)",
+        backdropFilter: "blur(10px)",
+      }}
+    >
       <div className="navbar-container">
         <div className="navbar-logo">
-          <a href="#hero" onClick={() => scrollToSection("hero")}>
+          <a
+            href="#hero"
+            onClick={(e) => {
+              e.preventDefault();
+              scrollToSection("hero");
+            }}
+          >
             Anthony Wen
           </a>
         </div>
@@ -48,28 +64,31 @@ export default function Navbar() {
         <div className={`navbar-menu ${isMenuOpen ? "active" : ""}`}>
           <a
             href="#about"
-            className={`navbar-link ${
-              activeSection === "about" ? "active" : ""
-            }`}
-            onClick={() => scrollToSection("about")}
+            className={`navbar-link ${activeSection === "about" ? "active" : ""}`}
+            onClick={(e) => {
+              e.preventDefault();
+              scrollToSection("about");
+            }}
           >
             About
           </a>
           <a
             href="#projects"
-            className={`navbar-link ${
-              activeSection === "projects" ? "active" : ""
-            }`}
-            onClick={() => scrollToSection("projects")}
+            className={`navbar-link ${activeSection === "projects" ? "active" : ""}`}
+            onClick={(e) => {
+              e.preventDefault();
+              scrollToSection("projects");
+            }}
           >
             Projects
           </a>
           <a
             href="#contact"
-            className={`navbar-link ${
-              activeSection === "contact" ? "active" : ""
-            }`}
-            onClick={() => scrollToSection("contact")}
+            className={`navbar-link ${activeSection === "contact" ? "active" : ""}`}
+            onClick={(e) => {
+              e.preventDefault();
+              scrollToSection("contact");
+            }}
           >
             Contact
           </a>
@@ -87,4 +106,3 @@ export default function Navbar() {
     </nav>
   );
 }
-

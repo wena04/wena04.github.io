@@ -1,80 +1,66 @@
 import React from "react";
+import "../styles/projects.css";
 
 export default function Projects() {
   const projects = [
     {
       title: "3D Solar System",
+      role: "Interactive Design",
       description:
         "Interactive 3D solar system built with Three.js and React Three Fiber, featuring realistic physics and orbital mechanics.",
-      technologies: ["Three.js", "React Three Fiber", "Rapier Physics"],
-      github: "https://github.com/wena04/solar-system",
-      demo: "https://wena04.github.io/solar-system",
       image: "/images/solar-system.png",
+      link: "https://github.com/wena04/solar-system",
     },
     {
       title: "Portfolio Website",
+      role: "Web Development",
       description:
         "Personal portfolio website with 3D interactive elements and modern design, showcasing my projects and skills.",
-      technologies: ["React", "Vite", "Three.js", "CSS3"],
-      github: "https://github.com/wena04/wena04.github.io",
-      demo: "https://wena04.github.io",
       image: "/images/portfolio.png",
+      link: "https://github.com/wena04/wena04.github.io",
     },
     {
-      title: "Data Visualization Dashboard",
+      title: "Data Visualization",
+      role: "Frontend Engineering",
       description:
         "Real-time data visualization dashboard for analyzing market trends and financial data with interactive charts.",
-      technologies: ["React", "D3.js", "Python", "FastAPI"],
-      github: "https://github.com/wena04/data-dashboard",
-      demo: "https://data-dashboard.vercel.app",
       image: "/images/dashboard.png",
+      link: "https://github.com/wena04/data-dashboard",
     },
   ];
 
   return (
-    <section id="projects" className="projects">
+    <section id="projects" className="projects-section">
       <div className="container">
-        <h2 className="section-title">Projects</h2>
+        <div className="projects-header">
+          <h2 className="projects-title">
+            Founder <span className="highlight">Search</span>
+          </h2>
+        </div>
+
         <div className="projects-grid">
           {projects.map((project, index) => (
-            <div key={index} className="project-card">
-              <div className="project-image">
-                <img src={project.image} alt={project.title} />
+            <a
+              key={index}
+              href={project.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="project-card"
+            >
+              <div
+                className="card-image"
+                style={{ backgroundImage: `url(${project.image})` }}
+              />
+              <div className="card-info">
+                <span className="card-role">{project.role}</span>
+                <h3 className="card-title">{project.title}</h3>
+                <p className="card-desc">{project.description}</p>
+                <div className="card-arrow">↗</div>
               </div>
-              <div className="project-content">
-                <h3 className="project-title">{project.title}</h3>
-                <p className="project-description">{project.description}</p>
-                <div className="project-technologies">
-                  {project.technologies.map((tech, techIndex) => (
-                    <span key={techIndex} className="tech-tag">
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-                <div className="project-links">
-                  <a
-                    href={project.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="project-link"
-                  >
-                    GitHub
-                  </a>
-                  <a
-                    href={project.demo}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="project-link"
-                  >
-                    Live Demo
-                  </a>
-                </div>
-              </div>
-            </div>
+            </a>
           ))}
         </div>
       </div>
     </section>
   );
 }
-

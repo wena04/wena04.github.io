@@ -1,21 +1,64 @@
+// File: src/sections/Projects.jsx
+import React from "react";
+import "../styles/projects.css";
+
+const projects = [
+  {
+    title: "3D Solar System",
+    role: "WebGL & Physics",
+    description: "Real-time orbital mechanics simulator.",
+    image: "/images/solar-system.png",
+    link: "https://github.com/wena04/solar-system",
+  },
+  {
+    title: "Portfolio 2026",
+    role: "Creative Dev",
+    description: "The interactive 3D site you are looking at.",
+    image: "/images/portfolio.png",
+    link: "https://github.com/wena04",
+  },
+  {
+    title: "Data Dashboard",
+    role: "Full Stack",
+    description: "Financial trends visualization in React & D3.",
+    image: "/images/dashboard.png",
+    link: "https://github.com/wena04/data-dashboard",
+  },
+];
+
 export default function Projects() {
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-white text-gray-900 px-8">
-      <h2 className="text-4xl font-bold mb-6">Projects</h2>
-      <ul className="space-y-4 max-w-2xl">
-        <li className="p-4 border rounded shadow">
-          GVCC App Rebuild – React, Golang, MySQL
-        </li>
-        <li className="p-4 border rounded shadow">
-          CSE 451 OS Labs – Implemented pipes, exec, COW fork
-        </li>
-        <li className="p-4 border rounded shadow">
-          iQuiz iOS App – Swift, Networking, Local Storage
-        </li>
-        <li className="p-4 border rounded shadow">
-          AI/VLM Paper – Real vs Synthetic Image Benchmark
-        </li>
-      </ul>
-    </div>
+    <section id="projects" className="projects-section">
+      <div className="container">
+        <div className="projects-header">
+          <h2 className="projects-title">
+            Selected <span className="highlight">Works</span>
+          </h2>
+        </div>
+
+        <div className="projects-grid">
+          {projects.map((p, i) => (
+            <a
+              href={p.link}
+              key={i}
+              className="project-card"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <div
+                className="card-image"
+                style={{ backgroundImage: `url(${p.image})` }}
+              />
+              <div className="card-info">
+                <span className="card-role">{p.role}</span>
+                <h3 className="card-title">{p.title}</h3>
+                <p className="card-desc">{p.description}</p>
+                <div className="card-arrow">↗</div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }

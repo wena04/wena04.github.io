@@ -466,28 +466,14 @@ FILE: ./src/App.jsx
 
 import React from "react";
 import VisualTest from "./components/VisualTest";
-import Navbar from "./components/Navbar";
-import VerticalNav from "./components/VerticalNav";
 import Hero from "./sections/Hero";
-import About from "./sections/About";
-import Experiences from "./components/experiences/Experiences";
-import Projects from "./sections/Projects";
-import Education from "./components/Education";
-import Contact from "./sections/Contact";
-import Footer from "./components/Footer";
 import "./App.css";
 
 function App() {
   return (
     <div className="app">
-      {/* GLOBAL 3D BACKGROUND */}
+      {/* GLOBAL 3D BACKGROUND (Layer 0) */}
       <VisualTest />
-
-      {/* NAVIGATION */}
-      <Navbar />
-      <div className="hidden md:block">
-        <VerticalNav />
-      </div>
 
       {/* SCROLLABLE CONTENT */}
       <main className="main-content" style={{ position: "relative", zIndex: 1 }}>
@@ -495,7 +481,11 @@ function App() {
         {/* Transparent Hero (shows planet) */}
         <Hero />
         
-        {/* Content Background (hides planet for readability) */}
+        {/* 
+            Layer 1 and other sections are currently hidden 
+            so you can focus on the 3D planet (Layer 0) first.
+        */}
+        {/* 
         <div style={{ background: 'rgba(10, 10, 10, 0.9)', backdropFilter: 'blur(10px)' }}>
             <About />
             <Experiences />
@@ -503,12 +493,14 @@ function App() {
             <Education />
             <Contact />
             <Footer />
-        </div>
+        </div> 
+        */}
 
       </main>
     </div>
   );
 }
+
 export default App;
 
 
@@ -1759,6 +1751,7 @@ const VisualTest = () => {
       new THREE.Mesh(new THREE.SphereGeometry(1.1, 64, 64), atmoMat)
     );
 
+    // Fiery Rings
     const particles = 20000;
     const pGeo = new THREE.BufferGeometry();
     const pos = new Float32Array(particles * 3);
@@ -1789,6 +1782,36 @@ const VisualTest = () => {
     ring.rotation.x = Math.PI / 2.1;
     celestialGroup.add(ring);
     scene.add(celestialGroup);
+
+    // --- STARFIELD (Layered for depth) ---
+    const createStarfield = (count, radius, size, opacity) => {
+      const geo = new THREE.BufferGeometry();
+      const positions = new Float32Array(count * 3);
+      for (let i = 0; i < count; i++) {
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+        const r = radius + (Math.random() - 0.5) * 20;
+        positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+        positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+        positions[i * 3 + 2] = r * Math.cos(phi);
+      }
+      geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+      return new THREE.Points(
+        geo,
+        new THREE.PointsMaterial({
+          size,
+          transparent: true,
+          opacity,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        })
+      );
+    };
+
+    const starsFar = createStarfield(4000, 100, 0.05, 0.4);
+    const starsMid = createStarfield(2000, 60, 0.08, 0.6);
+    const starsNear = createStarfield(500, 30, 0.12, 0.8);
+    scene.add(starsFar, starsMid, starsNear);
 
     // Lights
     const ambientLight = new THREE.AmbientLight(0x0b1020, 0.6);
@@ -1858,6 +1881,11 @@ const VisualTest = () => {
         rotationVelocity.y *= 0.95;
         celestialGroup.rotation.y += 0.001;
       }
+
+      // Starfield parallax
+      starsFar.rotation.y += 0.0001;
+      starsMid.rotation.y += 0.0002;
+      starsNear.rotation.y += 0.0003;
 
       // Scroll transitions
       celestialGroup.position.x = THREE.MathUtils.lerp(
@@ -2510,25 +2538,77 @@ export default function Navbar() {
 FILE: ./src/components/projects/Projects.jsx
 ==================================================
 
+import React from "react";
+import "../styles/projects.css";
+
+// Example Data (Replace with your real project info)
+const projects = [
+  {
+    title: "3D Solar System",
+    role: "WebGL & Physics",
+    image: "/images/solar-system.png", // Make sure this path exists or use a placeholder
+    link: "https://github.com/wena04/solar-system",
+  },
+  {
+    title: "Portfolio 2026",
+    role: "Creative Dev",
+    image: "/images/portfolio.png",
+    link: "https://github.com/wena04",
+  },
+  {
+    title: "Data Dashboard",
+    role: "Full Stack",
+    image: "/images/dashboard.png",
+    link: "https://github.com/wena04/data-dashboard",
+  },
+];
+
 export default function Projects() {
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-white text-gray-900 px-8">
-      <h2 className="text-4xl font-bold mb-6">Projects</h2>
-      <ul className="space-y-4 max-w-2xl">
-        <li className="p-4 border rounded shadow">
-          GVCC App Rebuild – React, Golang, MySQL
-        </li>
-        <li className="p-4 border rounded shadow">
-          CSE 451 OS Labs – Implemented pipes, exec, COW fork
-        </li>
-        <li className="p-4 border rounded shadow">
-          iQuiz iOS App – Swift, Networking, Local Storage
-        </li>
-        <li className="p-4 border rounded shadow">
-          AI/VLM Paper – Real vs Synthetic Image Benchmark
-        </li>
-      </ul>
-    </div>
+    <section id="projects" className="projects-section">
+      <div className="container">
+        {/* Header matching the reference style */}
+        <div className="projects-header">
+          <h2 className="projects-title">
+            Selected <br />
+            <span className="highlight">Works</span>
+          </h2>
+          <p className="projects-desc">
+            A collection of interactive experiences and technical experiments.
+            Dedicated to pushing the web forward.
+          </p>
+        </div>
+
+        {/* The Grid */}
+        <div className="projects-grid">
+          {projects.map((project, index) => (
+            <a
+              href={project.link}
+              key={index}
+              className="project-card"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <div className="card-image-wrapper">
+                {/* Fallback to a gradient if image is missing */}
+                <div
+                  className="card-image-placeholder"
+                  style={{ backgroundImage: `url(${project.image})` }}
+                />
+              </div>
+
+              <div className="card-content">
+                <div>
+                  <h3 className="card-title">{project.title}</h3>
+                  <span className="card-role">{project.role}</span>
+                </div>
+                <div className="card-arrow">↗</div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
