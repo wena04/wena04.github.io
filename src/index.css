@@ -1,6 +1,7 @@
 :root {
   font-family: Arial;
-  background-color: #fafafc;
+  background-color: #000000;
+  color: white;
 }
 
 a:hover {

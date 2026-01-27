@@ -1,28 +1,36 @@
 import React from "react";
-import Navbar from "./components/Navbar";
+import VisualTest from "./components/VisualTest";
 import Hero from "./sections/Hero";
-import About from "./sections/About";
-import Projects from "./sections/Projects";
-import Contact from "./sections/Contact";
-import Footer from "./components/Footer";
-import "./styles/index.css";
-import "./styles/App.css";
-import "./styles/navbar.css";
-import "./styles/hero.css";
-import "./styles/sections.css";
-import "./styles/footer.css";
+import "./App.css";
 
 function App() {
   return (
     <div className="app">
-      {/* <Navbar /> */}
-      <main className="main-content">
+      {/* GLOBAL 3D BACKGROUND (Layer 0) */}
+      <VisualTest />
+
+      {/* SCROLLABLE CONTENT */}
+      <main className="main-content" style={{ position: "relative", zIndex: 1 }}>
+        
+        {/* Transparent Hero (shows planet) */}
         <Hero />
-        {/* <About /> */}
-        {/* <Projects /> */}
-        {/* <Contact /> */}
+        
+        {/* 
+            Layer 1 and other sections are currently hidden 
+            so you can focus on the 3D planet (Layer 0) first.
+        */}
+        {/* 
+        <div style={{ background: 'rgba(10, 10, 10, 0.9)', backdropFilter: 'blur(10px)' }}>
+            <About />
+            <Experiences />
+            <Projects />
+            <Education />
+            <Contact />
+            <Footer />
+        </div> 
+        */}
+
       </main>
-      {/* <Footer /> */}
     </div>
   );
 }

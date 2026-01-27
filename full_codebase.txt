@@ -1,0 +1,2745 @@
+
+==================================================
+FILE: ./vite.config.js
+==================================================
+
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react()],
+});
+
+
+
+==================================================
+FILE: ./package.json
+==================================================
+
+{
+  "name": "wena04.github.io",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@react-three/drei": "^10.7.6",
+    "@react-three/fiber": "^9.4.0",
+    "@react-three/rapier": "^2.1.0",
+    "@tailwindcss/vite": "^4.1.12",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-simple-typewriter": "^5.0.1",
+    "three": "^0.180.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.33.0",
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.7",
+    "@vitejs/plugin-react": "^5.0.0",
+    "eslint": "^9.33.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.3.0",
+    "tailwindcss": "^4.1.12",
+    "vite": "^7.1.2"
+  }
+}
+
+
+
+==================================================
+FILE: ./eslint.config.js
+==================================================
+
+import js from '@eslint/js'
+import globals from 'globals'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactRefresh from 'eslint-plugin-react-refresh'
+import { defineConfig, globalIgnores } from 'eslint/config'
+
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{js,jsx}'],
+    extends: [
+      js.configs.recommended,
+      reactHooks.configs['recommended-latest'],
+      reactRefresh.configs.vite,
+    ],
+    languageOptions: {
+      ecmaVersion: 2020,
+      globals: globals.browser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        ecmaFeatures: { jsx: true },
+        sourceType: 'module',
+      },
+    },
+    rules: {
+      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+    },
+  },
+])
+
+
+
+==================================================
+FILE: ./src/constants.js
+==================================================
+
+// Personal Information
+export const PERSONAL_INFO = {
+  name: "Anthony Wen",
+  title: "Developer • CS + INFO Student • Boba + Music Lover",
+  email: "wena04@uw.edu",
+  university: "University of Washington",
+  major: "Computer Science & Informatics",
+  location: "Seattle, WA",
+  bio: "Communication is key in life. Undergraduate student at the University of Washington currently pursuing a double degree in Computer Science and Informatics.",
+  status: ["⚙️ Full-Stack Dev", "🧠 Product Thinking", "🧋 Boba Dev Hours"],
+};
+
+// Social Links
+export const SOCIAL_LINKS = {
+  email: "mailto:wena04@uw.edu",
+  linkedin: "https://linkedin.com/in/anthony-wen",
+  github: "https://github.com/wena04",
+  twitter: "https://twitter.com/wena04",
+};
+
+// Navigation Items
+export const NAV_ITEMS = [
+  { id: "about", label: "About", href: "#about" },
+  { id: "projects", label: "Projects", href: "#projects" },
+  { id: "contact", label: "Contact", href: "#contact" },
+];
+
+// Skills
+export const SKILLS = {
+  frontend: [
+    "React",
+    "JavaScript",
+    "TypeScript",
+    "HTML/CSS",
+    "Three.js",
+    "Vite",
+  ],
+  backend: ["Node.js", "Python", "Java", "SQL", "Express.js", "FastAPI"],
+  tools: ["Git", "Docker", "VS Code", "Figma", "Postman", "MongoDB"],
+  languages: ["English", "Chinese (Mandarin)"],
+};
+
+// Projects Data
+export const PROJECTS = [
+  {
+    id: "solar-system",
+    title: "3D Solar System",
+    description:
+      "Interactive 3D solar system built with Three.js and React Three Fiber, featuring realistic physics and orbital mechanics.",
+    technologies: ["Three.js", "React Three Fiber", "Rapier Physics", "React"],
+    github: "https://github.com/wena04/solar-system",
+    demo: "https://wena04.github.io/solar-system",
+    image: "/images/solar-system.png",
+    featured: true,
+  },
+  {
+    id: "portfolio",
+    title: "Portfolio Website",
+    description:
+      "Personal portfolio website with 3D interactive elements and modern design, showcasing my projects and skills.",
+    technologies: ["React", "Vite", "Three.js", "CSS3", "JavaScript"],
+    github: "https://github.com/wena04/wena04.github.io",
+    demo: "https://wena04.github.io",
+    image: "/images/portfolio.png",
+    featured: true,
+  },
+  {
+    id: "data-dashboard",
+    title: "Data Visualization Dashboard",
+    description:
+      "Real-time data visualization dashboard for analyzing market trends and financial data with interactive charts.",
+    technologies: ["React", "D3.js", "Python", "FastAPI", "PostgreSQL"],
+    github: "https://github.com/wena04/data-dashboard",
+    demo: "https://data-dashboard.vercel.app",
+    image: "/images/dashboard.png",
+    featured: false,
+  },
+];
+
+// Site Metadata
+export const SITE_METADATA = {
+  title: "Anthony Wen - Portfolio",
+  description:
+    "Computer Science & Informatics student at UW. Full-stack developer passionate about 3D graphics, data visualization, and innovative technology solutions.",
+  keywords: [
+    "Anthony Wen",
+    "Portfolio",
+    "Developer",
+    "Computer Science",
+    "UW",
+    "Three.js",
+    "React",
+    "JavaScript",
+  ],
+  author: "Anthony Wen",
+  url: "https://wena04.github.io",
+  image: "/og-image.png",
+};
+
+// Animation Settings
+export const ANIMATION_CONFIG = {
+  duration: 300,
+  easing: "cubic-bezier(0.4, 0, 0.2, 1)",
+  stagger: 100,
+};
+
+// Three.js Settings
+export const THREE_CONFIG = {
+  camera: {
+    fov: 50,
+    near: 0.1,
+    far: 1000,
+    position: { x: 0, y: 0, z: 8 },
+  },
+  renderer: {
+    antialias: true,
+    shadowMap: true,
+    shadowMapType: "PCFSoftShadowMap",
+  },
+  lights: {
+    ambient: { color: 0xffffff, intensity: 0.05 },
+    sun: { color: 0xffff00, intensity: 3, distance: 25 },
+    directional: { color: 0xffffff, intensity: 0.3 },
+  },
+};
+
+
+
+
+==================================================
+FILE: ./src/App.css
+==================================================
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+
+.main-content {
+  margin-top: 3rem;
+}
+
+.typing-span {
+  display: inline-block;
+  min-width: 180px;
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+.skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.skill-tag {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.vertical-timeline-element-date {
+  text-align: left;
+  display: block;
+  margin-left: 0;
+}
+
+.main-content {
+  margin-left: 0;
+  padding: 0 2rem;
+}
+
+nav {
+  padding: 1rem 0;
+  margin-bottom: 2rem;
+}
+
+/* Planet 3D Styling */
+.planet-container {
+  width: 100%;
+  max-width: 400px;
+  height: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+}
+
+.introContainer .sec1 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 2;
+}
+
+@media (min-width: 768px) {
+  .main-content {
+    margin-left: 0;
+  }
+
+  .vertical-nav {
+    display: block;
+  }
+}
+
+
+
+==================================================
+FILE: ./src/index.css
+==================================================
+
+:root {
+  font-family: Arial;
+  background-color: #000000;
+  color: white;
+}
+
+a:hover {
+  color: #d7d3bf !important;
+}
+
+nav {
+  display: flex;
+  align-items: center;
+  height: 50px;
+  background: transparent;
+}
+
+.portrait {
+  width: 13em;
+  height: 13em;
+  object-fit: cover;
+}
+
+.name {
+  font-size: 2em;
+  font-weight: bold;
+  margin-bottom: 0.3em;
+}
+
+.introContainer .sec1 {
+  flex: 2;
+}
+.introContainer .sec2 {
+  flex: 3;
+}
+
+.introContainer .sec div p {
+  font-size: 1.2em;
+}
+
+.introContainer .sec1 p:nth-of-type(2) {
+  font-size: 1.2em;
+  margin-top: 0;
+}
+
+.iconlinks {
+  width: 2.75em;
+  height: 2.75em;
+}
+
+.sec2 h1,
+.sec2 p {
+  margin-left: 2rem;
+  margin-right: 2rem;
+  text-align: left;
+}
+
+.sec2 p {
+  font-size: 1.1em;
+  line-height: 1.5;
+}
+
+.sec2 a {
+  color: black;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.section-header hr {
+  flex-grow: 1;
+  height: 2px;
+  background-color: lightgray;
+  border: none;
+  margin-left: 1rem;
+  margin-top: 0.6rem;
+}
+
+.section-title {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-right: 1rem;
+}
+
+.experience {
+  margin-left: 2rem;
+  margin-right: 2rem;
+}
+
+@media (min-width: 768px) {
+  .introContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    padding: 50px;
+  }
+
+  .experience {
+    margin-left: 7rem;
+    margin-right: 7rem;
+  }
+}
+
+
+
+==================================================
+FILE: ./src/main.jsx
+==================================================
+
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import App from "./App.jsx";
+
+createRoot(document.getElementById("root")).render(
+  <StrictMode>
+    <App />
+  </StrictMode>
+);
+
+
+
+==================================================
+FILE: ./src/App.jsx
+==================================================
+
+import React from "react";
+import VisualTest from "./components/VisualTest";
+import Navbar from "./components/Navbar";
+import VerticalNav from "./components/VerticalNav";
+import Hero from "./sections/Hero";
+import About from "./sections/About";
+import Experiences from "./components/experiences/Experiences";
+import Projects from "./sections/Projects";
+import Education from "./components/Education";
+import Contact from "./sections/Contact";
+import Footer from "./components/Footer";
+import "./App.css";
+
+function App() {
+  return (
+    <div className="app">
+      {/* GLOBAL 3D BACKGROUND */}
+      <VisualTest />
+
+      {/* NAVIGATION */}
+      <Navbar />
+      <div className="hidden md:block">
+        <VerticalNav />
+      </div>
+
+      {/* SCROLLABLE CONTENT */}
+      <main className="main-content" style={{ position: "relative", zIndex: 1 }}>
+        
+        {/* Transparent Hero (shows planet) */}
+        <Hero />
+        
+        {/* Content Background (hides planet for readability) */}
+        <div style={{ background: 'rgba(10, 10, 10, 0.9)', backdropFilter: 'blur(10px)' }}>
+            <About />
+            <Experiences />
+            <Projects />
+            <Education />
+            <Contact />
+            <Footer />
+        </div>
+
+      </main>
+    </div>
+  );
+}
+export default App;
+
+
+
+==================================================
+FILE: ./src/sections/About.jsx
+==================================================
+
+import React from "react";
+
+export default function About() {
+  return (
+    <section id="about" className="about">
+      <div className="container">
+        <h2 className="section-title">About Me</h2>
+        <div className="about-content">
+          <div className="about-text">
+            <p>
+              I'm a Computer Engineering & Computer Science student at UW. I
+              enjoy building backend systems, experimenting with operating
+              systems concepts, and exploring data-driven applications in real
+              estate, fintech, and healthtech.
+            </p>
+            <p>
+              Currently, I'm focused on Leetcoding, job searching, and working
+              as a TA for Frontend and Server Side Development courses. I'm
+              always excited to learn new technologies and work on challenging
+              projects.
+            </p>
+          </div>
+          <div className="about-skills">
+            <h3>Skills & Technologies</h3>
+            <div className="skills-grid">
+              <div className="skill-category">
+                <h4>Frontend</h4>
+                <ul>
+                  <li>React</li>
+                  <li>JavaScript/TypeScript</li>
+                  <li>HTML/CSS</li>
+                  <li>Three.js</li>
+                </ul>
+              </div>
+              <div className="skill-category">
+                <h4>Backend</h4>
+                <ul>
+                  <li>Node.js</li>
+                  <li>Python</li>
+                  <li>Java</li>
+                  <li>SQL</li>
+                </ul>
+              </div>
+              <div className="skill-category">
+                <h4>Tools</h4>
+                <ul>
+                  <li>Git</li>
+                  <li>Docker</li>
+                  <li>Vite</li>
+                  <li>VS Code</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
+
+==================================================
+FILE: ./src/sections/Hero.jsx
+==================================================
+
+import React from "react";
+
+export default function Hero() {
+  return (
+    <section id="hero" className="hero">
+      <div className="hero-content">
+        <h1 className="hero-title">Anthony Wen</h1>
+        <p className="hero-subtitle">
+          Developer • CS + INFO Student • Boba + Music Lover
+        </p>
+        <p className="hero-description">
+          Communication is key in life. Undergraduate student at the University
+          of Washington currently pursuing a double degree in Computer Science
+          and Informatics.
+        </p>
+        <div className="hero-status">
+          <span>⚙️ Full-Stack Dev</span>
+          <span>🧠 Product Thinking</span>
+          <span>🧋 Boba Dev Hours</span>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
+
+==================================================
+FILE: ./src/sections/Projects.jsx
+==================================================
+
+import React from "react";
+
+export default function Projects() {
+  const projects = [
+    {
+      title: "3D Solar System",
+      description:
+        "Interactive 3D solar system built with Three.js and React Three Fiber, featuring realistic physics and orbital mechanics.",
+      technologies: ["Three.js", "React Three Fiber", "Rapier Physics"],
+      github: "https://github.com/wena04/solar-system",
+      demo: "https://wena04.github.io/solar-system",
+      image: "/images/solar-system.png",
+    },
+    {
+      title: "Portfolio Website",
+      description:
+        "Personal portfolio website with 3D interactive elements and modern design, showcasing my projects and skills.",
+      technologies: ["React", "Vite", "Three.js", "CSS3"],
+      github: "https://github.com/wena04/wena04.github.io",
+      demo: "https://wena04.github.io",
+      image: "/images/portfolio.png",
+    },
+    {
+      title: "Data Visualization Dashboard",
+      description:
+        "Real-time data visualization dashboard for analyzing market trends and financial data with interactive charts.",
+      technologies: ["React", "D3.js", "Python", "FastAPI"],
+      github: "https://github.com/wena04/data-dashboard",
+      demo: "https://data-dashboard.vercel.app",
+      image: "/images/dashboard.png",
+    },
+  ];
+
+  return (
+    <section id="projects" className="projects">
+      <div className="container">
+        <h2 className="section-title">Projects</h2>
+        <div className="projects-grid">
+          {projects.map((project, index) => (
+            <div key={index} className="project-card">
+              <div className="project-image">
+                <img src={project.image} alt={project.title} />
+              </div>
+              <div className="project-content">
+                <h3 className="project-title">{project.title}</h3>
+                <p className="project-description">{project.description}</p>
+                <div className="project-technologies">
+                  {project.technologies.map((tech, techIndex) => (
+                    <span key={techIndex} className="tech-tag">
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+                <div className="project-links">
+                  <a
+                    href={project.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="project-link"
+                  >
+                    GitHub
+                  </a>
+                  <a
+                    href={project.demo}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="project-link"
+                  >
+                    Live Demo
+                  </a>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
+
+
+==================================================
+FILE: ./src/sections/Contact.jsx
+==================================================
+
+import React from "react";
+
+export default function Contact() {
+  return (
+    <section id="contact" className="contact">
+      <div className="container">
+        <h2 className="section-title">Get In Touch</h2>
+        <div className="contact-content">
+          <div className="contact-info">
+            <p>
+              I'm always interested in new opportunities and exciting projects.
+              Whether you have a question or just want to say hi, feel free to
+              reach out!
+            </p>
+            <div className="contact-methods">
+              <a href="mailto:wena04@uw.edu" className="contact-method">
+                <span className="contact-icon">📧</span>
+                <span>wena04@uw.edu</span>
+              </a>
+              <a
+                href="https://linkedin.com/in/anthony-wen"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="contact-method"
+              >
+                <span className="contact-icon">💼</span>
+                <span>LinkedIn</span>
+              </a>
+              <a
+                href="https://github.com/wena04"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="contact-method"
+              >
+                <span className="contact-icon">🐙</span>
+                <span>GitHub</span>
+              </a>
+            </div>
+          </div>
+          <div className="contact-form">
+            <form>
+              <div className="form-group">
+                <label htmlFor="name">Name</label>
+                <input type="text" id="name" name="name" required />
+              </div>
+              <div className="form-group">
+                <label htmlFor="email">Email</label>
+                <input type="email" id="email" name="email" required />
+              </div>
+              <div className="form-group">
+                <label htmlFor="message">Message</label>
+                <textarea
+                  id="message"
+                  name="message"
+                  rows="5"
+                  required
+                ></textarea>
+              </div>
+              <button type="submit" className="submit-btn">
+                Send Message
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
+
+==================================================
+FILE: ./src/styles/sections.css
+==================================================
+
+/* About Section */
+.about {
+  padding: 5rem 0;
+  background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+}
+
+.about-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+.about-text p {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+  color: #ccc;
+}
+
+.about-skills h3 {
+  color: #ff6b35;
+  margin-bottom: 1.5rem;
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+}
+
+.skill-category h4 {
+  color: #ff8c42;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.skill-category ul {
+  list-style: none;
+}
+
+.skill-category li {
+  padding: 0.5rem 0;
+  color: #ccc;
+  border-bottom: 1px solid rgba(255, 107, 53, 0.1);
+}
+
+.skill-category li:last-child {
+  border-bottom: none;
+}
+
+/* Projects Section */
+.projects {
+  padding: 5rem 0;
+  background: #0a0a0a;
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+}
+
+.project-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 107, 53, 0.2);
+  transition: all 0.3s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(255, 107, 53, 0.5);
+  box-shadow: 0 10px 30px rgba(255, 107, 53, 0.1);
+}
+
+.project-image {
+  height: 200px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #ff6b35, #ff8c42);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.project-content {
+  padding: 1.5rem;
+}
+
+.project-title {
+  color: #fff;
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+}
+
+.project-description {
+  color: #ccc;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.project-technologies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.tech-tag {
+  background: rgba(255, 107, 53, 0.1);
+  color: #ff8c42;
+  padding: 0.3rem 0.8rem;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  border: 1px solid rgba(255, 107, 53, 0.3);
+}
+
+.project-links {
+  display: flex;
+  gap: 1rem;
+}
+
+.project-link {
+  background: #ff6b35;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  transition: background 0.3s ease;
+}
+
+.project-link:hover {
+  background: #ff8c42;
+}
+
+/* Contact Section */
+.contact {
+  padding: 5rem 0;
+  background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+}
+
+.contact-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+.contact-info p {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  margin-bottom: 2rem;
+  color: #ccc;
+}
+
+.contact-methods {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.contact-method {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(255, 107, 53, 0.1);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 107, 53, 0.2);
+  transition: all 0.3s ease;
+  color: #fff;
+}
+
+.contact-method:hover {
+  background: rgba(255, 107, 53, 0.2);
+  transform: translateX(5px);
+}
+
+.contact-icon {
+  font-size: 1.5rem;
+}
+
+.contact-form {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2rem;
+  border-radius: 15px;
+  border: 1px solid rgba(255, 107, 53, 0.2);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #ff8c42;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid rgba(255, 107, 53, 0.3);
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.3);
+  color: #fff;
+  font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #ff6b35;
+  box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.2);
+}
+
+.submit-btn {
+  background: #ff6b35;
+  color: white;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.3s ease;
+}
+
+.submit-btn:hover {
+  background: #ff8c42;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .about-content,
+  .contact-content {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .project-card {
+    margin: 0 1rem;
+  }
+
+  .contact-form {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .about,
+  .projects,
+  .contact {
+    padding: 3rem 0;
+  }
+
+  .project-links {
+    flex-direction: column;
+  }
+
+  .contact-methods {
+    gap: 0.5rem;
+  }
+
+  .contact-method {
+    padding: 0.75rem;
+  }
+}
+
+
+
+
+==================================================
+FILE: ./src/styles/navbar.css
+==================================================
+
+/* Navbar Styles */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(10, 10, 10, 0.9);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 107, 53, 0.2);
+  transition: all 0.3s ease;
+}
+
+.navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 70px;
+}
+
+.navbar-logo a {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ff6b35;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.navbar-logo a:hover {
+  color: #ff8c42;
+}
+
+.navbar-menu {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.navbar-link {
+  color: #ccc;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.navbar-link:hover,
+.navbar-link.active {
+  color: #ff6b35;
+  background: rgba(255, 107, 53, 0.1);
+}
+
+.navbar-link.active::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 2px;
+  background: #ff6b35;
+  border-radius: 1px;
+}
+
+.navbar-toggle {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.bar {
+  width: 25px;
+  height: 3px;
+  background: #ff6b35;
+  margin: 3px 0;
+  transition: 0.3s;
+  border-radius: 2px;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .navbar-menu {
+    position: fixed;
+    top: 70px;
+    left: -100%;
+    width: 100%;
+    height: calc(100vh - 70px);
+    background: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(10px);
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding-top: 2rem;
+    transition: left 0.3s ease;
+  }
+
+  .navbar-menu.active {
+    left: 0;
+  }
+
+  .navbar-link {
+    font-size: 1.2rem;
+    padding: 1rem 2rem;
+    margin: 0.5rem 0;
+    width: 80%;
+    text-align: center;
+  }
+
+  .navbar-toggle {
+    display: flex;
+  }
+
+  .navbar-toggle.active .bar:nth-child(2) {
+    opacity: 0;
+  }
+
+  .navbar-toggle.active .bar:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+  }
+
+  .navbar-toggle.active .bar:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-container {
+    padding: 0 1rem;
+  }
+
+  .navbar-logo a {
+    font-size: 1.3rem;
+  }
+}
+
+
+
+
+==================================================
+FILE: ./src/styles/App.css
+==================================================
+
+/* App Component Styles */
+.app {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+}
+
+/* Main Content */
+.main-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Loading Spinner */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #0a0a0a;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid #333;
+  border-top: 3px solid #ff6b35;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error State */
+.error {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #0a0a0a;
+  color: #fff;
+  text-align: center;
+  padding: 2rem;
+}
+
+.error h1 {
+  color: #ff6b35;
+  margin-bottom: 1rem;
+}
+
+.error p {
+  color: #ccc;
+  margin-bottom: 2rem;
+}
+
+.error button {
+  background: #ff6b35;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.3s ease;
+}
+
+.error button:hover {
+  background: #ff8c42;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .error {
+    padding: 1rem;
+  }
+
+  .error h1 {
+    font-size: 2rem;
+  }
+}
+
+
+
+
+==================================================
+FILE: ./src/styles/index.css
+==================================================
+
+/* Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    "Oxygen", "Ubuntu", "Cantarell", sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: #0a0a0a;
+  overflow-x: hidden;
+}
+
+/* Typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+h1 {
+  font-size: 3rem;
+}
+h2 {
+  font-size: 2.5rem;
+}
+h3 {
+  font-size: 2rem;
+}
+h4 {
+  font-size: 1.5rem;
+}
+h5 {
+  font-size: 1.25rem;
+}
+h6 {
+  font-size: 1rem;
+}
+
+p {
+  margin-bottom: 1rem;
+  color: #ccc;
+}
+
+a {
+  color: #ff6b35;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: #ff8c42;
+}
+
+/* Container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Section Titles */
+.section-title {
+  text-align: center;
+  margin-bottom: 3rem;
+  color: #fff;
+  position: relative;
+}
+
+.section-title::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #ff6b35, #ff8c42);
+  border-radius: 2px;
+}
+
+/* Utility Classes */
+.text-center {
+  text-align: center;
+}
+.text-left {
+  text-align: left;
+}
+.text-right {
+  text-align: right;
+}
+
+.mb-1 {
+  margin-bottom: 0.5rem;
+}
+.mb-2 {
+  margin-bottom: 1rem;
+}
+.mb-3 {
+  margin-bottom: 1.5rem;
+}
+.mb-4 {
+  margin-bottom: 2rem;
+}
+
+.mt-1 {
+  margin-top: 0.5rem;
+}
+.mt-2 {
+  margin-top: 1rem;
+}
+.mt-3 {
+  margin-top: 1.5rem;
+}
+.mt-4 {
+  margin-top: 2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 1rem;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+  }
+  h2 {
+    font-size: 2rem;
+  }
+  h3 {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 2rem;
+  }
+  h2 {
+    font-size: 1.75rem;
+  }
+  h3 {
+    font-size: 1.5rem;
+  }
+}
+
+
+
+
+==================================================
+FILE: ./src/styles/footer.css
+==================================================
+
+/* Footer Styles */
+.footer {
+  background: #0a0a0a;
+  border-top: 1px solid rgba(255, 107, 53, 0.2);
+  padding: 3rem 0 1rem;
+  margin-top: 5rem;
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 3rem;
+  margin-bottom: 2rem;
+}
+
+.footer-info h3 {
+  color: #ff6b35;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.footer-info p {
+  color: #ccc;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.footer-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 2rem;
+}
+
+.footer-section h4 {
+  color: #ff8c42;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.footer-section ul {
+  list-style: none;
+}
+
+.footer-section li {
+  margin-bottom: 0.5rem;
+}
+
+.footer-section a {
+  color: #ccc;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+}
+
+.footer-section a:hover {
+  color: #ff6b35;
+}
+
+.footer-bottom {
+  text-align: center;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 107, 53, 0.1);
+}
+
+.footer-bottom p {
+  color: #666;
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    text-align: center;
+  }
+
+  .footer-links {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .footer {
+    padding: 2rem 0 1rem;
+    margin-top: 3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer {
+    padding: 1.5rem 0 1rem;
+  }
+
+  .footer-info h3 {
+    font-size: 1.3rem;
+  }
+
+  .footer-section h4 {
+    font-size: 1rem;
+  }
+}
+
+
+
+
+==================================================
+FILE: ./src/components/Footer.jsx
+==================================================
+
+import React from "react";
+
+export default function Footer() {
+  const currentYear = new Date().getFullYear();
+
+  return (
+    <footer className="footer">
+      <div className="container">
+        <div className="footer-content">
+          <div className="footer-info">
+            <h3>Anthony Wen</h3>
+            <p>Computer Science & Informatics Student</p>
+            <p>University of Washington</p>
+          </div>
+
+          <div className="footer-links">
+            <div className="footer-section">
+              <h4>Navigation</h4>
+              <ul>
+                <li>
+                  <a href="#about">About</a>
+                </li>
+                <li>
+                  <a href="#projects">Projects</a>
+                </li>
+                <li>
+                  <a href="#contact">Contact</a>
+                </li>
+              </ul>
+            </div>
+
+            <div className="footer-section">
+              <h4>Connect</h4>
+              <ul>
+                <li>
+                  <a href="mailto:wena04@uw.edu">Email</a>
+                </li>
+                <li>
+                  <a
+                    href="https://linkedin.com/in/anthony-wen"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    LinkedIn
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://github.com/wena04"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    GitHub
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div className="footer-bottom">
+          <p>&copy; {currentYear} Anthony Wen. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+
+
+
+==================================================
+FILE: ./src/components/VisualTest.jsx
+==================================================
+
+import React, { useEffect, useRef } from "react";
+import * as THREE from "three";
+import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
+
+const VisualTest = () => {
+  const mountRef = useRef(null);
+
+  useEffect(() => {
+    if (!mountRef.current) return;
+
+    const mountEl = mountRef.current;
+    const scene = new THREE.Scene();
+    scene.background = null;
+
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+    camera.position.z = 2.8;
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
+
+    mountEl.appendChild(renderer.domElement);
+
+    // Post-processing
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+    const bloomPass = new UnrealBloomPass(
+      new THREE.Vector2(width, height),
+      1.5,
+      0.4,
+      0.1
+    );
+    composer.addPass(bloomPass);
+
+    // Planet Creation
+    const celestialGroup = new THREE.Group();
+
+    const createNoiseTexture = () => {
+      const size = 1024;
+      const canvas = document.createElement("canvas");
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext("2d");
+      const imgData = ctx.createImageData(size, size);
+      for (let i = 0; i < imgData.data.length; i += 4) {
+        const val = Math.random() * 255;
+        imgData.data[i] = val;
+        imgData.data[i + 1] = val;
+        imgData.data[i + 2] = val;
+        imgData.data[i + 3] = 255;
+      }
+      ctx.putImageData(imgData, 0, 0);
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.wrapS = THREE.RepeatWrapping;
+      tex.wrapT = THREE.RepeatWrapping;
+      return tex;
+    };
+    const noiseMap = createNoiseTexture();
+
+    const planet = new THREE.Mesh(
+      new THREE.SphereGeometry(1, 128, 128),
+      new THREE.MeshStandardMaterial({
+        color: 0xff6b35,
+        bumpMap: noiseMap,
+        bumpScale: 0.15,
+        roughness: 0.4,
+        metalness: 0.2,
+        emissive: 0xff2200,
+        emissiveIntensity: 0.2,
+      })
+    );
+    celestialGroup.add(planet);
+
+    const atmoMat = new THREE.ShaderMaterial({
+      transparent: true,
+      side: THREE.BackSide,
+      uniforms: { glowColor: { value: new THREE.Color(0xff8c42) } },
+      vertexShader: `
+        varying vec3 vNormal;
+        void main() {
+          vNormal = normalize(normalMatrix * normal);
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform vec3 glowColor;
+        varying vec3 vNormal;
+        void main() {
+          float intensity = pow(0.6 - dot(vNormal, vec3(0, 0, 1.0)), 4.0);
+          gl_FragColor = vec4(glowColor, intensity);
+        }
+      `,
+    });
+    celestialGroup.add(
+      new THREE.Mesh(new THREE.SphereGeometry(1.1, 64, 64), atmoMat)
+    );
+
+    const particles = 20000;
+    const pGeo = new THREE.BufferGeometry();
+    const pos = new Float32Array(particles * 3);
+    const col = new Float32Array(particles * 3);
+    for (let i = 0; i < particles; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const radius = 1.6 + Math.random() * 0.5;
+      pos[i * 3] = Math.cos(angle) * radius;
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 0.1;
+      pos[i * 3 + 2] = Math.sin(angle) * radius;
+      const c = new THREE.Color().setHSL(0.08, 1.0, 0.4 + Math.random() * 0.5);
+      col[i * 3] = c.r;
+      col[i * 3 + 1] = c.g;
+      col[i * 3 + 2] = c.b;
+    }
+    pGeo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    pGeo.setAttribute("color", new THREE.BufferAttribute(col, 3));
+    const ring = new THREE.Points(
+      pGeo,
+      new THREE.PointsMaterial({
+        size: 0.012,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.8,
+        blending: THREE.AdditiveBlending,
+      })
+    );
+    ring.rotation.x = Math.PI / 2.1;
+    celestialGroup.add(ring);
+    scene.add(celestialGroup);
+
+    // Lights
+    const ambientLight = new THREE.AmbientLight(0x0b1020, 0.6);
+    scene.add(ambientLight);
+
+    const sunLight = new THREE.PointLight(0xffd08a, 5.2, 140, 2);
+    sunLight.position.set(0, 0, 0);
+    scene.add(sunLight);
+
+    const rimLight = new THREE.DirectionalLight(0x7aa2ff, 0.55);
+    rimLight.position.set(-6, 4, -8);
+    scene.add(rimLight);
+
+    // Drag & Coasting Logic
+    let isDragging = false;
+    let previousMousePosition = { x: 0, y: 0 };
+    let rotationVelocity = { x: 0, y: 0 };
+    let scrollPercent = 0;
+
+    const onMouseDown = (e) => {
+      isDragging = true;
+      previousMousePosition = { x: e.clientX, y: e.clientY };
+    };
+    const onMouseUp = () => {
+      isDragging = false;
+    };
+    const onMouseMove = (e) => {
+      if (isDragging) {
+        const deltaX = e.clientX - previousMousePosition.x;
+        const deltaY = e.clientY - previousMousePosition.y;
+        celestialGroup.rotation.y += deltaX * 0.005;
+        celestialGroup.rotation.x += deltaY * 0.005;
+        rotationVelocity = { x: deltaY * 0.005, y: deltaX * 0.005 };
+        previousMousePosition = { x: e.clientX, y: e.clientY };
+      }
+    };
+
+    const handleScroll = () => {
+      scrollPercent =
+        window.scrollY /
+        (document.documentElement.scrollHeight - window.innerHeight);
+    };
+
+    window.addEventListener("mousedown", onMouseDown);
+    window.addEventListener("mouseup", onMouseUp);
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("scroll", handleScroll);
+
+    const handleResize = () => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+      composer.setSize(w, h);
+    };
+    window.addEventListener("resize", handleResize);
+
+    let animId;
+    function animate() {
+      animId = requestAnimationFrame(animate);
+
+      if (!isDragging) {
+        celestialGroup.rotation.y += rotationVelocity.y;
+        celestialGroup.rotation.x += rotationVelocity.x;
+        rotationVelocity.x *= 0.95;
+        rotationVelocity.y *= 0.95;
+        celestialGroup.rotation.y += 0.001;
+      }
+
+      // Scroll transitions
+      celestialGroup.position.x = THREE.MathUtils.lerp(
+        celestialGroup.position.x,
+        -scrollPercent * 2.5,
+        0.05
+      );
+      celestialGroup.scale.setScalar(
+        THREE.MathUtils.lerp(celestialGroup.scale.x, 1 - scrollPercent * 0.4, 0.05)
+      );
+
+      composer.render();
+    }
+    animate();
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener("mousedown", onMouseDown);
+      window.removeEventListener("mouseup", onMouseUp);
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
+      if (mountEl && renderer.domElement) {
+        mountEl.removeChild(renderer.domElement);
+      }
+      renderer.dispose();
+    };
+  }, []);
+
+  return (
+    <div
+      ref={mountRef}
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: -1,
+        background: "black",
+        cursor: "grab",
+      }}
+    />
+  );
+};
+
+export default VisualTest;
+
+
+
+==================================================
+FILE: ./src/components/Education.jsx
+==================================================
+
+import { educationData } from "./experiences/ExperiencesData";
+import "./Education.css";
+
+const Education = () => {
+  return (
+    <div className="education-section">
+      <h2 className="section-title">Education</h2>
+      <div className="education-content">
+        {educationData.map((item, index) => (
+          <div key={index} className="education-card">
+            <div className="education-header">
+              <h3 className="education-title">{item.title}</h3>
+              <div className="education-subtitle-container">
+                <i>
+                  <span className="education-subtitle">{item.subtitle}</span>
+                </i>
+                <i>
+                  <span className="education-date">{item.date}</span>
+                </i>
+              </div>
+            </div>
+            <div className="education-details">
+              <p className="education-description">{item.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default Education;
+
+
+
+==================================================
+FILE: ./src/components/VerticalNav.jsx
+==================================================
+
+import React, { useState } from "react";
+import "./VerticalNav.css";
+import portraitPic from "../assets/react.svg";
+
+const VerticalNav = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  return (
+    <div className="vertical-nav">
+      <div className="logo">
+        <h2>Anthony Wen</h2>
+      </div>
+
+      <div className="menu-icon" onClick={toggleMenu}>
+        <img src={portraitPic} alt="menu" />
+      </div>
+
+      <div className={`nav-links ${isMenuOpen ? "nav-links-open" : ""}`}>
+        <a
+          href="#about"
+          className="nav-link"
+          onClick={() => setIsMenuOpen(false)}
+        >
+          About
+        </a>
+        <a
+          href="#experiences"
+          className="nav-link"
+          onClick={() => setIsMenuOpen(false)}
+        >
+          Experiences
+        </a>
+        <a
+          href="#projects"
+          className="nav-link"
+          onClick={() => setIsMenuOpen(false)}
+        >
+          Projects
+        </a>
+        <a
+          href="#education"
+          className="nav-link"
+          onClick={() => setIsMenuOpen(false)}
+        >
+          Education
+        </a>
+      </div>
+    </div>
+  );
+};
+
+export default VerticalNav;
+
+
+
+==================================================
+FILE: ./src/components/Button.jsx
+==================================================
+
+import React from "react";
+
+export default function Button({
+  children,
+  variant = "primary",
+  size = "medium",
+  onClick,
+  href,
+  target,
+  rel,
+  className = "",
+  disabled = false,
+  type = "button",
+}) {
+  const baseClasses = "btn";
+  const variantClasses = {
+    primary: "btn-primary",
+    secondary: "btn-secondary",
+    outline: "btn-outline",
+    ghost: "btn-ghost",
+  };
+  const sizeClasses = {
+    small: "btn-small",
+    medium: "btn-medium",
+    large: "btn-large",
+  };
+
+  const classes = [
+    baseClasses,
+    variantClasses[variant],
+    sizeClasses[size],
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  if (href) {
+    return (
+      <a
+        href={href}
+        target={target}
+        rel={rel}
+        className={classes}
+        onClick={onClick}
+      >
+        {children}
+      </a>
+    );
+  }
+
+  return (
+    <button
+      type={type}
+      className={classes}
+      onClick={onClick}
+      disabled={disabled}
+    >
+      {children}
+    </button>
+  );
+}
+
+
+
+
+==================================================
+FILE: ./src/components/IconLink.jsx
+==================================================
+
+function IconLink({ href, src, alt }) {
+  return (
+    <a href={href} target="_blank">
+      <img src={src} alt={alt} className="iconlinks"></img>
+    </a>
+  );
+}
+
+export default IconLink;
+
+
+
+==================================================
+FILE: ./src/components/Education.css
+==================================================
+
+.education-section {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.section-title {
+  color: #473c35;
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+  text-align: left;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.section-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 60px;
+  height: 2px;
+  background-color: #473c35;
+}
+
+.education-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  text-align: left;
+}
+
+.education-card {
+  background: #fafafc;
+  padding: 1.5rem;
+  text-align: left;
+}
+
+.education-header {
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.education-title {
+  color: #473c35;
+  font-size: 1.3rem;
+  margin: 0 0 0.5rem 0;
+  text-align: left;
+}
+
+.education-subtitle-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.education-subtitle {
+  color: #666;
+  font-size: 1.1rem;
+  margin: 0;
+  font-weight: 500;
+  text-align: left;
+}
+
+.education-date {
+  color: #666;
+  font-size: 1.1rem;
+  font-weight: 500;
+  text-align: left;
+}
+
+.education-date::before {
+  content: "|";
+  margin: 0 0.5rem;
+  color: #473c35;
+}
+
+.education-details {
+  color: #666;
+  line-height: 1.6;
+  text-align: left;
+}
+
+.education-description {
+  margin: 0;
+  text-align: left;
+}
+
+@media (max-width: 768px) {
+  .education-section {
+    padding: 1rem;
+  }
+
+  .education-card {
+    padding: 1.2rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+  }
+
+  .education-title {
+    font-size: 1.2rem;
+  }
+
+  .education-subtitle,
+  .education-date {
+    font-size: 1rem;
+  }
+}
+
+
+
+==================================================
+FILE: ./src/components/VerticalNav.css
+==================================================
+
+.vertical-nav {
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: 40px;
+  background-color: #f8f9fa;
+  padding: 0.5rem 0;
+  margin: 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  text-align: center;
+  display: none;
+}
+
+.logo h2 {
+  margin: 0;
+  padding: 0;
+}
+
+.menu-icon {
+  display: block;
+  position: absolute;
+  top: 50%;
+  right: 4rem;
+  transform: translateY(-50%);
+  cursor: pointer;
+  z-index: 1001;
+}
+
+.menu-icon img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.menu-icon img:hover {
+  transform: scale(1.1);
+}
+
+.nav-links {
+  display: none;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+  width: 100%;
+  position: fixed;
+  top: 70px;
+  left: 0;
+  right: 0;
+  background-color: #f8f9fa;
+  padding: 1rem 0;
+  margin: 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease-in-out;
+}
+
+.nav-links-open {
+  display: flex;
+  max-height: 400px;
+}
+
+.nav-link {
+  color: #473c35;
+  text-decoration: none;
+  font-size: 1rem;
+  padding: 0.5rem;
+  margin: 0;
+  text-align: center;
+  transition: all 0.3s ease;
+  border-radius: 4px;
+  display: inline-block;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(-20px);
+  animation: none;
+}
+
+.nav-links-open .nav-link {
+  animation: slideInDown 0.2s ease-out forwards;
+}
+
+.nav-links-open .nav-link:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.nav-links-open .nav-link:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.nav-links-open .nav-link:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.nav-links-open .nav-link:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+.nav-links-open .nav-link:nth-child(5) {
+  animation-delay: 0.5s;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.nav-link:hover {
+  background-color: #e9ecef;
+  color: #2c1810;
+  transform: translateY(-2px);
+}
+
+@media screen and (min-width: 768px) {
+  .vertical-nav {
+    width: 200px;
+    height: 100vh;
+    padding: 2rem 1rem;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  .logo {
+    margin-bottom: 2rem;
+    text-align: left;
+    display: block;
+    width: 100%;
+  }
+
+  .menu-icon {
+    display: none;
+  }
+
+  .nav-links {
+    display: flex;
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    background: transparent;
+    box-shadow: none;
+    max-height: none;
+    overflow: visible;
+    flex-direction: column;
+    gap: 1.5rem;
+    text-align: left;
+    margin: 0px 20px;
+    width: 100%;
+    align-items: flex-start;
+    padding: 0;
+  }
+
+  .nav-links-open {
+    max-height: none;
+  }
+
+  .nav-link {
+    font-size: 1.1rem;
+    text-align: left;
+    display: block;
+    padding: 0.5rem 1rem;
+    width: auto;
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+
+  .nav-link:hover {
+    transform: translateX(5px);
+  }
+}
+
+
+
+==================================================
+FILE: ./src/components/Navbar.jsx
+==================================================
+
+import React, { useState, useEffect } from "react";
+
+export default function Navbar() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("");
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = ["hero", "about", "projects", "contact"];
+      const scrollPosition = window.scrollY + 100;
+
+      for (const section of sections) {
+        const element = document.getElementById(section);
+        if (element) {
+          const { offsetTop, offsetHeight } = element;
+          if (
+            scrollPosition >= offsetTop &&
+            scrollPosition < offsetTop + offsetHeight
+          ) {
+            setActiveSection(section);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+    setIsMenuOpen(false);
+  };
+
+  return (
+    <nav className="navbar">
+      <div className="navbar-container">
+        <div className="navbar-logo">
+          <a href="#hero" onClick={() => scrollToSection("hero")}>
+            Anthony Wen
+          </a>
+        </div>
+
+        <div className={`navbar-menu ${isMenuOpen ? "active" : ""}`}>
+          <a
+            href="#about"
+            className={`navbar-link ${
+              activeSection === "about" ? "active" : ""
+            }`}
+            onClick={() => scrollToSection("about")}
+          >
+            About
+          </a>
+          <a
+            href="#projects"
+            className={`navbar-link ${
+              activeSection === "projects" ? "active" : ""
+            }`}
+            onClick={() => scrollToSection("projects")}
+          >
+            Projects
+          </a>
+          <a
+            href="#contact"
+            className={`navbar-link ${
+              activeSection === "contact" ? "active" : ""
+            }`}
+            onClick={() => scrollToSection("contact")}
+          >
+            Contact
+          </a>
+        </div>
+
+        <div
+          className="navbar-toggle"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+        >
+          <span className="bar"></span>
+          <span className="bar"></span>
+          <span className="bar"></span>
+        </div>
+      </div>
+    </nav>
+  );
+}
+
+
+
+
+==================================================
+FILE: ./src/components/projects/Projects.jsx
+==================================================
+
+export default function Projects() {
+  return (
+    <div className="min-h-screen flex flex-col justify-center items-center bg-white text-gray-900 px-8">
+      <h2 className="text-4xl font-bold mb-6">Projects</h2>
+      <ul className="space-y-4 max-w-2xl">
+        <li className="p-4 border rounded shadow">
+          GVCC App Rebuild – React, Golang, MySQL
+        </li>
+        <li className="p-4 border rounded shadow">
+          CSE 451 OS Labs – Implemented pipes, exec, COW fork
+        </li>
+        <li className="p-4 border rounded shadow">
+          iQuiz iOS App – Swift, Networking, Local Storage
+        </li>
+        <li className="p-4 border rounded shadow">
+          AI/VLM Paper – Real vs Synthetic Image Benchmark
+        </li>
+      </ul>
+    </div>
+  );
+}
+
+
+
+==================================================
+FILE: ./src/components/experiences/Experiences.css
+==================================================
+
+.experience-section {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.section-title {
+  color: #473c35;
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+  text-align: left;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.section-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 60px;
+  height: 2px;
+  background-color: #473c35;
+}
+
+.experience-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.experience-card {
+  background: #fafafc;
+  border-radius: 8px;
+  padding: 1.5rem;
+  border-left: 3px solid #473c35;
+  transition: transform 0.2s ease;
+  text-align: left;
+}
+
+.experience-card:hover {
+  transform: translateX(5px);
+}
+
+.experience-date {
+  color: #473c35;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  text-align: left;
+}
+
+.experience-title {
+  color: #473c35;
+  font-size: 1.3rem;
+  margin: 0 0 0.5rem 0;
+  text-align: left;
+}
+
+.experience-subtitle {
+  color: #666;
+  font-size: 1.1rem;
+  margin: 0 0 1rem 0;
+  font-weight: 500;
+  text-align: left;
+}
+
+.experience-description {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  justify-content: flex-start;
+}
+
+.skill-tag {
+  background: #f0f0f0;
+  color: #473c35;
+  padding: 0.3rem 0.8rem;
+  border-radius: 15px;
+  font-size: 0.85rem;
+  transition: background-color 0.3s ease;
+}
+
+.skill-tag:hover {
+  background: #e0e0e0;
+}
+
+@media (max-width: 768px) {
+  .experience-section {
+    padding: 1rem;
+  }
+
+  .experience-card {
+    padding: 1.2rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+  }
+
+  .experience-title {
+    font-size: 1.2rem;
+  }
+
+  .experience-subtitle {
+    font-size: 1rem;
+  }
+}
+
+
+
+==================================================
+FILE: ./src/components/experiences/ExperiencesData.jsx
+==================================================
+
+export const experiencesData = [
+  {
+    date: "Aug. 2025 - Present",
+    title: "Cursor Campus Lead @ UW Seattle",
+    subtitle: "Anysphere",
+    description: "Grow Cursor’s presence on campus",
+    skills: ["Community Engagement", "Project Management", "Event Planning"],
+  },
+  {
+    date: "Mar. 2025 - Present",
+    title: "Teaching Assistant",
+    subtitle: "University of Washington Information School",
+    description:
+      "Leading weekly lab sessions for 30+ students, covering topics in database design, SQL, and data modeling",
+    skills: [
+      "SQL",
+      "Relational Databases",
+      "Data Modeling",
+      "Teaching & Mentorship",
+    ],
+  },
+  {
+    date: "Sep. 2024 - Present",
+    title: "Research Assistant",
+    subtitle:
+      "Golden Lab, Department of Neurobiology and Biophysics, University of Washington",
+    description:
+      "Analyze physiological signal data from wireless implants; build and visualize machine learning models to detect behavioral patterns in animals.",
+    skills: ["Python", "Machine Learning", "Data Visualization"],
+  },
+];
+
+export const educationData = [
+  {
+    date: "Sep. 2023 – Jun. 2027 (Expected)",
+    title: "University of Washington, Seattle",
+    subtitle: "B.S., CS + Informatics",
+    description:
+      "Relevant courses: Data Structures and Algorithms, Databases and Data Modeling, Client-Side Development, Server-Side Development, Mobile Development: IOS, Machine Learning, Linear Algebra, and more.",
+    skills: [],
+  },
+];
+
+
+
+==================================================
+FILE: ./src/components/experiences/Experiences.jsx
+==================================================
+
+import { experiencesData } from "./ExperiencesData";
+import "./Experiences.css";
+
+const Experiences = () => {
+  return (
+    <div className="experience-section">
+      <h2 className="section-title">Experience</h2>
+      <div className="experience-grid">
+        {experiencesData.map((item, index) => (
+          <div key={index} className="experience-card">
+            <div className="experience-date">{item.date}</div>
+            <h3 className="experience-title">{item.title}</h3>
+            <h4 className="experience-subtitle">{item.subtitle}</h4>
+            <p className="experience-description">{item.description}</p>
+            {item.skills.length > 0 && (
+              <div className="skills">
+                {item.skills.map((skill, index) => (
+                  <span key={index} className="skill-tag">
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default Experiences;
+
+
