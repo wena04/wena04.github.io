@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Background3D from "./components/Background3D";
 import Navbar from "./components/Navbar";
 import Hero from "./sections/Hero";
@@ -9,13 +9,27 @@ import Footer from "./components/Footer";
 import "./App.css";
 
 function App() {
+  const [scrollPercent, setScrollPercent] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollable =
+        document.documentElement.scrollHeight - window.innerHeight;
+      const percent = scrollable > 0 ? window.scrollY / scrollable : 0;
+      setScrollPercent(percent);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <div className="app">
       {/* 3D Background - Layer 0 (Fixed) */}
       <Background3D />
 
       {/* Navigation - Fixed Top */}
-      <Navbar />
+      <Navbar scrollPercent={scrollPercent} />
 
       {/* 
           Main Content Container - Layer 1 (Relative)
@@ -37,7 +51,7 @@ function App() {
 
         <section id="hero">
           <div style={{ pointerEvents: "auto" }}>
-            <Hero />
+            <Hero scrollPercent={scrollPercent} />
           </div>
         </section>
 

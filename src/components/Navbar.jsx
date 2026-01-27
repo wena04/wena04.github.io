@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 
-export default function Navbar() {
+export default function Navbar({ scrollPercent = 0 }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("hero");
+
+  // Fade in navbar after some scroll (starts at 10%)
+  const opacity = Math.min(Math.max((scrollPercent - 0.1) * 10, 0), 1);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -46,6 +49,9 @@ export default function Navbar() {
         zIndex: 100,
         background: "rgba(0, 0, 0, 0.5)",
         backdropFilter: "blur(10px)",
+        opacity: opacity,
+        pointerEvents: opacity > 0.5 ? "auto" : "none",
+        transition: "opacity 0.3s ease-out",
       }}
     >
       <div className="navbar-container">

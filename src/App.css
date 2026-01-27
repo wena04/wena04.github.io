@@ -79,54 +79,56 @@ nav {
   height: 100vh;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end; /* Align to right */
   background: transparent;
   position: relative;
   overflow: hidden;
 }
 
 .hero-content {
-  text-align: center;
+  text-align: left;
   color: white;
-  max-width: 800px;
+  max-width: 450px;
   padding: 2rem;
+  margin-right: 5%;
   position: relative;
   z-index: 2;
+  transition: opacity 0.1s ease-out;
 }
 
 .hero-title {
-  font-size: 4rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
   background: linear-gradient(135deg, #ff6b35, #ff8c42, #ffff00);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  line-height: 1.1;
 }
 
 .hero-subtitle {
-  font-size: 1.5rem;
-  margin-bottom: 1.5rem;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
   color: #ff8c42;
-  font-weight: 300;
+  font-weight: 400;
+  letter-spacing: 1px;
 }
 
 .hero-description {
-  font-size: 1.1rem;
-  line-height: 1.8;
-  margin-bottom: 2rem;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
   color: #ccc;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
+  max-width: 100%;
 }
 
 .hero-status {
   display: flex;
-  justify-content: center;
-  gap: 2rem;
+  justify-content: flex-start;
+  gap: 1rem;
   flex-wrap: wrap;
-  margin-top: 2rem;
+  margin-top: 1.5rem;
 }
 
 .hero-status span {
