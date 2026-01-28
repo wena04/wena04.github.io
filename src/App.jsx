@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
-import CelestialScene from "./components/CelestialScene";
-import Navbar from "./components/Navbar";
+// Layer 0 - 3D Scene
+import CelestialScene from "./scene/CelestialScene";
+// Layer 2 - Navigation
+import Navbar from "./nav/Navbar";
+import Footer from "./nav/Footer";
+// Layer 1 - Content Sections
 import Hero from "./sections/Hero";
 import About from "./sections/About";
 import Projects from "./sections/Projects";
 import Contact from "./sections/Contact";
-import Footer from "./components/Footer";
+// Styles
 import "./App.css";
 
 function App() {

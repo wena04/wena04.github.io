@@ -1,4 +1,5 @@
-// File: src/components/CelestialScene.jsx
+// Layer 0 - 3D Background Scene
+// File: src/scene/CelestialScene.jsx
 import React, { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
