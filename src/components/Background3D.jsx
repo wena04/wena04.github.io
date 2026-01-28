@@ -84,7 +84,6 @@ const Background3D = () => {
         opacity,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
-        map: starTex,
         vertexColors: true,
       });
 
@@ -111,34 +110,53 @@ const Background3D = () => {
       canvas.height = size;
       const ctx = canvas.getContext("2d");
 
-      // Warm Golden-Orange Base
-      ctx.fillStyle = "#e69138"; 
+      // Rich Burnt Orange Base
+      ctx.fillStyle = "#c25a1e"; 
       ctx.fillRect(0, 0, size, size);
 
-      // Layer 1: Soft Cloud-like noise for color variation
-      for (let i = 0; i < 40; i++) {
+      // Layer 1: Darker, broader sienna patches for depth
+      for (let i = 0; i < 50; i++) {
         const x = Math.random() * size;
         const y = Math.random() * size;
-        const radius = Math.random() * 400 + 100;
+        const radius = Math.random() * 600 + 200;
         const grad = ctx.createRadialGradient(x, y, 0, x, y, radius);
-        // Using a "lighter black" (deep sienna) for softer shadows
-        grad.addColorStop(0, "rgba(70, 30, 10, 0.4)"); 
-        grad.addColorStop(1, "rgba(70, 30, 10, 0)");
+        grad.addColorStop(0, "rgba(40, 10, 0, 0.5)");
+        grad.addColorStop(1, "rgba(40, 10, 0, 0)");
         ctx.fillStyle = grad;
         ctx.beginPath();
         ctx.arc(x, y, radius, 0, Math.PI * 2);
         ctx.fill();
       }
 
-      // Layer 2: Sparse, Shallow Craters
-      for (let i = 0; i < 150; i++) {
+      // Layer 2: Craters (Rings and Depressions)
+      for (let i = 0; i < 200; i++) {
         const x = Math.random() * size;
         const y = Math.random() * size;
-        const radius = Math.random() * 40 + 5;
+        const radius = Math.random() * 30 + 5;
+        
+        // Rim highlight
+        ctx.strokeStyle = "rgba(255, 200, 150, 0.15)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Inner shadow
         const grad = ctx.createRadialGradient(x, y, 0, x, y, radius);
-        grad.addColorStop(0, "rgba(255, 200, 100, 0.3)"); // Brighter highlights
-        grad.addColorStop(1, "rgba(255, 200, 100, 0)");
+        grad.addColorStop(0, "rgba(20, 5, 0, 0.3)");
+        grad.addColorStop(0.8, "rgba(20, 5, 0, 0)");
         ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Layer 3: Finer "noise" for rocky texture
+      for (let i = 0; i < 500; i++) {
+        const x = Math.random() * size;
+        const y = Math.random() * size;
+        const radius = Math.random() * 3 + 1;
+        ctx.fillStyle = Math.random() > 0.5 ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.05)";
         ctx.beginPath();
         ctx.arc(x, y, radius, 0, Math.PI * 2);
         ctx.fill();
@@ -189,15 +207,16 @@ const Background3D = () => {
 
     // Ring Particles
     const pGeo = new THREE.BufferGeometry();
-    const count = 8000;
+    const count = 8000; // More particles for density
     const pos = new Float32Array(count * 3);
     const col = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
       const a = Math.random() * 6.28;
       const r = 2.5 + Math.random() * 1.5;
       pos[i * 3] = Math.cos(a) * r;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 0.2;
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 0.2; // Thicker ring (kept from image)
       pos[i * 3 + 2] = Math.sin(a) * r;
+      // Orange color matching GitHub repo
       const c = new THREE.Color().setHSL(0.08, 1.0, 0.5);
       col[i * 3] = c.r;
       col[i * 3 + 1] = c.g;
@@ -208,12 +227,11 @@ const Background3D = () => {
     const rings = new THREE.Points(
       pGeo,
       new THREE.PointsMaterial({
-        size: 0.015,
+        size: 0.015, // Larger particles (kept from image)
         vertexColors: true,
         transparent: true,
-        opacity: 0.6,
+        opacity: 0.6, // More luminous (kept from image)
         blending: THREE.AdditiveBlending,
-        map: starTex,
         depthWrite: false,
       })
     );
