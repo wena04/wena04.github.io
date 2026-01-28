@@ -2,7 +2,7 @@
 
 **Owner:** Anthony Wen  
 **Last Updated:** January 28, 2026  
-**Status:** Data Complete, Ready for Phase 1 Implementation
+**Status:** Phase 1 In Progress - Sections using real data, CSS cleaned up
 
 ---
 
@@ -101,9 +101,14 @@ Use Intersection Observer API to detect which section is visible.
 | Populate personal.js | DONE | Bio, contact, social links |
 | Simplify Footer | DONE | Just "© 2026 Anthony Wen" |
 | Create useVisibleSection hook | DONE | For section-based planet control |
-| Create Intro section (merge Hero+About+Skills) | TODO | |
+| Update Hero.jsx with real data | DONE | Uses personal.js, includes social links |
+| Update About.jsx with real data | DONE | Uses skills.js, shows education/major |
+| Update Projects.jsx with real data | DONE | Uses projects.js (18 projects) |
+| Remove Contact section | DONE | Merged into Hero (links) and Footer (copyright) |
+| Clean up CSS for dark theme | DONE | All text light, transparent backgrounds |
+| Fix CSS imports | DONE | navbar.css, footer.css, sections.css imported |
+| Create Intro section (merge Hero+About) | TODO | Combine into single Intro.jsx |
 | Create Experience section | TODO | Use data/experiences.js |
-| Update Projects section | TODO | Use data/projects.js |
 | Create Friends section placeholder | TODO | Empty, 3D comes in Phase 4 |
 | Update Navbar links | TODO | Match new sections |
 
@@ -194,10 +199,10 @@ src/
 │   └── Footer.jsx              # Minimal footer (just copyright)
 │
 ├── sections/                   # Layer 1 - Content Sections
-│   ├── Hero.jsx                # (will become Intro.jsx)
-│   ├── About.jsx               # (will merge into Intro)
-│   ├── Projects.jsx            # Project showcase
-│   └── Contact.jsx             # (will be deleted, contact in Intro)
+│   ├── Hero.jsx                # Uses personal.js (will merge into Intro.jsx)
+│   ├── About.jsx               # Uses skills.js (will merge into Intro.jsx)
+│   ├── Projects.jsx            # Uses projects.js ✓
+│   └── Contact.jsx             # REMOVED from App.jsx (still exists as file)
 │
 ├── ui/                         # Shared UI Components
 │   ├── Button.jsx              # Reusable button
@@ -236,15 +241,21 @@ src/
 | **Deleted (unused)** | `src/assets/` folder (was just default Vite react.svg) |
 | **Simplified** | `Footer.jsx` - now just copyright, no contact links |
 
+### Recently Updated
+| File | Change | Status |
+|------|--------|--------|
+| `sections/Hero.jsx` | Now uses `personal.js` data | ✓ Working |
+| `sections/About.jsx` | Now uses `skills.js` data | ✓ Working |
+| `sections/Projects.jsx` | Now uses `projects.js` data (18 projects) | ✓ Working |
+| `sections/Contact.jsx` | Removed from App.jsx | ✓ Done |
+| All CSS files | Cleaned up for dark theme, light text | ✓ Done |
+
 ### Still To Do
 | File | Action | Notes |
 |------|--------|-------|
-| `sections/Hero.jsx` | Merge into `Intro.jsx` | Phase 1 |
-| `sections/About.jsx` | Merge into `Intro.jsx` | Phase 1 |
-| `sections/Contact.jsx` | Merge into `Footer.jsx` | Phase 1 |
-| `sections/Intro.jsx` | Create | Phase 1 |
-| `sections/Experience.jsx` | Create | Phase 1 |
-| `sections/Friends.jsx` | Create | Phase 1 |
+| `sections/Hero.jsx` + `About.jsx` | Merge into `Intro.jsx` | Phase 1 |
+| `sections/Experience.jsx` | Create | Phase 1 - use experiences.js |
+| `sections/Friends.jsx` | Create placeholder | Phase 1 |
 | `scene/FriendsGlobe.jsx` | Create | Phase 4 |
 | `ui/ProjectCard.jsx` | Create | Phase 2 |
 | `ui/ExperienceCard.jsx` | Create | Phase 2 |

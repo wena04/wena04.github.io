@@ -8,7 +8,6 @@ import Footer from "./nav/Footer";
 import Hero from "./sections/Hero";
 import About from "./sections/About";
 import Projects from "./sections/Projects";
-import Contact from "./sections/Contact";
 // Styles
 import "./App.css";
 
@@ -68,12 +67,6 @@ function App() {
         <section id="projects">
           <div style={{ pointerEvents: "auto" }}>
             <Projects />
-          </div>
-        </section>
-
-        <section id="contact">
-          <div style={{ pointerEvents: "auto" }}>
-            <Contact />
           </div>
         </section>
 

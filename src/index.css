@@ -1,104 +1,55 @@
+/* Base Styles - Dark Theme for 3D Background */
 :root {
-  font-family: Arial;
-  background-color: #000000;
-  color: white;
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  background-color: transparent;
+  color: #fff;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: transparent;
+  color: #fff;
+  line-height: 1.6;
+}
+
+/* Links */
+a {
+  color: #ff6b35;
+  text-decoration: none;
+  transition: color 0.3s ease;
 }
 
 a:hover {
-  color: #d7d3bf !important;
+  color: #ff8c42;
 }
 
-nav {
-  display: flex;
-  align-items: center;
-  height: 50px;
-  background: transparent;
+/* Container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
 }
 
-.portrait {
-  width: 13em;
-  height: 13em;
-  object-fit: cover;
-}
-
-.name {
-  font-size: 2em;
-  font-weight: bold;
-  margin-bottom: 0.3em;
-}
-
-.introContainer .sec1 {
-  flex: 2;
-}
-.introContainer .sec2 {
-  flex: 3;
-}
-
-.introContainer .sec div p {
-  font-size: 1.2em;
-}
-
-.introContainer .sec1 p:nth-of-type(2) {
-  font-size: 1.2em;
-  margin-top: 0;
-}
-
-.iconlinks {
-  width: 2.75em;
-  height: 2.75em;
-}
-
-.sec2 h1,
-.sec2 p {
-  margin-left: 2rem;
-  margin-right: 2rem;
-  text-align: left;
-}
-
-.sec2 p {
-  font-size: 1.1em;
-  line-height: 1.5;
-}
-
-.sec2 a {
-  color: black;
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-}
-
-.section-header hr {
-  flex-grow: 1;
-  height: 2px;
-  background-color: lightgray;
-  border: none;
-  margin-left: 1rem;
-  margin-top: 0.6rem;
-}
-
+/* Section Titles */
 .section-title {
-  font-size: 1.2em;
-  font-weight: bold;
-  margin-right: 1rem;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 2rem;
 }
 
-.experience {
-  margin-left: 2rem;
-  margin-right: 2rem;
-}
-
-@media (min-width: 768px) {
-  .introContainer {
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
-    padding: 50px;
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 1rem;
   }
-
-  .experience {
-    margin-left: 7rem;
-    margin-right: 7rem;
+  
+  .section-title {
+    font-size: 2rem;
   }
 }

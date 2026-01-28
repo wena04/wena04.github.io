@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import "../styles/navbar.css";
 
 export default function Navbar({ scrollPercent = 0 }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

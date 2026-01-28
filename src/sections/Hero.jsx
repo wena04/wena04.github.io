@@ -1,4 +1,5 @@
 import React from "react";
+import { personal, socialLinks } from "../data/personal";
 
 export default function Hero({ scrollPercent }) {
   // Text starts appearing after the initial zoom is complete (scroll > 20%)
@@ -22,19 +23,28 @@ export default function Hero({ scrollPercent }) {
           maxWidth: "450px",
         }}
       >
-        <h1 className="hero-title">Anthony Wen</h1>
-        <p className="hero-subtitle">
-          Developer • CS + INFO Student • Boba + Music Lover
-        </p>
+        <h1 className="hero-title">{personal.name}</h1>
+        <p className="hero-subtitle">{personal.tagline}</p>
         <p className="hero-description">
-          Communication is key in life. Undergraduate student at the University
-          of Washington currently pursuing a double degree in Computer Science
-          and Informatics.
+          {personal.quote}. {personal.bio}
         </p>
         <div className="hero-status">
-          <span>⚙️ Full-Stack Dev</span>
-          <span>🧠 Product Thinking</span>
-          <span>🧋 Boba Dev Hours</span>
+          {personal.status.map((s, i) => (
+            <span key={i}>
+              {i === 0 ? "⚙️" : i === 1 ? "🧠" : "🧋"} {s}
+            </span>
+          ))}
+        </div>
+        <div className="hero-links" style={{ marginTop: "1.5rem", display: "flex", gap: "1rem" }}>
+          <a href={socialLinks.github} target="_blank" rel="noopener noreferrer" style={{ color: "#ff6b35" }}>
+            GitHub
+          </a>
+          <a href={socialLinks.linkedin} target="_blank" rel="noopener noreferrer" style={{ color: "#ff6b35" }}>
+            LinkedIn
+          </a>
+          <a href={socialLinks.email} style={{ color: "#ff6b35" }}>
+            Email
+          </a>
         </div>
       </div>
     </section>

@@ -1,4 +1,7 @@
 import React from "react";
+import { personal } from "../data/personal";
+import { skills } from "../data/skills";
+import "../styles/sections.css";
 
 export default function About() {
   return (
@@ -8,46 +11,41 @@ export default function About() {
         <div className="about-content">
           <div className="about-text">
             <p>
-              I'm a Computer Engineering & Computer Science student at UW. I
-              enjoy building backend systems, experimenting with operating
-              systems concepts, and exploring data-driven applications in real
-              estate, fintech, and healthtech.
+              <strong>{personal.major}</strong> at {personal.university}
+              {personal.minor && <> with a minor in <strong>{personal.minor}</strong></>}.
             </p>
             <p>
-              Currently, I'm focused on Leetcoding, job searching, and working
-              as a TA for Frontend and Server Side Development courses. I'm
-              always excited to learn new technologies and work on challenging
-              projects.
+              {personal.standing} • {personal.scholarship} recipient • Dean's List Student
+            </p>
+            <p>
+              Languages: {personal.languages.join(", ")}
             </p>
           </div>
           <div className="about-skills">
             <h3>Skills & Technologies</h3>
             <div className="skills-grid">
               <div className="skill-category">
-                <h4>Frontend</h4>
+                <h4>Languages</h4>
                 <ul>
-                  <li>React</li>
-                  <li>JavaScript/TypeScript</li>
-                  <li>HTML/CSS</li>
-                  <li>Three.js</li>
+                  {skills.languages.slice(0, 6).map((skill, i) => (
+                    <li key={i}>{skill}</li>
+                  ))}
                 </ul>
               </div>
               <div className="skill-category">
-                <h4>Backend</h4>
+                <h4>Technologies</h4>
                 <ul>
-                  <li>Node.js</li>
-                  <li>Python</li>
-                  <li>Java</li>
-                  <li>SQL</li>
+                  {skills.technologies.map((skill, i) => (
+                    <li key={i}>{skill}</li>
+                  ))}
                 </ul>
               </div>
               <div className="skill-category">
                 <h4>Tools</h4>
                 <ul>
-                  <li>Git</li>
-                  <li>Docker</li>
-                  <li>Vite</li>
-                  <li>VS Code</li>
+                  {skills.tools.map((skill, i) => (
+                    <li key={i}>{skill}</li>
+                  ))}
                 </ul>
               </div>
             </div>
