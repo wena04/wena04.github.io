@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Background3D from "./components/Background3D";
+import CelestialScene from "./components/CelestialScene";
 import Navbar from "./components/Navbar";
 import Hero from "./sections/Hero";
 import About from "./sections/About";
@@ -26,7 +26,7 @@ function App() {
   return (
     <div className="app">
       {/* 3D Background - Layer 0 (Fixed) */}
-      <Background3D />
+      <CelestialScene />
 
       {/* Navigation - Fixed Top */}
       <Navbar scrollPercent={scrollPercent} />
