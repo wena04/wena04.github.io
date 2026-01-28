@@ -33,7 +33,7 @@ const Background3D = () => {
       new THREE.Vector2(width, height),
       1.4,
       0.4,
-      0.1
+      0.1,
     );
     composer.addPass(bloomPass);
 
@@ -54,7 +54,14 @@ const Background3D = () => {
     };
     const starTex = createStarTexture();
 
-    const createStarfield = (count, radius, size, opacity, baseColor, colorVariation = 0.1) => {
+    const createStarfield = (
+      count,
+      radius,
+      size,
+      opacity,
+      baseColor,
+      colorVariation = 0.1,
+    ) => {
       const geo = new THREE.BufferGeometry();
       const positions = new Float32Array(count * 3);
       const colors = new Float32Array(count * 3);
@@ -69,7 +76,11 @@ const Background3D = () => {
         positions[i * 3 + 2] = r * Math.cos(phi);
 
         const c = new THREE.Color(baseColor);
-        c.offsetHSL((Math.random() - 0.5) * colorVariation, 0, (Math.random() - 0.5) * 0.2);
+        c.offsetHSL(
+          (Math.random() - 0.5) * colorVariation,
+          0,
+          (Math.random() - 0.5) * 0.2,
+        );
         colors[i * 3] = c.r;
         colors[i * 3 + 1] = c.g;
         colors[i * 3 + 2] = c.b;
@@ -98,6 +109,13 @@ const Background3D = () => {
 
     // 3. PLANET GROUP
     const celestialGroup = new THREE.Group();
+
+    // --- FIX: INITIAL STARTUP ANGLE ---
+    // Rotates the whole system (Planet + Rings) to be diagonal
+    celestialGroup.rotation.z = -Math.PI / 3;
+    celestialGroup.rotation.x = -Math.PI / 2;
+
+    // Create a ring geometry
     // Start planet far away
     celestialGroup.position.z = -20;
     scene.add(celestialGroup);
@@ -111,7 +129,7 @@ const Background3D = () => {
       const ctx = canvas.getContext("2d");
 
       // Rich Burnt Orange Base
-      ctx.fillStyle = "#c25a1e"; 
+      ctx.fillStyle = "#c25a1e";
       ctx.fillRect(0, 0, size, size);
 
       // Layer 1: Darker, broader sienna patches for depth
@@ -133,7 +151,7 @@ const Background3D = () => {
         const x = Math.random() * size;
         const y = Math.random() * size;
         const radius = Math.random() * 30 + 5;
-        
+
         // Rim highlight
         ctx.strokeStyle = "rgba(255, 200, 150, 0.15)";
         ctx.lineWidth = 1;
@@ -156,7 +174,10 @@ const Background3D = () => {
         const x = Math.random() * size;
         const y = Math.random() * size;
         const radius = Math.random() * 3 + 1;
-        ctx.fillStyle = Math.random() > 0.5 ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.05)";
+        ctx.fillStyle =
+          Math.random() > 0.5
+            ? "rgba(255, 255, 255, 0.05)"
+            : "rgba(0, 0, 0, 0.05)";
         ctx.beginPath();
         ctx.arc(x, y, radius, 0, Math.PI * 2);
         ctx.fill();
@@ -176,7 +197,7 @@ const Background3D = () => {
         metalness: 0.1,
         emissive: 0xff4500, // Warm internal glow
         emissiveIntensity: 0.15,
-      })
+      }),
     );
     celestialGroup.add(planet);
 
@@ -202,7 +223,7 @@ const Background3D = () => {
       `,
     });
     celestialGroup.add(
-      new THREE.Mesh(new THREE.SphereGeometry(1.05, 64, 64), atmoMat)
+      new THREE.Mesh(new THREE.SphereGeometry(1.05, 64, 64), atmoMat),
     );
 
     // Ring Particles
@@ -233,9 +254,9 @@ const Background3D = () => {
         opacity: 0.6, // More luminous (kept from image)
         blending: THREE.AdditiveBlending,
         depthWrite: false,
-      })
+      }),
     );
-    rings.rotation.x = Math.PI / 3;
+    rings.rotation.x = Math.PI / 2.2;
     celestialGroup.add(rings);
 
     // Lights
@@ -252,7 +273,8 @@ const Background3D = () => {
     let rotationVelocity = { x: 0, y: 0 };
 
     const handleScroll = () => {
-      const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollable =
+        document.documentElement.scrollHeight - window.innerHeight;
       scrollPercent = scrollable > 0 ? window.scrollY / scrollable : 0;
     };
 
@@ -316,8 +338,13 @@ const Background3D = () => {
       starLayers.forEach((layer, i) => {
         layer.rotation.y += 0.0001 * (i + 1);
         layer.material.opacity =
-          layer.material.opacity * 0.99 + (Math.random() * 0.1 + (0.4 + i * 0.2)) * 0.01;
-        layer.material.opacity = THREE.MathUtils.clamp(layer.material.opacity, 0.1, 0.85);
+          layer.material.opacity * 0.99 +
+          (Math.random() * 0.1 + (0.4 + i * 0.2)) * 0.01;
+        layer.material.opacity = THREE.MathUtils.clamp(
+          layer.material.opacity,
+          0.1,
+          0.85,
+        );
       });
 
       composer.render();
