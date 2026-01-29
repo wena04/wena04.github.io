@@ -5,9 +5,10 @@ import CelestialScene from "./scene/CelestialScene";
 import Navbar from "./nav/Navbar";
 import Footer from "./nav/Footer";
 // Layer 1 - Content Sections
-import Hero from "./sections/Hero";
-import About from "./sections/About";
+import Intro from "./sections/Intro";
+import Experience from "./sections/Experience";
 import Projects from "./sections/Projects";
+import Friends from "./sections/Friends";
 // Styles
 import "./App.css";
 
@@ -28,17 +29,13 @@ function App() {
 
   return (
     <div className="app">
-      {/* 3D Background - Layer 0 (Fixed) */}
+      {/* Layer 0: 3D Background (Fixed) */}
       <CelestialScene />
 
-      {/* Navigation - Fixed Top */}
+      {/* Layer 2: Navigation (Fixed Top) */}
       <Navbar scrollPercent={scrollPercent} />
 
-      {/* 
-          Main Content Container - Layer 1 (Relative)
-          We use pointer-events: none on the layout wrappers 
-          so that clicks on empty space pass through to the 3D background.
-      */}
+      {/* Layer 1: Main Content (Scrollable) */}
       <main
         className="main-content"
         style={{
@@ -47,29 +44,27 @@ function App() {
           pointerEvents: "none",
         }}
       >
-        {/* 
-            Each section content needs pointer-events: auto 
-            to be interactive (links, buttons, etc.)
-        */}
+        {/* Intro Section (Hero + About merged) */}
+        <div style={{ pointerEvents: "auto" }}>
+          <Intro scrollPercent={scrollPercent} />
+        </div>
 
-        <section id="hero">
-          <div style={{ pointerEvents: "auto" }}>
-            <Hero scrollPercent={scrollPercent} />
-          </div>
-        </section>
+        {/* Experience Section */}
+        <div style={{ pointerEvents: "auto" }}>
+          <Experience />
+        </div>
 
-        <section id="about">
-          <div style={{ pointerEvents: "auto" }}>
-            <About />
-          </div>
-        </section>
+        {/* Projects Section */}
+        <div style={{ pointerEvents: "auto" }}>
+          <Projects />
+        </div>
 
-        <section id="projects">
-          <div style={{ pointerEvents: "auto" }}>
-            <Projects />
-          </div>
-        </section>
+        {/* Friends Section */}
+        <div style={{ pointerEvents: "auto" }}>
+          <Friends />
+        </div>
 
+        {/* Footer */}
         <div style={{ pointerEvents: "auto" }}>
           <Footer />
         </div>

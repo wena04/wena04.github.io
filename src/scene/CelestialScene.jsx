@@ -5,6 +5,8 @@ import * as THREE from "three";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
+import { createNetworkGlobe } from "./globeGenerator";
+import { friends } from "../data/friends";
 
 // ============================================================================
 // MAIN COMPONENT
@@ -68,15 +70,18 @@ const CelestialScene = () => {
     scene.add(celestialGroup);
 
     // Planet Creation
+    const planetMaterial = new THREE.MeshStandardMaterial({
+      map: createSoftMoonTexture(),
+      roughness: 0.8,
+      metalness: 0.1,
+      emissive: 0xff4500, // Warm internal glow
+      emissiveIntensity: 0.15,
+      transparent: true,
+    });
+    planetMaterial.userData = { baseOpacity: 1 };
     const planet = new THREE.Mesh(
       new THREE.SphereGeometry(1, 128, 128),
-      new THREE.MeshStandardMaterial({
-        map: createSoftMoonTexture(),
-        roughness: 0.8,
-        metalness: 0.1,
-        emissive: 0xff4500, // Warm internal glow
-        emissiveIntensity: 0.15,
-      }),
+      planetMaterial,
     );
     celestialGroup.add(planet);
 
@@ -124,22 +129,41 @@ const CelestialScene = () => {
     pGeo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
     pGeo.setAttribute("color", new THREE.BufferAttribute(col, 3));
 
-    const rings = new THREE.Points(
-      pGeo,
-      new THREE.PointsMaterial({
-        size: 0.015, // Larger particles (kept from image)
-        vertexColors: true,
-        transparent: true,
-        opacity: 0.6, // More luminous (kept from image)
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-      }),
-    );
+    const ringsMaterial = new THREE.PointsMaterial({
+      size: 0.015, // Larger particles (kept from image)
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.6, // More luminous (kept from image)
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    ringsMaterial.userData = { baseOpacity: 0.6 };
+    const rings = new THREE.Points(pGeo, ringsMaterial);
     rings.rotation.x = Math.PI / 2.2;
     celestialGroup.add(rings);
 
     // ------------------------------------------------------------------------
-    // 4. LIGHTING
+    // 4. FRIENDS NETWORK GLOBE (Initially Hidden)
+    // ------------------------------------------------------------------------
+    const friendsGlobe = createNetworkGlobe(friends);
+    friendsGlobe.position.set(0, 0, 0); // Center position
+
+    // Store base opacities for each material
+    friendsGlobe.traverse((child) => {
+      if (child.material) {
+        child.material.userData = { baseOpacity: child.material.opacity };
+        child.material.opacity = 0; // Start hidden
+        child.material.transparent = true;
+      }
+    });
+    scene.add(friendsGlobe);
+
+    // Track current opacity for smooth transitions
+    let globeOpacity = 0;
+    let planetOpacity = 1;
+
+    // ------------------------------------------------------------------------
+    // 5. LIGHTING
     // ------------------------------------------------------------------------
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
     scene.add(ambientLight);
@@ -148,7 +172,7 @@ const CelestialScene = () => {
     scene.add(sunLight);
 
     // ------------------------------------------------------------------------
-    // 5. ANIMATION & INTERACTION STATE
+    // 6. ANIMATION & INTERACTION STATE
     // ------------------------------------------------------------------------
     let scrollPercent = 0;
     let isDragging = false;
@@ -223,6 +247,53 @@ const CelestialScene = () => {
           0.85,
         );
       });
+
+      // ------------------------------------------------------------------------
+      // PLANET <-> GLOBE CROSSFADE (Friends Section Transition)
+      // ------------------------------------------------------------------------
+      const isFriendsSection = scrollPercent > 0.75; // Adjust threshold as needed
+      const targetGlobeOpacity = isFriendsSection ? 1 : 0;
+      const targetPlanetOpacity = isFriendsSection ? 0 : 1;
+
+      // Smooth lerp transition
+      globeOpacity = THREE.MathUtils.lerp(
+        globeOpacity,
+        targetGlobeOpacity,
+        0.05,
+      );
+      planetOpacity = THREE.MathUtils.lerp(
+        planetOpacity,
+        targetPlanetOpacity,
+        0.05,
+      );
+
+      // Apply opacity to globe materials
+      friendsGlobe.traverse((child) => {
+        if (
+          child.material &&
+          child.material.userData.baseOpacity !== undefined
+        ) {
+          child.material.opacity =
+            child.material.userData.baseOpacity * globeOpacity;
+        }
+      });
+
+      // Apply opacity to planet materials
+      celestialGroup.traverse((child) => {
+        if (child.material) {
+          if (child.material.uniforms) {
+            // Shader materials (atmosphere)
+            // Skip for now, or handle separately
+          } else if (child.material.opacity !== undefined) {
+            child.material.opacity =
+              planetOpacity * (child.material.userData?.baseOpacity || 1);
+            child.material.transparent = true;
+          }
+        }
+      });
+
+      // Rotate globe slowly
+      friendsGlobe.rotation.y += 0.002;
 
       composer.render();
     };
