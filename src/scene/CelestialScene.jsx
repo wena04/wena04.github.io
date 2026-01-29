@@ -177,7 +177,10 @@ const CelestialScene = () => {
     let scrollPercent = 0;
     let isDragging = false;
     let previousMousePosition = { x: 0, y: 0 };
-    let rotationVelocity = { x: 0, y: 0 };
+
+    // Separate velocity for planet and globe
+    let planetVelocity = { x: 0, y: 0 };
+    let globeVelocity = { x: 0, y: 0 };
 
     const handleScroll = () => {
       const scrollable =
@@ -197,13 +200,26 @@ const CelestialScene = () => {
         const deltaX = e.clientX - previousMousePosition.x;
         const deltaY = e.clientY - previousMousePosition.y;
 
-        celestialGroup.rotation.y += deltaX * 0.005;
-        celestialGroup.rotation.x += deltaY * 0.005;
+        // Check which object is visible based on scroll position
+        const isFriendsSection = scrollPercent > 0.75;
 
-        rotationVelocity = {
-          x: deltaY * 0.005,
-          y: deltaX * 0.005,
-        };
+        if (isFriendsSection) {
+          // Drag the globe (inverted to follow mouse direction)
+          friendsGlobe.rotation.y -= deltaX * 0.005;
+          friendsGlobe.rotation.x -= deltaY * 0.005;
+          globeVelocity = {
+            x: -deltaY * 0.005,
+            y: -deltaX * 0.005,
+          };
+        } else {
+          // Drag the planet (inverted to follow mouse direction)
+          celestialGroup.rotation.y -= deltaX * 0.005;
+          celestialGroup.rotation.x -= deltaY * 0.005;
+          planetVelocity = {
+            x: -deltaY * 0.005,
+            y: -deltaX * 0.005,
+          };
+        }
 
         previousMousePosition = { x: e.clientX, y: e.clientY };
       }
@@ -225,15 +241,24 @@ const CelestialScene = () => {
       celestialGroup.position.z = THREE.MathUtils.lerp(-15, 0, zoomProgress);
       celestialGroup.position.x = THREE.MathUtils.lerp(0, -2.5, moveProgress);
 
-      // Drag & Coasting Logic
+      // Drag & Coasting Logic - Planet
       if (!isDragging) {
-        celestialGroup.rotation.y += rotationVelocity.y;
-        celestialGroup.rotation.x += rotationVelocity.x; // Friction
-        rotationVelocity.x *= 0.95;
-        rotationVelocity.y *= 0.95;
-        celestialGroup.rotation.y += 0.001;
+        celestialGroup.rotation.y += planetVelocity.y;
+        celestialGroup.rotation.x += planetVelocity.x;
+        planetVelocity.x *= 0.95; // Friction
+        planetVelocity.y *= 0.95;
+        celestialGroup.rotation.y += 0.001; // Slow auto-rotate
       }
       rings.rotation.y += 0.0005;
+
+      // Drag & Coasting Logic - Globe
+      if (!isDragging) {
+        friendsGlobe.rotation.y += globeVelocity.y;
+        friendsGlobe.rotation.x += globeVelocity.x;
+        globeVelocity.x *= 0.95; // Friction
+        globeVelocity.y *= 0.95;
+        friendsGlobe.rotation.y += 0.001; // Slow auto-rotate
+      }
 
       // Starfield Parallax & Twinkle
       starLayers.forEach((layer, i) => {
@@ -291,9 +316,6 @@ const CelestialScene = () => {
           }
         }
       });
-
-      // Rotate globe slowly
-      friendsGlobe.rotation.y += 0.002;
 
       composer.render();
     };
