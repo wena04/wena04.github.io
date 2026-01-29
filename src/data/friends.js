@@ -11,30 +11,30 @@ export const friends = [
   {
     id: 2,
     name: "Millor Lei",
-    url: null, // TODO: Add portfolio URL
+    url: "https://millorlei.com/",
     color: "#ff8c42",
   },
   {
     id: 3,
     name: "Marco Guo",
-    url: null, // TODO: Add portfolio URL
+    url: "https://marc0guo.github.io/marco-portfolio/", // TODO: Add portfolio URL
     color: "#ffd08a",
   },
   {
     id: 4,
     name: "Joelle Liu",
-    url: null, // TODO: Add portfolio URL
+    url: "https://github.com/joelle1725", // TODO: Add portfolio URL
     color: "#4ecdc4",
   },
   {
     id: 5,
-    name: "Chumeng Zhang",
+    name: "Billy Zhang",
     url: null, // TODO: Add portfolio URL
     color: "#45b7d1",
   },
   {
     id: 6,
-    name: "Maya Odienheim",
+    name: "Maya Odenheim",
     url: null, // TODO: Add portfolio URL
     color: "#96ceb4",
   },
@@ -42,6 +42,12 @@ export const friends = [
     id: 7,
     name: "An Dao",
     url: null, // TODO: Add portfolio URL
+    color: "#dda0dd",
+  },
+  {
+    id: 8,
+    name: "David Gao",
+    url: "https://www.yuangao.me/",
     color: "#dda0dd",
   },
 ];

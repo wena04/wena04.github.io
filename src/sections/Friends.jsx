@@ -5,13 +5,14 @@ export default function Friends() {
   return (
     <section id="friends" className="friends-section">
       <div className="container">
-        <h2 className="section-title">Friends</h2>
+        {/* Title hidden for now to see 3D globe clearly */}
+        {/* <h2 className="section-title">Friends</h2>
         <p className="friends-intro">
           Amazing people I've met along the way. Click to visit their
           portfolios!
-        </p>
+        </p> */}
 
-        {/* Placeholder - will become 3D globe in Phase 4 */}
+        {/* HIDDEN: Friend cards - uncomment when ready
         <div className="friends-grid">
           {friends.map((friend) => (
             <a
@@ -41,12 +42,13 @@ export default function Friends() {
         <p className="friends-note">
           🌐 This section will become an interactive 3D globe!
         </p>
+        */}
       </div>
 
       <style>{`
         .friends-section {
           padding: 5rem 0;
-          min-height: 80vh;
+          min-height: 100vh; /* Full viewport to see the globe */
         }
 
         .friends-intro {
