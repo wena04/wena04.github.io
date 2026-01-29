@@ -158,15 +158,16 @@ Use Intersection Observer API to detect which section is visible.
 
 **Goal:** Unique differentiators
 
-| Task                                      | Status | Notes                                    |
-| ----------------------------------------- | ------ | ---------------------------------------- |
-| **Create `globeGenerator.js`**            | DONE   | Fibonacci sphere + geometric connections |
-| Add Globe to CelestialScene               | TODO   | Import and hide initially (opacity 0)    |
-| Planet → Globe transition                 | TODO   | Opacity crossfade (scroll > 85%)         |
-| Globe interaction (drag, hover, click)    | TODO   | Raycaster for friend nodes               |
-| Friend name labels (CSS2DRenderer)        | TODO   | Show name on hover                       |
-| Loading screen ("Ready Player One")       | TODO   |                                          |
-| Projects: finalize layout (tabs/carousel) | TODO   |                                          |
+| Task                                      | Status | Notes                                       |
+| ----------------------------------------- | ------ | ------------------------------------------- |
+| **Create `globeGenerator.js`**            | DONE   | Fibonacci sphere + geometric connections    |
+| **Add Globe to CelestialScene**           | DONE   | Imported, starts hidden (opacity 0)         |
+| **Planet → Globe transition**             | DONE   | Opacity crossfade at scroll > 75%           |
+| **Globe drag interaction**                | DONE   | Mouse drag + coast, follows mouse direction |
+| Globe hover/click (Raycaster)             | TODO   | Click friend node → open portfolio          |
+| Friend name labels (CSS2DRenderer)        | TODO   | Show name on hover                          |
+| Loading screen ("Ready Player One")       | TODO   |                                             |
+| Projects: finalize layout (tabs/carousel) | TODO   |                                             |
 
 #### Friends Globe Design (Jan 28, 2026)
 
@@ -182,11 +183,12 @@ Design Elements:
 - Rotates slowly, draggable
 ```
 
-**Transition Logic:**
+**Transition Logic (IMPLEMENTED):**
 
 - Hero/Experience/Projects: Planet visible, Globe hidden (opacity 0)
-- Friends Section (scroll > 85%): Planet fades OUT, Globe fades IN
-- Smooth opacity crossfade (not particle dissolve)
+- Friends Section (scroll > 75%): Planet fades OUT, Globe fades IN
+- Smooth opacity crossfade with lerp (0.05 speed)
+- Both objects have independent drag + coast interaction
 
 **Reference Images:**
 
