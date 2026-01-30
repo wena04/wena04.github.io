@@ -88,7 +88,7 @@ export const experiences = [
     title: "Software Engineer Intern",
     company: "Global Visa Consultation Center (GVCC)",
     description:
-      "Migrated & merged 8000+ client records from legacy Microsoft Access (Year 2000) and hardcopy docs to MySQL, improving data storage and search by 50%. Developed web applications with JavaScript, HTML/CSS and Bootstrap. Designed internal business automation system using Adobe AI.",
+      "Designed and developed their entire internal business automation system from scratch",
     skills: ["JavaScript", "MySQL", "Bootstrap", "Adobe AI", "Data Migration"],
   },
   {
@@ -158,7 +158,8 @@ export const awards = [
     title: "Gary A. Kildall Endowed Scholarship",
     issuer: "Paul G. Allen School of Computer Science & Engineering",
     date: "Sep 2024",
-    description: "Awarded to 2 outstanding CSE undergraduates based on academic merit out of 400+ applicants",
+    description:
+      "Awarded to 2 outstanding CSE undergraduates based on academic merit out of 400+ applicants",
   },
   {
     id: 2,

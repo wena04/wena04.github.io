@@ -10,12 +10,11 @@ export const personal = {
   major: "Computer Science & Informatics (Double Degree)",
   minor: "Applied Mathematics",
   scholarship: "Gary A. Kildall Endowed Scholarship",
-  standing: "Junior (Senior Standing in Credits)",
+  standing: "Junior",
   location: "Seattle, WA",
   bio: "Undergraduate student at the University of Washington currently pursuing a double degree in Computer Science and Informatics with a minor in Applied Mathematics. Direct Admit, Dean's List student. Open to work!",
   status: ["Full-Stack Dev", "Product Thinking", "Boba Dev Hours"],
   languages: ["English", "Chinese (Mandarin)", "Cantonese"],
-  // From GitHub
   githubUsername: "wena04",
   openToWork: true,
 };

@@ -6,7 +6,7 @@ export const friends = [
     id: 1,
     name: "Amelia Li",
     url: "https://ameliali.com",
-    color: "#ff6b35", // Orange
+    color: "#ff6b35",
   },
   {
     id: 2,
@@ -28,8 +28,8 @@ export const friends = [
   },
   {
     id: 5,
-    name: "Billy Zhang",
-    url: null, // TODO: Add portfolio URL
+    name: "Jessie Xiao",
+    url: "https://sites.google.com/uw.edu/jessie-xiao/home",
     color: "#45b7d1",
   },
   {
@@ -50,6 +50,16 @@ export const friends = [
     url: "https://www.yuangao.me/",
     color: "#dda0dd",
   },
+  {
+    id: 9,
+    name: "Vivian Lu",
+    url: "https://zifulu.framer.website/",
+    color: "#dda0dd",
+  },
+  {
+    id: 10,
+    name: "Patricia Wen",
+    url: "", // TODO: Add portfolio URL
+    color: "#dda0dd",
+  },
 ];
-
-// Total: 7 friends (you mentioned 10+, add more as needed)

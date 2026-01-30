@@ -206,15 +206,16 @@ Design Elements:
 
 **Goal:** Production ready
 
-| Task                           | Status | Notes              |
-| ------------------------------ | ------ | ------------------ |
-| SEO meta tags                  | TODO   |                    |
-| Open Graph images              | TODO   |                    |
-| Performance audit (Lighthouse) | TODO   |                    |
-| Cross-browser testing          | TODO   |                    |
-| Final content review           | TODO   |                    |
-| Update README                  | TODO   |                    |
-| Deploy to GitHub Pages         | TODO   | Already configured |
+| Task                           | Status | Notes                                  |
+| ------------------------------ | ------ | -------------------------------------- |
+| SEO meta tags                  | TODO   |                                        |
+| Open Graph images              | TODO   |                                        |
+| Performance audit (Lighthouse) | TODO   |                                        |
+| Cross-browser testing          | TODO   |                                        |
+| Final content review           | TODO   |                                        |
+| Update README                  | TODO   |                                        |
+| Confirm licensing text         | DONE   | Repo is not open source; see `LICENSE` |
+| Deploy to GitHub Pages         | TODO   | Already configured                     |
 
 ---
 
