@@ -5,8 +5,8 @@ export default function Navbar({ scrollPercent = 0 }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("intro");
 
-  // Fade in navbar after some scroll (starts at 10%)
-  const opacity = Math.min(Math.max((scrollPercent - 0.1) * 10, 0), 1);
+  // Fade in navbar (starts at 5%, fully visible by 10%)
+  const opacity = Math.min(Math.max((scrollPercent - 0.05) * 20, 0), 1);
 
   useEffect(() => {
     const handleScroll = () => {

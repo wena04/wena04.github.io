@@ -1,6 +1,6 @@
 // Layer 0 - 3D Background Scene
 // File: src/scene/CelestialScene.jsx
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
@@ -13,6 +13,8 @@ import { friends } from "../data/friends";
 // ============================================================================
 const CelestialScene = () => {
   const mountRef = useRef(null);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -41,7 +43,7 @@ const CelestialScene = () => {
     const composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
     const bloomPass = new UnrealBloomPass(
-      new THREE.Vector2(width, height),
+      new THREE.Vector2(width / 2, height / 2), // Half-res for performance
       1.4,
       0.4,
       0.1,
@@ -67,6 +69,7 @@ const CelestialScene = () => {
     celestialGroup.rotation.z = -Math.PI / 5;
     celestialGroup.rotation.x = -Math.PI / 2.5;
     celestialGroup.position.z = -20; // Start planet far away
+    celestialGroup.position.x = 0; // Start planet centered (landing screen)
     scene.add(celestialGroup);
 
     // Planet Creation
@@ -148,14 +151,16 @@ const CelestialScene = () => {
     const friendsGlobe = createNetworkGlobe(friends);
     friendsGlobe.position.set(0, 0, 0); // Center position
 
-    // Store base opacities for each material
+    // Store base opacities and hide all globe materials at start
     friendsGlobe.traverse((child) => {
       if (child.material) {
         child.material.userData = { baseOpacity: child.material.opacity };
         child.material.opacity = 0; // Start hidden
         child.material.transparent = true;
+        child.material.depthWrite = false; // Prevent dark silhouette when invisible
       }
     });
+    friendsGlobe.visible = false; // Completely hidden until needed
     scene.add(friendsGlobe);
 
     // Track current opacity for smooth transitions
@@ -172,7 +177,7 @@ const CelestialScene = () => {
     scene.add(sunLight);
 
     // ------------------------------------------------------------------------
-    // 6. ANIMATION & INTERACTION STATE
+    // 7. ANIMATION & INTERACTION STATE
     // ------------------------------------------------------------------------
     let scrollPercent = 0;
     let isDragging = false;
@@ -186,11 +191,16 @@ const CelestialScene = () => {
       const scrollable =
         document.documentElement.scrollHeight - window.innerHeight;
       scrollPercent = scrollable > 0 ? window.scrollY / scrollable : 0;
+      // Only update React state while landing hints are visible (avoids re-renders later)
+      if (window.scrollY < 200) {
+        setScrollY(window.scrollY);
+      }
     };
 
     const onMouseDown = (e) => {
       isDragging = true;
       previousMousePosition = { x: e.clientX, y: e.clientY };
+      setHasInteracted(true);
     };
     const onMouseUp = () => {
       isDragging = false;
@@ -234,12 +244,41 @@ const CelestialScene = () => {
     const animate = () => {
       requestAnimationFrame(animate);
 
-      // Scrollytelling: Zoom In (0-20%) -> Slide Left (20-100%)
-      const zoomProgress = Math.min(scrollPercent * 5, 1);
-      const moveProgress = Math.max((scrollPercent - 0.2) * 1.25, 0);
+      // Scrollytelling — 4 phases:
+      // Phase 1 (0-10%):   Zoom in to small size, planet centered  (Landing)
+      // Phase 2 (10-18%):  Planet slides center -> right            (Intro)
+      // Phase 3 (18-70%):  Planet slides right -> left              (Experience, Projects)
+      // Phase 4 (70-100%): Planet comes closer for globe swap       (Friends)
+      const zoomProgress = THREE.MathUtils.clamp(scrollPercent / 0.1, 0, 1);
+      const slideRightProgress = THREE.MathUtils.clamp(
+        (scrollPercent - 0.1) / 0.08,
+        0,
+        1,
+      );
+      const slideLeftProgress = THREE.MathUtils.clamp(
+        (scrollPercent - 0.18) / 0.52,
+        0,
+        1,
+      );
+      const friendsZoomProgress = THREE.MathUtils.clamp(
+        (scrollPercent - 0.7) / 0.3,
+        0,
+        1,
+      );
 
-      celestialGroup.position.z = THREE.MathUtils.lerp(-15, 0, zoomProgress);
-      celestialGroup.position.x = THREE.MathUtils.lerp(0, -2.5, moveProgress);
+      // Z position: zoom from -15 to -5 (small planet), then come to 0 for Friends
+      const baseZ = THREE.MathUtils.lerp(-15, -5, zoomProgress);
+      celestialGroup.position.z = THREE.MathUtils.lerp(
+        baseZ,
+        0,
+        friendsZoomProgress,
+      );
+
+      // X position: center -> right -> left edge
+      let targetX = THREE.MathUtils.lerp(0, 10.0, slideRightProgress);
+      targetX = THREE.MathUtils.lerp(targetX, -3.5, slideLeftProgress);
+
+      celestialGroup.position.x = targetX;
 
       // Drag & Coasting Logic - Planet
       if (!isDragging) {
@@ -247,9 +286,9 @@ const CelestialScene = () => {
         celestialGroup.rotation.x += planetVelocity.x;
         planetVelocity.x *= 0.95; // Friction
         planetVelocity.y *= 0.95;
-        celestialGroup.rotation.y += 0.001; // Slow auto-rotate
+        celestialGroup.rotation.y += 0.003; // Auto-rotate
       }
-      rings.rotation.y += 0.0005;
+      rings.rotation.y += 0.003;
 
       // Drag & Coasting Logic - Globe
       if (!isDragging) {
@@ -276,9 +315,12 @@ const CelestialScene = () => {
       // ------------------------------------------------------------------------
       // PLANET <-> GLOBE CROSSFADE (Friends Section Transition)
       // ------------------------------------------------------------------------
-      const isFriendsSection = scrollPercent > 0.75; // Adjust threshold as needed
+      const isFriendsSection = scrollPercent > 0.75;
       const targetGlobeOpacity = isFriendsSection ? 1 : 0;
       const targetPlanetOpacity = isFriendsSection ? 0 : 1;
+
+      // Toggle globe visibility — only render when it's fading in or visible
+      friendsGlobe.visible = globeOpacity > 0.01;
 
       // Smooth lerp transition
       globeOpacity = THREE.MathUtils.lerp(
@@ -292,30 +334,33 @@ const CelestialScene = () => {
         0.05,
       );
 
-      // Apply opacity to globe materials
-      friendsGlobe.traverse((child) => {
-        if (
-          child.material &&
-          child.material.userData.baseOpacity !== undefined
-        ) {
-          child.material.opacity =
-            child.material.userData.baseOpacity * globeOpacity;
-        }
-      });
-
-      // Apply opacity to planet materials
-      celestialGroup.traverse((child) => {
-        if (child.material) {
-          if (child.material.uniforms) {
-            // Shader materials (atmosphere)
-            // Skip for now, or handle separately
-          } else if (child.material.opacity !== undefined) {
+      // Apply opacity to globe materials (only when visible)
+      if (friendsGlobe.visible) {
+        friendsGlobe.traverse((child) => {
+          if (
+            child.material &&
+            child.material.userData.baseOpacity !== undefined
+          ) {
             child.material.opacity =
-              planetOpacity * (child.material.userData?.baseOpacity || 1);
-            child.material.transparent = true;
+              child.material.userData.baseOpacity * globeOpacity;
           }
-        }
-      });
+        });
+      }
+
+      // Apply opacity to planet materials (only during crossfade transition)
+      if (planetOpacity < 0.99) {
+        celestialGroup.traverse((child) => {
+          if (child.material) {
+            if (child.material.uniforms) {
+              // Shader materials (atmosphere) - skip
+            } else if (child.material.opacity !== undefined) {
+              child.material.opacity =
+                planetOpacity * (child.material.userData?.baseOpacity || 1);
+              child.material.transparent = true;
+            }
+          }
+        });
+      }
 
       composer.render();
     };
@@ -341,16 +386,94 @@ const CelestialScene = () => {
   }, []);
 
   return (
-    <div
-      ref={mountRef}
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: -1,
-        background: "black",
-        cursor: "grab",
-      }}
-    />
+    <>
+      <div
+        ref={mountRef}
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: -1,
+          background: "black",
+          cursor: "grab",
+        }}
+      />
+      {/* Landing hints — gone once hero section starts */}
+      {scrollY < 150 && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: "2.5rem",
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 10,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "1rem",
+            pointerEvents: "none",
+            opacity: Math.max(1 - scrollY / 100, 0),
+            transition: "opacity 0.3s ease",
+          }}
+        >
+          {/* Scroll down indicator */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "0.5rem",
+              animation: "hintBounce 2s ease-in-out infinite",
+            }}
+          >
+            <span
+              style={{
+                color: "rgba(255, 200, 160, 0.5)",
+                fontFamily: "'Roboto Mono', monospace",
+                fontSize: "0.7rem",
+                letterSpacing: "2px",
+                textTransform: "uppercase",
+              }}
+            >
+              Scroll to begin
+            </span>
+            {/* Chevron down */}
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="rgba(255, 140, 66, 0.5)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </div>
+
+          {/* Drag hint */}
+          {!hasInteracted && (
+            <span
+              style={{
+                color: "rgba(255, 255, 255, 0.25)",
+                fontFamily: "'Roboto Mono', monospace",
+                fontSize: "0.65rem",
+                letterSpacing: "1.5px",
+                textTransform: "uppercase",
+              }}
+            >
+              or drag the planet
+            </span>
+          )}
+        </div>
+      )}
+      <style>{`
+        @keyframes hintBounce {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(6px); }
+        }
+      `}</style>
+    </>
   );
 };
 

@@ -1,8 +1,15 @@
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@300;400;500&display=swap");
+
 /* Base Styles - Dark Theme for 3D Background */
 :root {
   font-family: "Inter", "Segoe UI", Arial, sans-serif;
   background-color: transparent;
-  color: #fff;
+
+  /* New Palette */
+  --text-main: #e0e0e0; /* White-ish for reading */
+  --text-muted: #a0a0a0; /* Grey for less important stuff */
+  --accent-primary: #ff6b35; /* Signature Orange */
+  --accent-glow: #ffd08a; /* Gold for highlights */
 }
 
 * {
@@ -13,19 +20,27 @@
 
 body {
   background: transparent;
-  color: #fff;
+  color: var(--text-main);
   line-height: 1.6;
 }
 
 /* Links */
 a {
-  color: #ff6b35;
+  color: var(--accent-primary);
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
 a:hover {
-  color: #ff8c42;
+  color: var(--accent-glow);
+}
+
+/* Headings */
+h1,
+h2,
+h3 {
+  color: var(--accent-primary);
+  text-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
 }
 
 /* Container */
@@ -39,8 +54,18 @@ a:hover {
 .section-title {
   font-size: 2.5rem;
   font-weight: 700;
-  color: #fff;
   margin-bottom: 2rem;
+}
+
+/* The Glass Card Effect */
+.glass-panel {
+  background: rgba(10, 10, 10, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
 }
 
 /* Responsive */
@@ -48,7 +73,7 @@ a:hover {
   .container {
     padding: 0 1rem;
   }
-  
+
   .section-title {
     font-size: 2rem;
   }

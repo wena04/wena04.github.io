@@ -44,6 +44,9 @@ function App() {
           pointerEvents: "none",
         }}
       >
+        {/* Landing Section — planet showcase, no text */}
+        <div style={{ height: "100vh", pointerEvents: "none" }} />
+
         {/* Intro Section (Hero + About merged) */}
         <div style={{ pointerEvents: "auto" }}>
           <Intro scrollPercent={scrollPercent} />

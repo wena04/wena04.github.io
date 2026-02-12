@@ -62,4 +62,10 @@ export const friends = [
     url: "", // TODO: Add portfolio URL
     color: "#dda0dd",
   },
+  {
+    id: 11,
+    name: "Tony Yang",
+    url: "https://github.com/yct2004-cmd/Tony-Yang",
+    color: "#dda0dd",
+  },
 ];

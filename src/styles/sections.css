@@ -1,4 +1,4 @@
-/* 
+/*
    Sections Styles
    Shared styles for content sections
    All sections should have transparent backgrounds to show 3D scene
@@ -9,28 +9,257 @@ section {
   position: relative;
 }
 
-/* Container utility */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem;
+/* ================================================================
+   HERO / INTRO  –  "Pilot Profile" HUD Panel
+   ================================================================ */
+
+/* 1. Layout Container: Splits screen into Left (Text) and Right (Planet) */
+.hero-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 100vh;
+  width: 100%;
+  padding-left: 10%;
+  padding-top: 5vh; /* Push slightly below true center */
+  box-sizing: border-box;
+  position: relative;
+  z-index: 2;
 }
 
-/* Section Headers */
-.section-title {
+/* 2. The Data Panel (Glass Card) */
+.hud-panel {
+  width: 450px;
+  background: rgba(10, 12, 16, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-left: 4px solid #ff6b35;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 2.5rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - 20px),
+    calc(100% - 20px) 100%,
+    0 100%
+  );
+}
+
+/* 3. Typography */
+.hud-header {
+  font-family: "Orbitron", sans-serif;
+  color: #ff6b35;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.hud-title {
   font-size: 2.5rem;
-  font-weight: 700;
   color: #fff;
+  margin: 0 0 1rem 0;
+  font-weight: 700;
+  text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.hud-tagline {
+  font-size: 1rem;
+  color: #ff8c42;
+  margin-bottom: 1.5rem;
+  font-weight: 400;
+}
+
+.hud-bio {
+  color: #e0e0e0;
+  line-height: 1.6;
+  font-size: 1rem;
+  margin-bottom: 2rem;
+  font-weight: 300;
+}
+
+/* 4. The Stats Grid (Major/Minor/etc) */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 0.75rem 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 1.5rem;
   margin-bottom: 2rem;
 }
 
-/* Responsive */
+.stat-label {
+  font-family: "Roboto Mono", monospace;
+  color: #888;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.stat-value {
+  color: #fff;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+/* 5. Social Links Row */
+.hud-links {
+  display: flex;
+  gap: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 1.5rem;
+}
+
+.hud-links a {
+  font-family: "Roboto Mono", monospace;
+  font-size: 0.8rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-decoration: none;
+  transition:
+    color 0.3s ease,
+    text-shadow 0.3s ease;
+}
+
+.hud-links a:hover {
+  color: #ff6b35;
+  text-shadow: 0 0 8px rgba(255, 107, 53, 0.6);
+}
+
+/* ================================================================
+   MINIMAL VARIANT  –  Borderless floating text
+   ================================================================ */
+.hud-panel.minimal {
+  background: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: none;
+  box-shadow: none;
+  clip-path: none;
+  padding: 0;
+  max-width: 600px;
+  width: auto;
+}
+
+/* Large cinematic name */
+.hud-panel.minimal .hud-title {
+  font-size: 4.5rem;
+  font-weight: 800;
+  letter-spacing: -1px;
+  margin: 0 0 1.5rem 0;
+  background: linear-gradient(135deg, #ff6b35, #ff8c42, #ffd93d);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
+}
+
+/* Typewriter Subtitle */
+.hud-subtitle {
+  font-family: "Orbitron", sans-serif;
+  font-size: 1.1rem;
+  color: #ff6b35;
+  margin-bottom: 3rem;
+  min-height: 1.5em;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.typewriter-text {
+  border-right: none;
+}
+
+.cursor {
+  opacity: 0;
+  color: #ff6b35;
+  margin-left: 2px;
+  transition: opacity 0.1s;
+}
+
+.cursor.blink {
+  opacity: 1;
+}
+
+/* Social Row — spaced out, understated */
+.social-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.social-link {
+  font-family: "Roboto Mono", monospace;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.4);
+  text-decoration: none;
+  letter-spacing: 2px;
+  transition:
+    color 0.3s ease,
+    text-shadow 0.3s ease;
+}
+
+.social-link:hover {
+  color: #ff6b35;
+  text-shadow: 0 0 12px rgba(255, 107, 53, 0.5);
+}
+
+.separator {
+  color: rgba(255, 255, 255, 0.15);
+  font-size: 0.6rem;
+}
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
 @media (max-width: 768px) {
-  .container {
-    padding: 0 1rem;
+  .hero-container {
+    padding-left: 5%;
+    padding-right: 5%;
+    justify-content: center;
   }
 
-  .section-title {
-    font-size: 2rem;
+  .hud-panel {
+    width: 100%;
+    max-width: 420px;
+    padding: 2rem;
+  }
+
+  .hud-panel.minimal .hud-title {
+    font-size: 3rem;
+  }
+
+  .hud-subtitle {
+    font-size: 0.95rem;
+    letter-spacing: 2px;
+    margin-bottom: 2rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 90px 1fr;
+  }
+
+  .hud-links {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .hud-panel.minimal .hud-title {
+    font-size: 2.5rem;
+  }
+
+  .hud-subtitle {
+    font-size: 0.85rem;
   }
 }
