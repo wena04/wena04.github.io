@@ -1,8 +1,8 @@
 # Portfolio Project Plan
 
 **Owner:** Anthony Wen  
-**Last Updated:** January 28, 2026  
-**Status:** Phase 1 COMPLETE - All sections exist with real data
+**Last Updated:** February 11, 2026  
+**Status:** Phase 2 IN PROGRESS - Intro section designed, scrollytelling implemented
 
 ---
 
@@ -11,15 +11,14 @@
 When working on this project, read this document first to understand:
 
 - The 3-layer architecture (Layer 0: 3D, Layer 1: Content, Layer 2: Nav)
-- The 4 main sections + footer structure
+- The 4 main sections + landing screen + footer structure
 - Current phase and what's been completed
 - File organization and naming conventions
 
 Key files:
 
-- `docs/celestial-scene.md` - Layer 0 visual specs (LOCKED)
 - `docs/PROJECT-PLAN.md` - This file (architecture + phases)
-- `src/scene/CelestialScene.jsx` - 3D background component
+- `src/scene/CelestialScene.jsx` - 3D background component (Layer 0)
 - `src/App.jsx` - Main app composition
 - `src/data/` - All content data (experiences, projects, skills, friends, personal)
 
@@ -30,9 +29,9 @@ Key files:
 A personal portfolio website with:
 
 - **Immersive 3D background** - Cosmic theme with interactive planet
-- **Scroll-driven storytelling** - Planet behavior changes per section
+- **Scroll-driven storytelling** - Planet slides across screen per section with 4-phase animation
 - **Unique Friends section** - 3D globe network linking to friends' portfolios
-- **"Ready Player One" loading screen** - Themed after favorite book
+- **"Ready Player One" loading screen** - Themed after favorite book (Phase 4)
 
 ---
 
@@ -42,113 +41,117 @@ A personal portfolio website with:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  Layer 2: Navbar (zIndex: 10)                                   │
-│  - Fixed top, semi-transparent                                  │
-│  - Links: Intro, Experience, Projects, Friends                  │
+│  Layer 2: Navbar (zIndex: 100)                                  │
+│  - Fixed top, warm glass background                             │
+│  - Pill-style links: Intro, Experience, Projects, Friends       │
+│  - Fades in at 5% scroll, fully visible by 10%                 │
 ├─────────────────────────────────────────────────────────────────┤
 │  Layer 1: Main Content (zIndex: 1)                              │
 │  - Scrollable sections                                          │
 │  - pointer-events: none on wrappers, auto on interactive        │
+│  - Landing screen (empty 100vh) before Intro                    │
 ├─────────────────────────────────────────────────────────────────┤
 │  Layer 0: CelestialScene (zIndex: -1)                           │
 │  - Fixed position, full viewport                                │
-│  - Planet, rings, starfield                                     │
-│  - Responds to scroll position                                  │
-│  - Transitions to Friends Globe at bottom                       │
+│  - Planet, rings, starfield, atmosphere                         │
+│  - 4-phase scroll-driven animation                              │
+│  - Crossfade transition to Friends Globe at bottom              │
+│  - Landing hints: "Scroll to begin" + "or drag the planet"     │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### 2.2 Sections (Final)
+### 2.2 Page Flow
 
-| #   | Section        | Content                                                     | Planet State                   |
-| --- | -------------- | ----------------------------------------------------------- | ------------------------------ |
-| 1   | **Intro**      | Name, tagline, bio, education, skills, photo, contact links | Centered, zooming in           |
-| 2   | **Experience** | Work history (10 roles from LinkedIn)                       | Slide left, smaller            |
-| 3   | **Projects**   | Coding (12) + Design (6) projects                           | Corner position                |
-| 4   | **Friends**    | 3D globe with 7+ friend nodes                               | Planet dissolves → globe forms |
-| —   | **Footer**     | Just copyright: "© 2026 Anthony Wen"                        | Globe visible                  |
+| #   | Screen         | Content                                                | Planet State                            |
+| --- | -------------- | ------------------------------------------------------ | --------------------------------------- |
+| 0   | **Landing**    | Empty — just the planet centered in starfield          | Centered, zooming in from deep space    |
+| 1   | **Intro**      | Floating text: Name, typewriter tagline, social links  | Slides to far right (x=10)              |
+| 2   | **Experience** | Work history (10 roles from LinkedIn)                  | Sliding from right toward center        |
+| 3   | **Projects**   | Coding (12) + Design (6) projects                      | Continuing left, getting smaller        |
+| 4   | **Friends**    | 3D globe with 7+ friend nodes                          | Planet fades out at left edge, globe in |
+| —   | **Footer**     | Just copyright: "© 2026 Anthony Wen"                  | Globe visible                           |
 
-### 2.3 Section-Based Planet Control
+### 2.3 Scrollytelling (4-Phase System) — IMPLEMENTED
 
-Planet behavior is tied to visible section, NOT hardcoded scroll percentages.
-This allows adding/removing/reordering sections easily.
+The planet position is driven by `scrollPercent` with 4 distinct phases:
 
 ```javascript
-// Conceptual config - implement in CelestialScene.jsx
-const sectionConfigs = {
-  intro: { planetPosition: "center", scale: 1.0, opacity: 1.0 },
-  experience: { planetPosition: "left", scale: 0.8, opacity: 1.0 },
-  projects: { planetPosition: "corner", scale: 0.6, opacity: 0.8 },
-  friends: { planetPosition: "dissolve", scale: 0, opacity: 0 },
-};
+// Phase 1 (0-10%):   Zoom in, planet centered            (Landing)
+// Phase 2 (10-18%):  Planet slides center -> far right    (Intro)
+// Phase 3 (18-70%):  Planet slides right -> left          (Experience, Projects)
+// Phase 4 (70-100%): Planet comes closer for globe swap   (Friends)
+
+// Z position: -15 -> -5 (small planet), then -5 -> 0 (closer for Friends)
+// X position: 0 -> 10.0 (right), then 10.0 -> -3.5 (left edge)
 ```
 
-Use Intersection Observer API to detect which section is visible.
+This is fully percentage-based. Adding/removing sections will shift percentages but the phases auto-adjust.
 
 ---
 
 ## 3. Development Phases
 
-### Phase 1: Foundation (Current Priority)
+### Phase 1: Foundation — COMPLETE
 
 **Goal:** All sections exist and are navigable
 
 | Task                                    | Status | Notes                                             |
 | --------------------------------------- | ------ | ------------------------------------------------- |
-| Clean up unused components              | DONE   | Removed duplicates, reorganized folders           |
-| Reorganize repo structure               | DONE   | scene/, nav/, ui/, data/, hooks/                  |
-| Delete unused assets folder             | DONE   | src/assets/ removed                               |
-| Create data files                       | DONE   | All content from LinkedIn/resume                  |
-| Populate experiences.js                 | DONE   | 10 work experiences + education + awards          |
-| Populate projects.js                    | DONE   | 12 coding + 6 design projects                     |
-| Populate friends.js                     | DONE   | 7 friends (Amelia Li + 6 others)                  |
-| Populate personal.js                    | DONE   | Bio, contact, social links                        |
-| Simplify Footer                         | DONE   | Just "© 2026 Anthony Wen"                         |
-| Create useVisibleSection hook           | DONE   | For section-based planet control                  |
-| Update Hero.jsx with real data          | DONE   | Uses personal.js, includes social links           |
-| Update About.jsx with real data         | DONE   | Uses skills.js, shows education/major             |
-| Update Projects.jsx with real data      | DONE   | Uses projects.js (18 projects)                    |
-| Remove Contact section                  | DONE   | Merged into Hero (links) and Footer (copyright)   |
-| Clean up CSS for dark theme             | DONE   | All text light, transparent backgrounds           |
-| Fix CSS imports                         | DONE   | navbar.css, footer.css, sections.css imported     |
-| Create Intro section (merge Hero+About) | DONE   | Intro.jsx with hero + about + skills              |
-| Create Experience section               | DONE   | Experience.jsx with 10 roles + education + awards |
-| Create Friends section placeholder      | DONE   | Friends.jsx with grid layout (3D in Phase 4)      |
-| Update Navbar links                     | DONE   | Intro, Experience, Projects, Friends              |
-
-**Deliverable:** Ugly but functional portfolio with all sections.
+| Clean up unused components              | DONE   | Removed duplicates, reorganized folders            |
+| Reorganize repo structure               | DONE   | scene/, nav/, ui/, data/, hooks/                   |
+| Delete unused assets folder             | DONE   | src/assets/ removed                                |
+| Create data files                       | DONE   | All content from LinkedIn/resume                   |
+| Populate experiences.js                 | DONE   | 10 work experiences + education + awards           |
+| Populate projects.js                    | DONE   | 12 coding + 6 design projects                      |
+| Populate friends.js                     | DONE   | 7 friends (Amelia Li + 6 others)                   |
+| Populate personal.js                    | DONE   | Bio, contact, social links                         |
+| Simplify Footer                         | DONE   | Just "© 2026 Anthony Wen"                          |
+| Create useVisibleSection hook           | DONE   | For section-based planet control                   |
+| Create Intro section                    | DONE   | Merged Hero + About into single section            |
+| Create Experience section               | DONE   | Experience.jsx with 10 roles + education + awards  |
+| Create Friends section placeholder      | DONE   | Friends.jsx with grid layout (3D in Phase 4)       |
+| Update Navbar links                     | DONE   | Intro, Experience, Projects, Friends               |
+| Clean up CSS for dark theme             | DONE   | All text light, transparent backgrounds            |
 
 ---
 
-### Phase 2: Section Design
+### Phase 2: Section Design — IN PROGRESS
 
 **Goal:** Each section looks polished
 
-| Task                             | Status | Notes                            |
-| -------------------------------- | ------ | -------------------------------- |
-| Design Intro section layout      | TODO   | Photo, bio, skills grid          |
-| Design Experience timeline/cards | TODO   |                                  |
-| Design Projects carousel         | TODO   | Decide: tabs, two rows, or mixed |
-| Design Footer                    | TODO   | Clean, minimal                   |
-| Responsive design (mobile)       | TODO   |                                  |
-| Typography and spacing           | TODO   |                                  |
+| Task                              | Status      | Notes                                                        |
+| --------------------------------- | ----------- | ------------------------------------------------------------ |
+| Add Landing screen                | DONE        | Empty 100vh div before Intro in App.jsx                      |
+| Landing hints (scroll + drag)     | DONE        | Centered "Scroll to begin" + chevron, fades out on scroll    |
+| Design Intro section              | DONE        | Minimal floating text: name (gradient), typewriter, socials  |
+| Navbar redesign                   | DONE        | Warm glass background, pill hover/active, bouncy transitions |
+| Fonts (Orbitron + Roboto Mono)    | DONE        | Google Fonts import in index.css                             |
+| Design Experience timeline/cards  | TODO        |                                                              |
+| Design Projects carousel          | TODO        | Decide: tabs, two rows, or mixed                             |
+| Design Footer                     | TODO        | Clean, minimal                                               |
+| Responsive design (mobile)        | TODO        |                                                              |
+| Typography and spacing            | TODO        |                                                              |
 
 **Deliverable:** Polished static portfolio.
 
 ---
 
-### Phase 3: Planet Transitions
+### Phase 3: Planet Transitions — DRAFT WORKING
 
 **Goal:** 3D background responds to scroll
 
-| Task                                | Status | Notes                  |
-| ----------------------------------- | ------ | ---------------------- |
-| Implement Intersection Observer     | TODO   | Detect visible section |
-| Create section config system        | TODO   | See 2.3 above          |
-| Animate planet position per section | TODO   |                        |
-| Smooth interpolation (lerp)         | TODO   |                        |
-| Performance optimization            | TODO   |                        |
-| Mobile: reduce effects or disable   | TODO   |                        |
+| Task                                | Status | Notes                                              |
+| ----------------------------------- | ------ | -------------------------------------------------- |
+| 4-phase scrollytelling system       | DRAFT  | Working but percentages will shift as sections grow |
+| Planet position per section         | DRAFT  | z: -15→-5→0, x: 0→10→-3.5 (needs tuning later)   |
+| Smooth interpolation (lerp/clamp)   | DONE   | THREE.MathUtils.clamp + lerp                       |
+| Planet → Globe crossfade            | DONE   | Opacity crossfade at scroll > 75%                  |
+| Globe hidden until needed           | DONE   | visible=false + depthWrite=false (no silhouette)   |
+| Performance optimization            | DONE   | See performance section below                      |
+| Re-tune after all sections designed | TODO   | Scroll breakpoints will need adjusting             |
+| Mobile: reduce effects or disable   | TODO   |                                                    |
+
+**What's locked:** Landing (Phase 1: 0-10%), Intro/Hero (Phase 2: 10-18%), and Friends (Phase 4: 70-100%) all look good — don't change these. Only Phase 3 (18-70%, Experience/Projects) needs tuning once those sections are designed.
 
 **Deliverable:** Immersive scrollytelling portfolio.
 
@@ -158,47 +161,17 @@ Use Intersection Observer API to detect which section is visible.
 
 **Goal:** Unique differentiators
 
-| Task                                      | Status | Notes                                       |
-| ----------------------------------------- | ------ | ------------------------------------------- |
-| **Create `globeGenerator.js`**            | DONE   | Fibonacci sphere + geometric connections    |
-| **Add Globe to CelestialScene**           | DONE   | Imported, starts hidden (opacity 0)         |
-| **Planet → Globe transition**             | DONE   | Opacity crossfade at scroll > 75%           |
-| **Globe drag interaction**                | DONE   | Mouse drag + coast, follows mouse direction |
-| Globe hover/click (Raycaster)             | TODO   | Click friend node → open portfolio          |
-| Friend name labels (CSS2DRenderer)        | TODO   | Show name on hover                          |
-| Loading screen ("Ready Player One")       | TODO   |                                             |
-| Projects: finalize layout (tabs/carousel) | TODO   |                                             |
-
-#### Friends Globe Design (Jan 28, 2026)
-
-**Visual Style:** "Constellation Network Sphere"
-
-```
-Design Elements:
-- Fibonacci sphere distribution (250 nodes)
-- Geometric line connections between nearby nodes
-- Gold nodes (#ffd08a) + Orange lines (#ff6b35)
-- Inner glow atmosphere
-- 7+ highlighted friend nodes (larger, colored)
-- Rotates slowly, draggable
-```
-
-**Transition Logic (IMPLEMENTED):**
-
-- Hero/Experience/Projects: Planet visible, Globe hidden (opacity 0)
-- Friends Section (scroll > 75%): Planet fades OUT, Globe fades IN
-- Smooth opacity crossfade with lerp (0.05 speed)
-- Both objects have independent drag + coast interaction
-
-**Reference Images:**
-
-- `assets/business-network-concept-*.png` - Geometric line connections
-- `assets/emmo2-*.png` - Colorful node distribution on sphere
-- `assets/Gemini_Generated_Image_*.png` - Final concept mockup
-
-**Implementation File:** `src/scene/globeGenerator.js`
-
-**Deliverable:** Complete, impressive portfolio.
+| Task                                      | Status | Notes                                        |
+| ----------------------------------------- | ------ | -------------------------------------------- |
+| **Create `globeGenerator.js`**            | DONE   | Fibonacci sphere + geometric connections     |
+| **Add Globe to CelestialScene**           | DONE   | Imported, starts hidden (visible=false)      |
+| **Planet → Globe transition**             | DONE   | Opacity crossfade at scroll > 75%            |
+| **Globe drag interaction**                | DONE   | Mouse drag + coast, follows mouse direction  |
+| Globe hover/click (Raycaster)             | TODO   | Click friend node → open portfolio           |
+| Friend name labels (CSS2DRenderer)        | TODO   | Show name on hover                           |
+| Loading screen ("Ready Player One")       | TODO   |                                              |
+| Projects: finalize layout (tabs/carousel) | TODO   |                                              |
+| Custom mouse cursor                       | TODO   | See implementation guide in Section 7        |
 
 ---
 
@@ -219,116 +192,114 @@ Design Elements:
 
 ---
 
-## 4. Repo Structure (IMPLEMENTED)
-
-The repo has been reorganized. Duplicate files removed, layer-based folders created.
-
-### Current Structure
+## 4. Repo Structure (Current)
 
 ```
 src/
-├── main.jsx                    # Entry point
-├── App.jsx                     # Main composition
-├── App.css                     # Global app styles
-├── index.css                   # Base styles
+├── main.jsx                     # Entry point
+├── App.jsx                      # Main composition (Landing + 4 sections + Footer)
+├── App.css                      # Global app styles
+├── index.css                    # Base styles + Google Fonts (Orbitron, Roboto Mono)
 │
-├── scene/                      # Layer 0 - 3D Background
-│   ├── CelestialScene.jsx      # Main 3D scene (planet, stars, rings)
-│   └── globeGenerator.js       # Friends Network Globe generator ✓
+├── scene/                       # Layer 0 - 3D Background
+│   ├── CelestialScene.jsx       # Planet, stars, rings, globe, scrollytelling, hints
+│   ├── globeGenerator.js        # Friends Network Globe (Fibonacci sphere)
+│   └── skillOrbits.js           # [UNUSED] 3D skill orbits (kept for potential reuse)
 │
-├── nav/                        # Layer 2 - Navigation
-│   ├── Navbar.jsx              # Top navigation bar
-│   └── Footer.jsx              # Minimal footer (just copyright)
+├── nav/                         # Layer 2 - Navigation
+│   ├── Navbar.jsx               # Warm pill-style nav, fades in at 5% scroll
+│   └── Footer.jsx               # Minimal footer (just copyright)
 │
-├── sections/                   # Layer 1 - Content Sections
-│   ├── Hero.jsx                # Uses personal.js (will merge into Intro.jsx)
-│   ├── About.jsx               # Uses skills.js (will merge into Intro.jsx)
-│   ├── Projects.jsx            # Uses projects.js ✓
-│   └── Contact.jsx             # REMOVED from App.jsx (still exists as file)
+├── sections/                    # Layer 1 - Content Sections
+│   ├── Intro.jsx                # Floating text: name + typewriter + social links
+│   ├── Experience.jsx           # Work history + education + awards
+│   ├── Projects.jsx             # Coding + design projects grid
+│   ├── Friends.jsx              # Friends section (3D globe in Layer 0)
+│   ├── Hero.jsx                 # [UNUSED] Old hero section (replaced by Intro)
+│   ├── About.jsx                # [UNUSED] Old about section (merged into Intro)
+│   └── Contact.jsx              # [UNUSED] Removed from app
 │
-├── ui/                         # Shared UI Components
-│   ├── Button.jsx              # Reusable button
-│   └── IconLink.jsx            # Icon link component
+├── ui/                          # Shared UI Components
+│   ├── Button.jsx               # Reusable button
+│   ├── IconLink.jsx             # Icon link component
+│   └── SkillMarquee.jsx         # [UNUSED] CSS marquee (kept for potential reuse)
 │
-├── data/                       # Content Data (ALL POPULATED)
-│   ├── experiences.js          # 10 work experiences + education + awards ✓
-│   ├── projects.js             # 12 coding + 6 design projects ✓
-│   ├── skills.js               # Skills list ✓
-│   ├── friends.js              # 7 friends (expandable) ✓
-│   └── personal.js             # Personal info + social links ✓
+├── data/                        # Content Data (ALL POPULATED)
+│   ├── experiences.js           # 10 work experiences + education + awards
+│   ├── projects.js              # 12 coding + 6 design projects
+│   ├── skills.js                # Skills list + devicon CDN URLs
+│   ├── friends.js               # 7 friends (expandable)
+│   └── personal.js              # Personal info + social links
 │
-├── styles/                     # Component Styles
-│   ├── navbar.css
-│   ├── footer.css
-│   ├── projects.css
-│   └── sections.css
+├── styles/                      # Component Styles
+│   ├── navbar.css               # Warm glass navbar + pill hover/active
+│   ├── footer.css               # Minimal footer styles
+│   ├── projects.css             # Projects section styles
+│   └── sections.css             # HUD panel + hero-container + minimal variant
 │
-└── hooks/                      # Custom React Hooks
-    └── useVisibleSection.js    # Section visibility detection ✓
+└── hooks/                       # Custom React Hooks
+    └── useVisibleSection.js     # Section visibility detection (placeholder)
 ```
 
----
+### Unused Files (safe to delete later)
 
-## 5. Component Inventory
-
-### Completed Cleanup
-
-| Action                  | Files                                                                                   |
-| ----------------------- | --------------------------------------------------------------------------------------- |
-| **Moved to `scene/`**   | `CelestialScene.jsx`                                                                    |
-| **Moved to `nav/`**     | `Navbar.jsx`, `Footer.jsx`                                                              |
-| **Moved to `ui/`**      | `Button.jsx`, `IconLink.jsx`                                                            |
-| **Deleted (unused)**    | `VerticalNav.jsx`, `VerticalNav.css`, `Education.jsx`, `Education.css`                  |
-| **Deleted (duplicate)** | `styles/App.css`, `styles/index.css`, `components/projects/`, `components/experiences/` |
-| **Deleted (replaced)**  | `constants.js` (data moved to `data/` folder)                                           |
-| **Deleted (unused)**    | `src/assets/` folder (was just default Vite react.svg)                                  |
-| **Simplified**          | `Footer.jsx` - now just copyright, no contact links                                     |
-
-### Recently Updated
-
-| File                    | Change                                    | Status    |
-| ----------------------- | ----------------------------------------- | --------- |
-| `sections/Hero.jsx`     | Now uses `personal.js` data               | ✓ Working |
-| `sections/About.jsx`    | Now uses `skills.js` data                 | ✓ Working |
-| `sections/Projects.jsx` | Now uses `projects.js` data (18 projects) | ✓ Working |
-| `sections/Contact.jsx`  | Removed from App.jsx                      | ✓ Done    |
-| All CSS files           | Cleaned up for dark theme, light text     | ✓ Done    |
-
-### Still To Do
-
-| File                              | Action                 | Notes                        |
-| --------------------------------- | ---------------------- | ---------------------------- |
-| `sections/Hero.jsx` + `About.jsx` | Merge into `Intro.jsx` | Phase 1                      |
-| `sections/Experience.jsx`         | Create                 | Phase 1 - use experiences.js |
-| `sections/Friends.jsx`            | Create placeholder     | Phase 1                      |
-| `scene/FriendsGlobe.jsx`          | Create                 | Phase 4                      |
-| `ui/ProjectCard.jsx`              | Create                 | Phase 2                      |
-| `ui/ExperienceCard.jsx`           | Create                 | Phase 2                      |
-| `ui/SkillBadge.jsx`               | Create                 | Phase 2                      |
+- `sections/Hero.jsx`, `sections/About.jsx`, `sections/Contact.jsx` — replaced by `Intro.jsx`
+- `scene/skillOrbits.js` — 3D skill orbits, removed from scene but kept on disk
+- `ui/SkillMarquee.jsx` — CSS marquee, removed from Intro but kept on disk
 
 ---
 
-## 6. Content Status
+## 5. Key Design Decisions (Feb 2026)
 
-### Data Files (ALL POPULATED)
+### Intro Section — "Floating Text" Design
 
-- [x] `personal.js` - Name, tagline, bio, contact, social links
-- [x] `experiences.js` - 10 work roles + education + awards + certifications
-- [x] `projects.js` - 12 coding projects + 6 design projects
-- [x] `skills.js` - Languages, technologies, tools
-- [x] `friends.js` - 7 friends (Amelia Li + 6 others, expandable)
+The Intro is NOT a card/panel. It's borderless floating text against the starfield:
+- **Name**: 4.5rem, bold 800 weight, orange gradient (`#ff6b35 → #ff8c42 → #ffd93d`)
+- **Typewriter**: Orbitron font, uppercase, 3px letter-spacing, cycles through phrases
+- **Social links**: Roboto Mono, very dim (`rgba(255,255,255,0.4)`), dot-separated
+- **No background, no border, no blur** — text floats in space
 
-### Still Needed
+The planet sits to the far right, leaving the left side entirely for text.
 
-- [ ] Profile photo for Intro section
-- [ ] Project screenshots/thumbnails in `public/images/`
-- [ ] Friend portfolio URLs (most are null, need to fill in)
-- [ ] Kyle Thayer / IDL Research role (waiting for title confirmation)
-- [ ] More design project descriptions (some are placeholders)
+### Navbar — "Warm Pill" Design
 
-### Footer
+- Background: warm dark glass (`rgba(15, 10, 8, 0.8)`)
+- Links: 0.95rem, bold 700, warm peach when inactive
+- Hover: bouncy scale + lift with warm orange tint
+- Active: subtle orange-tinted pill background, orange text
+- Logo: 1.5rem, 800 weight, warm orange `#ff8c42`
+- Appears at 5% scroll, fully visible by 10%
 
-- [x] Simplified to just "© 2026 Anthony Wen" (like Amelia Li's)
+### Landing Screen
+
+- Empty 100vh viewport before Intro
+- Planet centered, zooming in from deep space
+- "Scroll to begin" hint + chevron at bottom center (bouncing)
+- "or drag the planet" hint below (disappears after first click)
+- All hints fade out by 150px of scroll
+
+### Planet Position Summary
+
+| Screen     | X Position | Z Position | Size     |
+| ---------- | ---------- | ---------- | -------- |
+| Landing    | 0 (center) | -15 → -5  | Zooming  |
+| Intro      | 10 (right) | -5         | Small    |
+| Experience | 10 → -3.5  | -5         | Small    |
+| Projects   | sliding     | -5         | Small    |
+| Friends    | -3.5 (left)| -5 → 0    | Growing  |
+
+---
+
+## 6. Performance Optimizations (IMPLEMENTED)
+
+| Optimization                          | Impact                                         |
+| ------------------------------------- | ---------------------------------------------- |
+| `setScrollY` only fires for scrollY<200 | Prevents React re-renders after hints gone   |
+| Globe `traverse` skipped when hidden  | No tree walk until Friends section             |
+| Planet `traverse` skipped when opaque | Only runs during crossfade (planetOpacity<0.99)|
+| Bloom pass at half resolution         | 4x less GPU cost, looks identical (bloom blurs)|
+| Globe `depthWrite: false`             | Prevents dark silhouette when invisible        |
+| Globe `visible = false` at start      | GPU skips rendering entirely until needed      |
 
 ---
 
@@ -338,10 +309,10 @@ src/
 | ----------------- | ---------------------------- | ------------------------------- |
 | 3D Library        | Three.js (vanilla)           | Already in use, full control    |
 | Animation         | Native Three.js + CSS        | Keep dependencies minimal       |
-| Carousel          | TBD (CSS, Swiper, or Framer) | Decide in Phase 2               |
+| Fonts             | Orbitron + Roboto Mono       | Sci-fi headers + tech labels    |
 | Section Detection | Intersection Observer API    | Native, performant              |
-| Friends Globe     | Same WebGL canvas preferred  | Seamless transition from planet |
-| Mobile 3D         | Reduce/disable effects       | Performance                     |
+| Friends Globe     | Same WebGL canvas            | Seamless transition from planet |
+| Mobile 3D         | Reduce/disable effects       | Performance (TODO)              |
 | Custom Cursor     | CSS variables + PNG images   | See implementation below        |
 
 ### Custom Cursor Implementation (from Amelia Li's portfolio)
@@ -385,7 +356,26 @@ button:hover {
 
 ---
 
-## 8. Reference Links
+## 8. Content Status
+
+### Data Files (ALL POPULATED)
+
+- [x] `personal.js` - Name, tagline, bio, contact, social links
+- [x] `experiences.js` - 10 work roles + education + awards + certifications
+- [x] `projects.js` - 12 coding projects + 6 design projects
+- [x] `skills.js` - Languages, technologies, tools + devicon CDN URLs
+- [x] `friends.js` - 7 friends (expandable)
+
+### Still Needed
+
+- [ ] Project screenshots/thumbnails in `public/images/`
+- [ ] Friend portfolio URLs (most are null, need to fill in)
+- [ ] Kyle Thayer / IDL Research role (waiting for title confirmation)
+- [ ] More design project descriptions (some are placeholders)
+
+---
+
+## 9. Reference Links
 
 - **Live Site:** https://wena04.github.io
 - **GitHub Repo:** https://github.com/wena04/wena04.github.io
@@ -395,15 +385,21 @@ button:hover {
 
 ---
 
-## 9. Notes for Future Sessions
+## 10. Notes for Future Sessions
 
 When resuming work:
 
 1. Check this document for current phase and pending tasks
-2. Check `docs/celestial-scene.md` for Layer 0 visual specs (DO NOT MODIFY without approval)
-3. Follow the repo structure in Section 4
-4. Update task status in this document as you complete them
-5. If adding new sections, use the section-based config system (Section 2.3)
+2. Follow the repo structure in Section 4
+3. Update task status in this document as you complete them
+4. Note: some files in `sections/` and `ui/` are unused (see Section 4)
+5. The scrollytelling is percentage-based — adding sections will shift breakpoints
+
+### Immediate Next Steps
+
+1. **Design Experience section** — timeline/cards layout with `experiences.js` data
+2. **Design Projects section** — decide on carousel vs tabs vs grid
+3. **Clean up unused files** — delete Hero.jsx, About.jsx, Contact.jsx, skillOrbits.js, SkillMarquee.jsx
 
 ### Commands to Get Started
 
