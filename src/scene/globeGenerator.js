@@ -93,10 +93,14 @@ export const createNetworkGlobe = (friendsData = []) => {
     );
     friendMesh.position.copy(pos);
 
-    // Invisible larger hit area for easier hover / click
+    // Invisible larger hit area — opacity 0 still raycasts (visible:false does not)
     const hitMesh = new THREE.Mesh(
       hitGeo,
-      new THREE.MeshBasicMaterial({ visible: false }),
+      new THREE.MeshBasicMaterial({
+        transparent: true,
+        opacity: 0,
+        depthWrite: false,
+      }),
     );
     friendMesh.add(hitMesh);
 

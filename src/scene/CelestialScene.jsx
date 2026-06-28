@@ -136,7 +136,7 @@ const CelestialScene = ({ scrollPercent = 0, onReady }) => {
     });
 
     const pickFriend = (e) => {
-      if (!sceneStateRef.current.friendsActive) return null;
+      if (!sceneStateRef.current.friendsActive || globeOpacity < 0.15) return null;
       ndc.x = (e.clientX / window.innerWidth) * 2 - 1;
       ndc.y = -(e.clientY / window.innerHeight) * 2 + 1;
       raycaster.setFromCamera(ndc, camera);
@@ -180,44 +180,50 @@ const CelestialScene = ({ scrollPercent = 0, onReady }) => {
       setScrollY(y < 200 ? y : 200);
     };
 
+    const isInteractiveTarget = (target) =>
+      target?.closest?.(
+        "a, button, input, textarea, select, label, .orbit-arrow, .arch-row, .navbar, .scroll-rail",
+      );
+
+    const setCursor = (style) => {
+      document.body.style.cursor = style;
+    };
+
     const onPointerDown = (e) => {
+      if (isInteractiveTarget(e.target)) return;
       if (e.pointerType === "touch") e.preventDefault();
       isDragging = true;
       activePointerId = e.pointerId;
       dragMoved = false;
       previousMousePosition = { x: e.clientX, y: e.clientY };
-      mountEl.setPointerCapture(e.pointerId);
     };
     const onPointerUp = (e) => {
       if (activePointerId !== null && e.pointerId !== activePointerId) return;
-      // Tap / click on a friend node opens their site (hover shows highlight)
-      if (!dragMoved) {
+      if (!dragMoved && sceneStateRef.current.friendsActive) {
         const m = pickFriend(e) || hoveredFriend;
         openFriend(m);
       }
       isDragging = false;
       activePointerId = null;
-      if (mountEl.hasPointerCapture(e.pointerId)) {
-        mountEl.releasePointerCapture(e.pointerId);
-      }
-      if (mountEl && sceneStateRef.current.friendsActive) {
-        mountEl.style.cursor = hoveredFriend?.userData?.url ? "pointer" : "grab";
+      if (sceneStateRef.current.friendsActive) {
+        setCursor(hoveredFriend?.userData?.url ? "pointer" : "grab");
+      } else {
+        setCursor("grab");
       }
     };
     const onPointerMove = (e) => {
       if (activePointerId !== null && e.pointerId !== activePointerId) return;
       if (!isDragging) {
-        // Hover-pick friend nodes (mouse/stylus only; touch has no hover)
         if (sceneStateRef.current.friendsActive && e.pointerType !== "touch") {
           hoveredFriend = pickFriend(e);
           const hasLink = Boolean(hoveredFriend?.userData?.url);
-          if (mountEl) {
-            mountEl.style.cursor = hasLink ? "pointer" : "grab";
-          }
+          setCursor(hasLink ? "pointer" : "grab");
+        } else if (!sceneStateRef.current.friendsActive) {
+          setCursor("grab");
         }
         return;
       }
-      if (mountEl) mountEl.style.cursor = "grabbing";
+      setCursor("grabbing");
       const deltaX = e.clientX - previousMousePosition.x;
       const deltaY = e.clientY - previousMousePosition.y;
       if (Math.abs(deltaX) + Math.abs(deltaY) > 4) {
@@ -225,9 +231,7 @@ const CelestialScene = ({ scrollPercent = 0, onReady }) => {
         dragMoved = true;
       }
 
-      const isFriendsSection = sceneStateRef.current.friendsActive;
-
-      if (isFriendsSection) {
+      if (sceneStateRef.current.friendsActive) {
         friendsGlobe.rotation.y -= deltaX * 0.005;
         friendsGlobe.rotation.x -= deltaY * 0.005;
         globeVelocity = {
@@ -246,13 +250,13 @@ const CelestialScene = ({ scrollPercent = 0, onReady }) => {
       previousMousePosition = { x: e.clientX, y: e.clientY };
     };
 
-    // Event Listeners
+    // Window listeners — mount is z-index -1 so it never receives events from above
     window.addEventListener("scroll", handleScroll);
-    handleScroll(); // sync once (correct hint state on a deep refresh)
-    mountEl.addEventListener("pointerdown", onPointerDown, { passive: false });
-    mountEl.addEventListener("pointerup", onPointerUp);
-    mountEl.addEventListener("pointercancel", onPointerUp);
-    mountEl.addEventListener("pointermove", onPointerMove);
+    handleScroll();
+    window.addEventListener("pointerdown", onPointerDown, { passive: false });
+    window.addEventListener("pointerup", onPointerUp);
+    window.addEventListener("pointercancel", onPointerUp);
+    window.addEventListener("pointermove", onPointerMove);
 
     // Time-based rotation so speed is consistent across refresh rates (60 vs 120 Hz)
     // and independent of frame rate. Values are radians/second (calm, slow orbit).
@@ -272,11 +276,10 @@ const CelestialScene = ({ scrollPercent = 0, onReady }) => {
       const choreo = planetFromScroll(scrollRef.current, starts, {
         xScale: profileRef.current.xScale,
       });
-      const { x, z, friendsActive, ringsOpacity } = choreo;
+      const { x, z, ringsOpacity } = choreo;
       celestialGroup.position.z = z;
       celestialGroup.position.x = x;
       celestialGroup.scale.setScalar(choreo.scale);
-      sceneStateRef.current.friendsActive = friendsActive;
 
       // Drag & Coasting Logic - Planet
       if (!isDragging) {
@@ -341,6 +344,8 @@ const CelestialScene = ({ scrollPercent = 0, onReady }) => {
       }
       friendsGlobe.visible = globeOpacity > 0.01;
       globeOpacity = THREE.MathUtils.lerp(globeOpacity, gv, 0.06);
+      // Interact when globe is actually on screen (not only at scroll % threshold)
+      sceneStateRef.current.friendsActive = gv > 0.2;
       if (friendsGlobe.visible) {
         friendsGlobe.traverse((child) => {
           if (child.material && child.material.userData.baseOpacity !== undefined) {
@@ -410,11 +415,12 @@ const CelestialScene = ({ scrollPercent = 0, onReady }) => {
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      mountEl.removeEventListener("pointerdown", onPointerDown);
-      mountEl.removeEventListener("pointerup", onPointerUp);
-      mountEl.removeEventListener("pointercancel", onPointerUp);
-      mountEl.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerdown", onPointerDown);
+      window.removeEventListener("pointerup", onPointerUp);
+      window.removeEventListener("pointercancel", onPointerUp);
+      window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("resize", handleResize);
+      setCursor("");
       labelEls.forEach((el) => el.remove());
       mountEl.removeChild(renderer.domElement);
       renderer.dispose();
@@ -430,7 +436,6 @@ const CelestialScene = ({ scrollPercent = 0, onReady }) => {
           inset: 0,
           zIndex: -1,
           background: "black",
-          cursor: "grab",
           touchAction: "none",
         }}
       />

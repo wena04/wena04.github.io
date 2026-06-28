@@ -98,7 +98,7 @@ function App() {
           <Friends />
         </div>
 
-        <div style={{ pointerEvents: "auto" }}>
+        <div style={{ pointerEvents: "none" }}>
           <Footer />
         </div>
       </main>
