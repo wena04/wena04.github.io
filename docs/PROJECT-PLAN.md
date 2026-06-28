@@ -1,8 +1,8 @@
 # Portfolio Project Plan
 
 **Owner:** Anthony Wen  
-**Last Updated:** February 11, 2026  
-**Status:** Phase 2 IN PROGRESS - Intro section designed, scrollytelling implemented
+**Last Updated:** June 27, 2026  
+**Status:** Phase 2–3 largely complete — 6-section scrollytelling live in working tree
 
 ---
 
@@ -11,16 +11,20 @@
 When working on this project, read this document first to understand:
 
 - The 3-layer architecture (Layer 0: 3D, Layer 1: Content, Layer 2: Nav)
-- The 4 main sections + landing screen + footer structure
+- The 6 main sections + landing screen + footer structure
+- Section-anchored planet choreography (not hard-coded scroll percentages)
 - Current phase and what's been completed
 - File organization and naming conventions
 
 Key files:
 
 - `docs/PROJECT-PLAN.md` - This file (architecture + phases)
-- `src/scene/CelestialScene.jsx` - 3D background component (Layer 0)
-- `src/App.jsx` - Main app composition
-- `src/data/` - All content data (experiences, projects, skills, friends, personal)
+- `PROGRESS.md` - Running progress log (sections, TODOs, repo health)
+- `src/scene/choreography.js` - Section-anchored scroll → planet mapping
+- `src/scene/CelestialScene.jsx` - 3D background orchestrator (Layer 0)
+- `src/App.jsx` - Main app composition + single scroll clock
+- `src/data/personal.js` - Bio, social links, canonical `navItems`
+- `src/data/` - All content data (experiences, projects, skills, friends)
 
 ---
 
@@ -41,10 +45,11 @@ A personal portfolio website with:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  Layer 2: Navbar (zIndex: 100)                                  │
-│  - Fixed top, warm glass background                             │
-│  - Pill-style links: Intro, Experience, Projects, Friends       │
-│  - Fades in at 5% scroll, fully visible by 10%                 │
+│  Layer 2: Navbar + ScrollRail (zIndex: 100)                     │
+│  - Fixed top navbar; constellation rail on right edge             │
+│  - Pill-style links: Intro, Experience, Research, Education,    │
+│    Projects, Friends (from `personal.js` navItems)                │
+│  - Navbar fades in at 5% scroll, fully visible by 10%             │
 ├─────────────────────────────────────────────────────────────────┤
 │  Layer 1: Main Content (zIndex: 1)                              │
 │  - Scrollable sections                                          │
@@ -64,28 +69,31 @@ A personal portfolio website with:
 
 | #   | Screen         | Content                                                | Planet State                            |
 | --- | -------------- | ------------------------------------------------------ | --------------------------------------- |
-| 0   | **Landing**    | Empty — just the planet centered in starfield          | Centered, zooming in from deep space    |
-| 1   | **Intro**      | Floating text: Name, typewriter tagline, social links  | Slides to far right (x=10)              |
-| 2   | **Experience** | Work history (10 roles from LinkedIn)                  | Sliding from right toward center        |
-| 3   | **Projects**   | Coding (12) + Design (6) projects                      | Continuing left, getting smaller        |
-| 4   | **Friends**    | 3D globe with 7+ friend nodes                          | Planet fades out at left edge, globe in |
-| —   | **Footer**     | Just copyright: "© 2026 Anthony Wen"                  | Globe visible                           |
+| 0   | **Landing**    | Empty — planet centered in starfield                   | Centered, zooming in from deep space    |
+| 1   | **Intro**      | Name, tagline, social links                            | Docks far right                         |
+| 2   | **Experience** | Scorpius constellation timeline (work roles + honors)  | Holds right                             |
+| 3   | **Research**   | Decision-tree lab cards (IDL, Wordplaypen)             | Drifts toward center                    |
+| 4   | **Education**  | Mission-patch badges (UW, AISG)                        | Recedes left/back                       |
+| 5   | **Projects**   | Featured orbit + solar archive tabs                    | Center + small; planet ring fades       |
+| 6   | **Friends**    | Crescent planet + 3D constellation globe               | Crossfade to globe; lit crescent rim    |
+| —   | **Footer**     | Copyright: "© 2026 Anthony Wen"                        | Globe visible                           |
 
-### 2.3 Scrollytelling (4-Phase System) — IMPLEMENTED
+### 2.3 Scrollytelling (Section-Anchored) — IMPLEMENTED
 
-The planet position is driven by `scrollPercent` with 4 distinct phases:
+Planet position is driven by `scrollPercent` but **keyframes are anchored to live
+section positions** via `choreography.sectionStarts()` — not fixed percentages.
+Adding or resizing sections keeps the planet tied to content.
 
 ```javascript
-// Phase 1 (0-10%):   Zoom in, planet centered            (Landing)
-// Phase 2 (10-18%):  Planet slides center -> far right    (Intro)
-// Phase 3 (18-70%):  Planet slides right -> left          (Experience, Projects)
-// Phase 4 (70-100%): Planet comes closer for globe swap   (Friends)
+// Journey (choreography.js):
+// landing → intro (dock right) → experience (hold)
+// → research (center) → education (recede left/back)
+// → projects (center + small) → friends (crescent + globe crossfade)
 
-// Z position: -15 -> -5 (small planet), then -5 -> 0 (closer for Friends)
-// X position: 0 -> 10.0 (right), then 10.0 -> -3.5 (left edge)
+// Key exports: sectionStarts(ids), planetFromScroll(sp, starts)
 ```
 
-This is fully percentage-based. Adding/removing sections will shift percentages but the phases auto-adjust.
+See `docs/scrollytelling-design.md` and `PROGRESS.md` for per-section UI details.
 
 ---
 
@@ -97,8 +105,8 @@ This is fully percentage-based. Adding/removing sections will shift percentages 
 
 | Task                                    | Status | Notes                                             |
 | --------------------------------------- | ------ | ------------------------------------------------- |
-| Clean up unused components              | DONE   | Removed duplicates, reorganized folders            |
-| Reorganize repo structure               | DONE   | scene/, nav/, ui/, data/, hooks/                   |
+| Clean up unused components              | DONE   | Removed Hero, About, Contact, ui/, hooks, skillOrbits |
+| Reorganize repo structure               | DONE   | scene/, nav/, sections/, data/, styles/            |
 | Delete unused assets folder             | DONE   | src/assets/ removed                                |
 | Create data files                       | DONE   | All content from LinkedIn/resume                   |
 | Populate experiences.js                 | DONE   | 10 work experiences + education + awards           |
@@ -106,16 +114,20 @@ This is fully percentage-based. Adding/removing sections will shift percentages 
 | Populate friends.js                     | DONE   | 7 friends (Amelia Li + 6 others)                   |
 | Populate personal.js                    | DONE   | Bio, contact, social links                         |
 | Simplify Footer                         | DONE   | Just "© 2026 Anthony Wen"                          |
-| Create useVisibleSection hook           | DONE   | For section-based planet control                   |
 | Create Intro section                    | DONE   | Merged Hero + About into single section            |
-| Create Experience section               | DONE   | Experience.jsx with 10 roles + education + awards  |
-| Create Friends section placeholder      | DONE   | Friends.jsx with grid layout (3D in Phase 4)       |
-| Update Navbar links                     | DONE   | Intro, Experience, Projects, Friends               |
+| Create Experience section               | DONE   | Scorpius constellation + work roles + honors       |
+| Create Research section                 | DONE   | Decision-tree layout, own `#research` section      |
+| Create Education section                | DONE   | Mission patches, own `#education` section          |
+| Create Friends section                  | DONE   | Crescent planet + 3D globe with labels/click     |
+| Update Navbar links                     | DONE   | 6 sections via shared `navItems` in personal.js    |
+| Add ScrollRail                          | DONE   | Constellation progress rail on right edge          |
+| Add LoadingScreen                       | DONE   | Minimal orb+ring loader (Phase 4 upgrade optional) |
+| Add favicons                            | DONE   | AW mark in `public/` + manifest                    |
 | Clean up CSS for dark theme             | DONE   | All text light, transparent backgrounds            |
 
 ---
 
-### Phase 2: Section Design — IN PROGRESS
+### Phase 2: Section Design — MOSTLY COMPLETE
 
 **Goal:** Each section looks polished
 
@@ -123,35 +135,35 @@ This is fully percentage-based. Adding/removing sections will shift percentages 
 | --------------------------------- | ----------- | ------------------------------------------------------------ |
 | Add Landing screen                | DONE        | Empty 100vh div before Intro in App.jsx                      |
 | Landing hints (scroll + drag)     | DONE        | Centered "Scroll to begin" + chevron, fades out on scroll    |
-| Design Intro section              | DONE        | Minimal floating text: name (gradient), typewriter, socials  |
-| Navbar redesign                   | DONE        | Warm glass background, pill hover/active, bouncy transitions |
-| Fonts (Orbitron + Roboto Mono)    | DONE        | Google Fonts import in index.css                             |
-| Design Experience timeline/cards  | TODO        |                                                              |
-| Design Projects carousel          | TODO        | Decide: tabs, two rows, or mixed                             |
-| Design Footer                     | TODO        | Clean, minimal                                               |
-| Responsive design (mobile)        | TODO        |                                                              |
-| Typography and spacing            | TODO        |                                                              |
+| Design Intro section              | DONE        | Floating text: name, tagline, social pills                   |
+| Navbar redesign                   | DONE        | Warm glass background, pill hover/active                     |
+| Design Experience (Scorpius)      | DONE        | Constellation timeline, scroll-drawn path                    |
+| Design Research section           | DONE        | Decision-tree with dashed slanted branches                   |
+| Design Education section          | DONE        | Mission-patch badges                                         |
+| Design Projects orbit + archive   | DONE        | Featured orbit ring + tabbed solar archive                   |
+| Design Friends globe              | DONE        | Labels, hover, click → portfolio                             |
+| ScrollRail + loading screen       | DONE        | Right-edge constellation rail; minimal loader                |
+| Favicons                          | DONE        | `public/favicon.*`, `site.webmanifest`                       |
+| Responsive design (mobile)        | PARTIAL     | Mobile passes in Experience, Research, Projects              |
+| SEO / Open Graph                  | TODO        | `og-image.png` still missing                                 |
 
 **Deliverable:** Polished static portfolio.
 
 ---
 
-### Phase 3: Planet Transitions — DRAFT WORKING
+### Phase 3: Planet Transitions — IMPLEMENTED
 
 **Goal:** 3D background responds to scroll
 
 | Task                                | Status | Notes                                              |
 | ----------------------------------- | ------ | -------------------------------------------------- |
-| 4-phase scrollytelling system       | DRAFT  | Working but percentages will shift as sections grow |
-| Planet position per section         | DRAFT  | z: -15→-5→0, x: 0→10→-3.5 (needs tuning later)   |
+| Section-anchored choreography       | DONE   | `choreography.js` reads live section positions     |
+| Planet position per section         | DONE   | 6-section keyframe journey                         |
 | Smooth interpolation (lerp/clamp)   | DONE   | THREE.MathUtils.clamp + lerp                       |
-| Planet → Globe crossfade            | DONE   | Opacity crossfade at scroll > 75%                  |
-| Globe hidden until needed           | DONE   | visible=false + depthWrite=false (no silhouette)   |
+| Planet → Globe crossfade            | DONE   | Friends section crescent + globe                   |
+| Globe hidden until needed           | DONE   | visible=false + depthWrite=false                   |
 | Performance optimization            | DONE   | See performance section below                      |
-| Re-tune after all sections designed | TODO   | Scroll breakpoints will need adjusting             |
-| Mobile: reduce effects or disable   | TODO   |                                                    |
-
-**What's locked:** Landing (Phase 1: 0-10%), Intro/Hero (Phase 2: 10-18%), and Friends (Phase 4: 70-100%) all look good — don't change these. Only Phase 3 (18-70%, Experience/Projects) needs tuning once those sections are designed.
+| Mobile: reduce effects or disable   | TODO   | Position fine-tuning across aspect ratios          |
 
 **Deliverable:** Immersive scrollytelling portfolio.
 
@@ -163,14 +175,11 @@ This is fully percentage-based. Adding/removing sections will shift percentages 
 
 | Task                                      | Status | Notes                                        |
 | ----------------------------------------- | ------ | -------------------------------------------- |
-| **Create `globeGenerator.js`**            | DONE   | Fibonacci sphere + geometric connections     |
-| **Add Globe to CelestialScene**           | DONE   | Imported, starts hidden (visible=false)      |
-| **Planet → Globe transition**             | DONE   | Opacity crossfade at scroll > 75%            |
-| **Globe drag interaction**                | DONE   | Mouse drag + coast, follows mouse direction  |
-| Globe hover/click (Raycaster)             | TODO   | Click friend node → open portfolio           |
-| Friend name labels (CSS2DRenderer)        | TODO   | Show name on hover                           |
-| Loading screen ("Ready Player One")       | TODO   |                                              |
-| Projects: finalize layout (tabs/carousel) | TODO   |                                              |
+| Globe drag interaction                | DONE   | Mouse drag + coast                               |
+| Globe hover/click (Raycaster)         | DONE   | Click friend node → open portfolio               |
+| Friend name labels (CSS2DRenderer)    | DONE   | Front-facing labels + hover highlight            |
+| Loading screen ("Ready Player One")   | TODO   | Current loader is minimal orb+ring               |
+| Project thumbnails                    | TODO   | Add images to `public/images/`                   |
 | Custom mouse cursor                       | TODO   | See implementation guide in Section 7        |
 
 ---
@@ -197,55 +206,55 @@ This is fully percentage-based. Adding/removing sections will shift percentages 
 ```
 src/
 ├── main.jsx                     # Entry point
-├── App.jsx                      # Main composition (Landing + 4 sections + Footer)
+├── App.jsx                      # Composition + single scroll clock
 ├── App.css                      # Global app styles
-├── index.css                    # Base styles + Google Fonts (Orbitron, Roboto Mono)
+├── index.css                    # Base styles + Google Fonts
 │
 ├── scene/                       # Layer 0 - 3D Background
-│   ├── CelestialScene.jsx       # Planet, stars, rings, globe, scrollytelling, hints
-│   ├── globeGenerator.js        # Friends Network Globe (Fibonacci sphere)
-│   └── skillOrbits.js           # [UNUSED] 3D skill orbits (kept for potential reuse)
+│   ├── CelestialScene.jsx       # Planet, stars, rings, globe, scrollytelling
+│   ├── choreography.js          # Section-anchored scroll → planet mapping
+│   ├── celestialFactory.js      # Planet mesh, atmosphere, starfield
+│   ├── textures.js              # Canvas texture generators
+│   └── globeGenerator.js        # Friends network globe (Fibonacci sphere)
 │
 ├── nav/                         # Layer 2 - Navigation
-│   ├── Navbar.jsx               # Warm pill-style nav, fades in at 5% scroll
-│   └── Footer.jsx               # Minimal footer (just copyright)
+│   ├── Navbar.jsx               # Top nav (imports navItems from personal.js)
+│   ├── ScrollRail.jsx           # Right-edge constellation progress rail
+│   ├── LoadingScreen.jsx        # Initial load shade
+│   └── Footer.jsx               # Minimal footer
 │
 ├── sections/                    # Layer 1 - Content Sections
-│   ├── Intro.jsx                # Floating text: name + typewriter + social links
-│   ├── Experience.jsx           # Work history + education + awards
-│   ├── Projects.jsx             # Coding + design projects grid
-│   ├── Friends.jsx              # Friends section (3D globe in Layer 0)
-│   ├── Hero.jsx                 # [UNUSED] Old hero section (replaced by Intro)
-│   ├── About.jsx                # [UNUSED] Old about section (merged into Intro)
-│   └── Contact.jsx              # [UNUSED] Removed from app
+│   ├── Intro.jsx
+│   ├── Experience.jsx           # Scorpius constellation + work roles
+│   ├── Research.jsx             # Decision-tree lab cards
+│   ├── Education.jsx            # Mission-patch badges
+│   ├── Projects.jsx             # Featured orbit + solar archive
+│   └── Friends.jsx              # Globe overlay + legend
 │
-├── ui/                          # Shared UI Components
-│   ├── Button.jsx               # Reusable button
-│   ├── IconLink.jsx             # Icon link component
-│   └── SkillMarquee.jsx         # [UNUSED] CSS marquee (kept for potential reuse)
+├── data/                        # Content Data
+│   ├── experiences.js           # Work, research, education, awards
+│   ├── projects.js              # Coding + design projects
+│   ├── skills.js                # Skills + devicon URLs (not yet in UI)
+│   ├── friends.js               # Globe nodes
+│   └── personal.js              # Bio, social links, navItems
 │
-├── data/                        # Content Data (ALL POPULATED)
-│   ├── experiences.js           # 10 work experiences + education + awards
-│   ├── projects.js              # 12 coding + 6 design projects
-│   ├── skills.js                # Skills list + devicon CDN URLs
-│   ├── friends.js               # 7 friends (expandable)
-│   └── personal.js              # Personal info + social links
-│
-├── styles/                      # Component Styles
-│   ├── navbar.css               # Warm glass navbar + pill hover/active
-│   ├── footer.css               # Minimal footer styles
-│   ├── projects.css             # Projects section styles
-│   └── sections.css             # HUD panel + hero-container + minimal variant
-│
-└── hooks/                       # Custom React Hooks
-    └── useVisibleSection.js     # Section visibility detection (placeholder)
+└── styles/                      # Component Styles (one file per major section)
+    ├── navbar.css
+    ├── scrollrail.css
+    ├── loading.css
+    ├── footer.css
+    ├── sections.css
+    ├── experience.css
+    ├── research.css
+    ├── education.css
+    ├── projects-orbit.css
+    └── friends.css
+
+public/
+├── favicon.ico / favicon.svg / PNG sizes
+├── site.webmanifest
+└── 404.html
 ```
-
-### Unused Files (safe to delete later)
-
-- `sections/Hero.jsx`, `sections/About.jsx`, `sections/Contact.jsx` — replaced by `Intro.jsx`
-- `scene/skillOrbits.js` — 3D skill orbits, removed from scene but kept on disk
-- `ui/SkillMarquee.jsx` — CSS marquee, removed from Intro but kept on disk
 
 ---
 
@@ -280,13 +289,17 @@ The planet sits to the far right, leaving the left side entirely for text.
 
 ### Planet Position Summary
 
-| Screen     | X Position | Z Position | Size     |
-| ---------- | ---------- | ---------- | -------- |
-| Landing    | 0 (center) | -15 → -5  | Zooming  |
-| Intro      | 10 (right) | -5         | Small    |
-| Experience | 10 → -3.5  | -5         | Small    |
-| Projects   | sliding     | -5         | Small    |
-| Friends    | -3.5 (left)| -5 → 0    | Growing  |
+| Screen     | Approx. X | Approx. Z | Notes                    |
+| ---------- | --------- | --------- | ------------------------ |
+| Landing    | 0         | -15 → -5  | Zoom in from deep space  |
+| Intro      | +6        | -5        | Docked right             |
+| Experience | +6        | -5        | Hold through Scorpius    |
+| Research   | 0         | -7        | Drift toward center      |
+| Education  | -7        | -9        | Recede left/back         |
+| Projects   | 0         | -7        | Center; planet ring fades|
+| Friends    | -4.6      | -2.5      | Crescent rim + globe     |
+
+Exact values interpolate via `choreography.planetFromScroll()` keyed to section tops.
 
 ---
 
@@ -310,7 +323,7 @@ The planet sits to the far right, leaving the left side entirely for text.
 | 3D Library        | Three.js (vanilla)           | Already in use, full control    |
 | Animation         | Native Three.js + CSS        | Keep dependencies minimal       |
 | Fonts             | Orbitron + Roboto Mono       | Sci-fi headers + tech labels    |
-| Section Detection | Intersection Observer API    | Native, performant              |
+| Section Detection | Scroll position + getBoundingClientRect | Navbar + ScrollRail; choreography uses section tops |
 | Friends Globe     | Same WebGL canvas            | Seamless transition from planet |
 | Mobile 3D         | Reduce/disable effects       | Performance (TODO)              |
 | Custom Cursor     | CSS variables + PNG images   | See implementation below        |
@@ -392,14 +405,15 @@ When resuming work:
 1. Check this document for current phase and pending tasks
 2. Follow the repo structure in Section 4
 3. Update task status in this document as you complete them
-4. Note: some files in `sections/` and `ui/` are unused (see Section 4)
-5. The scrollytelling is percentage-based — adding sections will shift breakpoints
+4. Note: `navItems` in `src/data/personal.js` is the single source of truth for section nav
+5. Scrollytelling is section-anchored — adding sections updates choreography automatically
 
 ### Immediate Next Steps
 
-1. **Design Experience section** — timeline/cards layout with `experiences.js` data
-2. **Design Projects section** — decide on carousel vs tabs vs grid
-3. **Clean up unused files** — delete Hero.jsx, About.jsx, Contact.jsx, skillOrbits.js, SkillMarquee.jsx
+1. **Content assets** — project thumbnails, company/school logos in `public/images/`
+2. **Fill friend portfolio URLs** in `friends.js`
+3. **Commit & deploy** scrollytelling working tree to GitHub Pages
+4. **Phase 4 polish** — "Ready Player One" loading screen, OG image, mobile tuning
 
 ### Commands to Get Started
 

@@ -50,7 +50,7 @@ section {
 
 /* 3. Typography */
 .hud-header {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-sans);
   color: #ff6b35;
   text-transform: uppercase;
   letter-spacing: 2px;
@@ -93,7 +93,7 @@ section {
 }
 
 .stat-label {
-  font-family: "Roboto Mono", monospace;
+  font-family: var(--font-sans);
   color: #888;
   font-size: 0.8rem;
   text-transform: uppercase;
@@ -115,7 +115,7 @@ section {
 }
 
 .hud-links a {
-  font-family: "Roboto Mono", monospace;
+  font-family: var(--font-sans);
   font-size: 0.8rem;
   color: #888;
   text-transform: uppercase;
@@ -161,7 +161,7 @@ section {
 
 /* Typewriter Subtitle */
 .hud-subtitle {
-  font-family: "Orbitron", sans-serif;
+  font-family: var(--font-sans);
   font-size: 1.1rem;
   color: #ff6b35;
   margin-bottom: 3rem;
@@ -185,32 +185,40 @@ section {
   opacity: 1;
 }
 
-/* Social Row — spaced out, understated */
+/* Social Row — icon + label pill buttons that stand out */
 .social-row {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 0.8rem;
+  flex-wrap: wrap;
 }
 
 .social-link {
-  font-family: "Roboto Mono", monospace;
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.4);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  color: #ffcdaa;
   text-decoration: none;
-  letter-spacing: 2px;
-  transition:
-    color 0.3s ease,
-    text-shadow 0.3s ease;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid rgba(255, 140, 66, 0.3);
+  border-radius: 22px;
+  background: rgba(255, 107, 53, 0.06);
+  transition: color 0.25s ease, background 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
 }
-
+.social-link svg {
+  width: 15px;
+  height: 15px;
+}
 .social-link:hover {
-  color: #ff6b35;
-  text-shadow: 0 0 12px rgba(255, 107, 53, 0.5);
-}
-
-.separator {
-  color: rgba(255, 255, 255, 0.15);
-  font-size: 0.6rem;
+  color: #fff;
+  background: rgba(255, 107, 53, 0.18);
+  border-color: rgba(255, 107, 53, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 0 16px rgba(255, 107, 53, 0.3);
 }
 
 /* ================================================================

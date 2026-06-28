@@ -1,0 +1,1254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Scrollytelling Mockup — Anthony Wen Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  /* ============================================================
+     PALETTE (from celestial-scene.md + sections.css)
+     ============================================================ */
+  :root {
+    --o1: #ff6b35;   /* persimmon */
+    --o2: #ff8c42;   /* warm orange */
+    --o3: #ffd93d;   /* gold-yellow */
+    --gold: #ffd08a; /* node gold */
+    --burnt: #c25a1e;
+    --ink: #0a0c10;
+    --dim: rgba(255,255,255,0.45);
+    --dim2: rgba(255,255,255,0.28);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: #000;
+    color: #fff;
+    font-family: "Roboto Mono", monospace;
+    overflow-x: hidden;
+  }
+
+  /* ============================================================
+     LAYER 0 — fake celestial background (CSS approximation of the
+     real Three.js scene, just to show choreography)
+     ============================================================ */
+  #scene {
+    position: fixed; inset: 0; z-index: 0; overflow: hidden;
+    background:
+      radial-gradient(1200px 800px at 80% -10%, rgba(194,90,30,0.18), transparent 60%),
+      radial-gradient(900px 600px at 10% 110%, rgba(255,107,53,0.10), transparent 60%),
+      #000;
+  }
+  /* starfield via layered radial-gradients */
+  #stars {
+    position: absolute; inset: -50%;
+    background-image:
+      radial-gradient(1.5px 1.5px at 20% 30%, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 70% 60%, #ffd08a, transparent),
+      radial-gradient(1px 1px at 40% 80%, #fff, transparent),
+      radial-gradient(2px 2px at 85% 20%, #ff8c42, transparent),
+      radial-gradient(1px 1px at 55% 45%, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 30% 65%, #fff, transparent),
+      radial-gradient(1px 1px at 90% 75%, #ffd08a, transparent),
+      radial-gradient(1.5px 1.5px at 12% 88%, #fff, transparent),
+      radial-gradient(1px 1px at 65% 12%, #fff, transparent);
+    background-repeat: repeat;
+    background-size: 600px 600px;
+    opacity: 0.7;
+    animation: drift 120s linear infinite;
+  }
+  @keyframes drift { to { transform: translate(40px, 30px); } }
+
+  /* the planet — a warm gradient sphere with a ring */
+  #planet-wrap {
+    position: absolute; top: 50%; left: 50%;
+    width: 320px; height: 320px;
+    transform: translate(-50%, -50%);
+    will-change: transform;
+    transition: opacity .6s ease;
+  }
+  #planet {
+    position: absolute; inset: 0; border-radius: 50%;
+    background:
+      radial-gradient(circle at 35% 30%, #ffb37a 0%, #e0701f 35%, #c25a1e 60%, #7a3208 100%);
+    box-shadow:
+      0 0 80px 10px rgba(255,107,53,0.35),
+      inset -30px -20px 60px rgba(40,10,0,0.6),
+      inset 20px 15px 40px rgba(255,200,150,0.15);
+  }
+  #planet::after { /* atmosphere halo */
+    content:""; position:absolute; inset:-12px; border-radius:50%;
+    background: radial-gradient(circle, transparent 60%, rgba(255,107,53,0.25) 78%, transparent 82%);
+  }
+  #ring {
+    position:absolute; top:50%; left:50%;
+    width:150%; height:150%;
+    transform: translate(-50%,-50%) rotateX(74deg) rotateZ(-32deg);
+    border-radius:50%;
+    border: 6px solid rgba(255,140,66,0.25);
+    box-shadow: 0 0 30px rgba(255,140,66,0.3), inset 0 0 30px rgba(255,140,66,0.2);
+  }
+
+  /* friends globe (shown only in friends beat) */
+  #globe {
+    position:absolute; top:50%; left:50%;
+    width:380px; height:380px; transform:translate(-50%,-50%) scale(.85);
+    border-radius:50%;
+    opacity:0; transition: transform .8s ease;   /* opacity driven per-frame in JS */
+    background: radial-gradient(circle at 50% 50%, rgba(255,107,53,0.08), transparent 68%);
+    box-shadow: 0 0 80px rgba(255,107,53,0.12);
+  }
+  #globe.show { transform:translate(-50%,-50%) scale(1); }
+
+  /* planet explosion particles (Experience): planet bursts into the starfield, reforms for Projects */
+  #planet-particles { position:absolute; inset:0; pointer-events:none; z-index:0; }
+  #planet-particles .pp { position:absolute; left:0; top:0; border-radius:50%; opacity:0;
+    will-change:transform,opacity; }
+  #globe { cursor:grab; }
+  #globe:active { cursor:grabbing; }
+  #globe .node {
+    position:absolute; border-radius:50%; background: var(--gold);
+    transform: translate(-50%,-50%); will-change:transform,opacity;
+  }
+  #globe .node.friend { cursor:pointer; }
+  #globe .flabel {
+    position:absolute; transform:translate(-50%,-150%); white-space:nowrap;
+    font-family:"Roboto Mono"; font-size:.62rem; letter-spacing:.5px; color:#fff;
+    background:rgba(10,7,5,0.74); border:1px solid rgba(255,208,138,0.3); border-radius:10px;
+    padding:.12rem .5rem; pointer-events:none; opacity:0; transition:opacity .2s; will-change:transform,opacity;
+  }
+  #globe svg { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+
+  /* ============================================================
+     LAYER 2 — fake navbar
+     ============================================================ */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 1rem 2rem;
+    background: rgba(15,10,8,0.7);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,140,66,0.12);
+  }
+  nav .logo { font-family:"Orbitron"; font-weight:800; color:var(--o2); font-size:1.2rem; }
+  nav .links { display:flex; gap:.4rem; }
+  nav a {
+    color:#ffcdaa; text-decoration:none; font-size:.8rem; font-weight:500;
+    padding:.4rem .8rem; border-radius:20px; transition:all .2s;
+  }
+  nav a:hover, nav a.active { background:rgba(255,107,53,0.15); color:var(--o2); }
+
+  /* ============================================================
+     LAYER 1 — content
+     ============================================================ */
+  main { position: relative; z-index: 10; }
+
+  /* a "track" is a tall scroll region; its .stage is sticky and animates in place */
+  .track { position: relative; }
+  .stage {
+    position: sticky; top: 0; height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 6rem clamp(1.5rem, 8vw, 10rem) 4rem;
+  }
+
+  .kicker {
+    font-family:"Orbitron"; text-transform:uppercase; letter-spacing:3px;
+    font-size:.7rem; color:var(--o1); margin-bottom:.6rem; opacity:.85;
+  }
+  .section-title {
+    font-family:"Orbitron"; font-weight:700; font-size:clamp(1.8rem,4vw,2.8rem);
+    color:#fff; margin-bottom:.4rem;
+  }
+  .section-sub { color:var(--dim); font-size:.85rem; margin-bottom:2.2rem; max-width:46ch; }
+
+  /* ---- annotation badge that explains what's happening ---- */
+  .note {
+    position: sticky; top:0; z-index:40;
+    margin:0 auto; max-width:760px;
+    background: rgba(255,107,53,0.08);
+    border:1px solid rgba(255,107,53,0.25);
+    border-left:3px solid var(--o1);
+    padding:.7rem 1rem; font-size:.72rem; color:#ffd9c2; line-height:1.5;
+    backdrop-filter: blur(6px);
+  }
+  .note b { color:var(--o2); }
+
+  /* ---------- HERO / INTRO beat ---------- */
+  #intro .name {
+    font-family:"Orbitron"; font-weight:800; font-size:clamp(2.5rem,7vw,4.5rem);
+    line-height:1; letter-spacing:-1px;
+    background:linear-gradient(135deg,#ff6b35,#ff8c42,#ffd93d);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+    margin-bottom:1.2rem;
+  }
+  #intro .typed { font-family:"Orbitron"; text-transform:uppercase; letter-spacing:3px;
+    color:var(--o1); font-size:1rem; margin-bottom:2rem; }
+  #intro .socials { display:flex; gap:1.2rem; color:var(--dim); font-size:.78rem; letter-spacing:2px; }
+
+  /* ---------- EXPERIENCE flight-path ---------- */
+  /* experience header (scrolls away before the constellation) */
+  .exp-head { padding: 6rem clamp(1.5rem,8vw,10rem) 0; }
+  .exp-head .awards { margin-left:0; margin-right:0; }
+
+  /* flight-path trajectory — the SCORPIUS constellation (Anthony is a Scorpio) */
+  /* tall + scrolls, so cards have room and it scales to any number of roles */
+  .exp-flight { position:relative; width:100%; max-width:1100px; margin:1.5rem auto 0;
+    padding:0 clamp(1rem,5vw,3rem); height:1320px; }
+  .exp-svg { position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
+  /* every star of the constellation */
+  .exp-star {
+    position:absolute; border-radius:50%; transform:translate(-50%,-50%); z-index:3;
+    background:#5a3a22; box-shadow:0 0 0 rgba(255,208,138,0);
+    transition: background .4s, box-shadow .4s;
+  }
+  .exp-star.lit { background:var(--gold); box-shadow:0 0 12px 1px rgba(255,208,138,0.8); }
+  /* Antares — the heart of the scorpion */
+  .exp-star.bright.lit { background:#fff; box-shadow:0 0 18px 4px rgba(255,107,53,0.9); }
+  .exp-antares-label { position:absolute; transform:translate(8px,-50%); z-index:3;
+    font-family:"Roboto Mono"; font-size:.6rem; letter-spacing:1px; color:var(--o2); white-space:nowrap;
+    opacity:0; transition:opacity .5s; }
+  .exp-antares-label.lit { opacity:.9; }
+  .exp-comet {
+    position:absolute; width:18px; height:18px; border-radius:50%; transform:translate(-50%,-50%);
+    z-index:4; opacity:0; pointer-events:none;
+    background:radial-gradient(circle, #fff 0%, var(--o3) 35%, var(--o1) 70%, transparent 72%);
+    box-shadow:0 0 22px 6px rgba(255,140,66,0.7);
+    transition:opacity .3s;
+  }
+  /* leader lines from a star to its card */
+  #exp-leaders line { stroke:rgba(255,140,66,0.3); stroke-width:1; stroke-dasharray:3 4; }
+  /* cards live in two fixed edge columns (JS sets left/right), centered on their star's y */
+  .exp-card {
+    position:absolute; width:clamp(190px,20vw,240px); z-index:2;
+    transform:translate(var(--sx,0), -50%);
+    padding:.85rem 1rem; background:rgba(18,12,9,0.8); backdrop-filter:blur(6px);
+    border:1px solid rgba(255,255,255,0.08); border-radius:12px;
+    opacity:0; transition:opacity .5s ease, transform .5s ease, border-color .3s;
+  }
+  .exp-card.right { --sx:-12px; border-left:3px solid var(--o1); }
+  .exp-card.left  { --sx:12px;  border-right:3px solid var(--o1); text-align:right; }
+  .exp-card.lit { opacity:1; --sx:0px; border-color:rgba(255,107,53,0.3); }
+  .exp-card .when { color:#8a8a8a; font-size:.68rem; }
+  .exp-card h4 { color:#fff; font-size:.95rem; margin:.15rem 0; }
+  .exp-card .co { color:var(--o2); font-size:.78rem; }
+  .exp-card .tags { display:flex; flex-wrap:wrap; gap:.35rem; margin-top:.55rem; }
+  .exp-card.left .tags { justify-content:flex-end; }
+  .exp-card .tag { background:rgba(255,107,53,0.15); color:var(--o2); font-size:.62rem;
+    padding:.12rem .45rem; border-radius:4px; }
+
+  /* "earlier roles" overflow list */
+  .exp-more { text-align:center; margin:2.5rem auto 0; padding:0 1.5rem; }
+  .exp-more-btn { font-family:"Roboto Mono"; font-size:.72rem; letter-spacing:1.5px; color:var(--o2);
+    background:rgba(255,107,53,0.08); border:1px solid rgba(255,107,53,0.28); border-radius:24px;
+    padding:.6rem 1.3rem; cursor:pointer; transition:.2s; text-transform:uppercase; }
+  .exp-more-btn:hover { background:rgba(255,107,53,0.16); }
+  .exp-more-list { max-width:760px; margin:1.3rem auto 0; display:grid; gap:.6rem; text-align:left; }
+  .exp-more-list .row { display:grid; grid-template-columns:1fr auto; align-items:center; gap:1rem;
+    padding:.7rem 1rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:10px; }
+  .exp-more-list .row h5 { color:#eee; font-size:.85rem; margin:0 0 .1rem; font-weight:500; }
+  .exp-more-list .row .co { color:var(--o2); font-size:.72rem; }
+  .exp-more-list .row .yr { font-family:"Roboto Mono"; font-size:.7rem; color:#888; }
+
+  @media (max-width:760px){
+    .exp-card { width:42%; }
+    .exp-head { padding-left:1.5rem; padding-right:1.5rem; }
+  }
+
+  /* awards as star badges */
+  .awards { display:flex; flex-wrap:wrap; gap:.65rem; margin-top:.7rem; max-width:920px; }
+  .award { display:flex; align-items:center; gap:.5rem; font-size:.78rem; color:#eee;
+    background:rgba(255,107,53,0.07); border:1px solid rgba(255,107,53,0.22);
+    padding:.5rem .9rem; border-radius:22px; transition:border-color .2s, background .2s; }
+  .award:hover { border-color:rgba(255,107,53,0.5); background:rgba(255,107,53,0.12); }
+  .award .star { color:var(--o3); }
+
+  /* ---------- PROJECTS — featured orbit (single ring) ---------- */
+  .proj-pin { position:relative; height:220vh; }
+  .proj-stage { align-items:center; text-align:center; }
+  .orbit { position:relative; width:100%; height:70vh; min-height:520px; margin-top:.3rem; }
+  .orbit-guide {
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    border:1px dashed rgba(255,140,66,0.16); border-radius:50%; pointer-events:none;
+  }
+  .orbit-guide.single { width:780px; height:340px; }
+
+  .orbit-card {
+    position:absolute; top:50%; left:50%; width:184px;
+    background:rgba(18,12,9,0.9); backdrop-filter:blur(8px);
+    border:1px solid rgba(255,255,255,0.16); border-radius:12px; padding:.7rem .75rem;
+    will-change:transform,opacity; transition:border-color .25s, box-shadow .25s;
+    box-shadow:0 6px 22px rgba(0,0,0,0.45);
+  }
+  .orbit-card.code { border-left:3px solid var(--o1); }
+  .orbit-card.design { border-left:3px solid var(--o3); }
+  .orbit-card .thumb {
+    height:62px; border-radius:7px; margin-bottom:.5rem;
+    background:linear-gradient(135deg, rgba(255,107,53,0.3), rgba(255,217,61,0.12));
+    display:flex; align-items:center; justify-content:center; color:#ffd9c2; font-size:.6rem;
+    border:1px dashed rgba(255,255,255,0.16);
+  }
+  .orbit-card .role { color:var(--o2); font-size:.58rem; text-transform:uppercase; letter-spacing:1.5px; }
+  .orbit-card h4 { color:#fff; font-size:.92rem; margin:.15rem 0; }
+  .orbit-card p { color:#ccc; font-size:.64rem; line-height:1.45; max-height:0; overflow:hidden;
+    opacity:0; transition:max-height .3s ease, opacity .3s ease; }
+  .orbit-card.focus { border-color:rgba(255,107,53,0.65); box-shadow:0 10px 36px rgba(255,107,53,0.28); }
+  .orbit-card.focus p { max-height:40px; opacity:1; }   /* only the front card shows its line */
+  .orbit { cursor:grab; }
+  .orbit:active { cursor:grabbing; }
+  .orbit-arrow {
+    position:absolute; top:50%; transform:translateY(-50%); z-index:200; cursor:pointer;
+    width:46px; height:46px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(18,12,9,0.82); color:var(--o2); font-size:1.7rem; line-height:1; padding-bottom:3px;
+    border:1px solid rgba(255,140,66,0.35); backdrop-filter:blur(6px);
+    transition:background .2s, transform .2s, box-shadow .2s;
+  }
+  .orbit-arrow:hover { background:rgba(255,107,53,0.22); box-shadow:0 0 18px rgba(255,107,53,0.4);
+    transform:translateY(-50%) scale(1.08); }
+  .orbit-arrow.prev { left:3%; }
+  .orbit-arrow.next { right:3%; }
+  .orbit-nav { display:flex; flex-direction:column; align-items:center; gap:.4rem; margin:.3rem 0 .1rem; }
+  .orbit-dots { display:flex; gap:.45rem; }
+  .orbit-dots button {
+    width:8px; height:8px; border-radius:50%; padding:0; cursor:pointer;
+    background:rgba(255,140,66,0.25); border:none; transition:all .2s;
+  }
+  .orbit-dots button:hover { background:rgba(255,140,66,0.6); transform:scale(1.25); }
+  .orbit-dots button.active { background:var(--o1); box-shadow:0 0 10px var(--o1); transform:scale(1.35); }
+  .orbit-status { font-family:"Roboto Mono"; font-size:.66rem; letter-spacing:2px; color:var(--dim); text-transform:uppercase; }
+  #orbit-count { color:var(--o2); }
+
+  /* ---------- PROJECT ARCHIVE — solar console / mission log ---------- */
+  .archive-wrap { position:relative; z-index:12; padding:1rem clamp(1rem,5vw,4rem) 5rem; }
+  .archive-panel {
+    position:relative; max-width:1040px; margin:0 auto; overflow:hidden;
+    background:rgba(14,10,8,0.74); backdrop-filter:blur(10px);
+    border:1px solid rgba(255,140,66,0.22); border-radius:16px;
+    padding:1.6rem clamp(1.2rem,3vw,2rem) 2rem;
+    box-shadow:0 20px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04);
+  }
+  .archive-panel::before { /* sun-flare corner glow */
+    content:""; position:absolute; top:-120px; right:-120px; width:340px; height:340px;
+    background:radial-gradient(circle, rgba(255,107,53,0.22), transparent 70%); pointer-events:none;
+  }
+  .archive-panel::after { /* faint tech grid */
+    content:""; position:absolute; inset:0; pointer-events:none; opacity:.45;
+    background-image:linear-gradient(rgba(255,140,66,0.04) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(255,140,66,0.04) 1px,transparent 1px);
+    background-size:40px 40px;
+  }
+  /* header + filter tabs row */
+  .archive-bar { position:relative; display:flex; align-items:center; justify-content:space-between;
+    gap:1rem; flex-wrap:wrap; border-bottom:1px solid rgba(255,140,66,0.2);
+    padding-bottom:1rem; margin-bottom:1.3rem; }
+  .archive-head {
+    font-family:"Orbitron"; font-weight:700; letter-spacing:2px;
+    color:var(--o2); font-size:.95rem; text-transform:uppercase;
+  }
+  .archive-tabs { display:flex; gap:.5rem; }
+  .atab {
+    font-family:"Roboto Mono"; font-size:.72rem; letter-spacing:1px; color:#cbb6a8; cursor:pointer;
+    background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.12); border-radius:22px;
+    padding:.45rem 1rem; transition:.2s;
+  }
+  .atab span { color:var(--dim2); }
+  .atab:hover { border-color:rgba(255,140,66,0.45); color:#fff; }
+  .atab.active { background:rgba(255,107,53,0.16); border-color:rgba(255,107,53,0.5); color:var(--o2); }
+  .atab.active span { color:var(--o2); }
+
+  /* compact two-line rows, 2-column grid */
+  .arch-grid { position:relative; display:grid; grid-template-columns:1fr 1fr; gap:.7rem; }
+  .arch-row {
+    display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:.85rem;
+    padding:.65rem .8rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);
+    border-radius:12px; cursor:pointer; transition:border-color .2s, background .2s;
+  }
+  .arch-row:hover { border-color:rgba(255,107,53,0.4); background:rgba(255,107,53,0.06); }
+  .arch-ico { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+    background:rgba(255,107,53,0.14); color:#ffcaa6; }
+  .arch-ico svg { width:19px; height:19px; }
+  .arch-main { min-width:0; }
+  .arch-main h5 { color:#fff; font-size:.92rem; margin:0 0 .12rem; font-weight:600; }
+  .arch-main .tech { color:var(--dim); font-size:.72rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .arch-links { display:flex; gap:.5rem; opacity:0; transition:opacity .2s; }
+  .arch-row:hover .arch-links { opacity:1; }
+  .arch-links a { color:#9a9a9a; display:inline-flex; }
+  .arch-links a:hover { color:var(--o1); }
+  .arch-links svg { width:14px; height:14px; }
+  /* click to expand detail (date + description) */
+  .arch-detail { grid-column:1 / -1; max-height:0; overflow:hidden; transition:max-height .3s ease; }
+  .arch-row.open .arch-detail { max-height:140px; }
+  .arch-detail .inner { padding-top:.55rem; margin-top:.55rem; border-top:1px solid rgba(255,255,255,0.07);
+    color:#bbb; font-size:.74rem; line-height:1.5; }
+  .arch-detail .d-date { font-family:"Roboto Mono"; font-size:.64rem; color:var(--o2); margin-right:.5rem; }
+  .arch-detail .d-date::before { content:"◷ "; }
+
+  /* archive pagination */
+  .arch-pager { display:flex; align-items:center; justify-content:center; gap:1.1rem; margin-top:1.4rem; }
+  .apage { font-family:"Roboto Mono"; font-size:1.1rem; line-height:1; color:var(--o2); cursor:pointer;
+    width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,0.04);
+    border:1px solid rgba(255,140,66,0.3); display:flex; align-items:center; justify-content:center;
+    padding-bottom:2px; transition:background .2s, box-shadow .2s; }
+  .apage:hover:not(:disabled) { background:rgba(255,107,53,0.18); box-shadow:0 0 14px rgba(255,107,53,0.3); }
+  .apage:disabled { opacity:.3; cursor:default; }
+  .apage-info { font-family:"Roboto Mono"; font-size:.72rem; letter-spacing:2px; color:var(--dim); }
+
+  @media (max-width:760px){
+    .arch-grid { grid-template-columns:1fr; }
+  }
+
+  /* awards pinned on top of experience */
+  .awards-label { font-family:"Orbitron"; font-size:.72rem; letter-spacing:2px; text-transform:uppercase;
+    color:var(--o3); margin-top:1.6rem; margin-bottom:.2rem; }
+
+  /* ---------- FRIENDS ---------- */
+  #friends .stage { align-items:center; text-align:center; justify-content:space-between; }
+  .legend { display:flex; flex-wrap:wrap; gap:.6rem; justify-content:center; max-width:620px; }
+  .legend a { color:#ddd; text-decoration:none; font-size:.72rem; cursor:pointer;
+    border:1px solid rgba(255,208,138,0.25); padding:.35rem .7rem; border-radius:20px;
+    display:flex; align-items:center; gap:.4rem; transition:.2s; }
+  .legend a:hover, .legend a.hot { border-color:var(--gold); color:#fff; background:rgba(255,208,138,0.12); }
+  .legend .dot { width:8px; height:8px; border-radius:50%; }
+
+  /* footer */
+  footer { position:relative; z-index:10; height:60vh; display:flex;
+    align-items:center; justify-content:center; color:var(--dim2); font-size:.75rem; letter-spacing:2px; }
+
+  /* progress bar */
+  #prog { position:fixed; top:0; left:0; height:3px; background:linear-gradient(90deg,var(--o1),var(--o3));
+    z-index:100; width:0; }
+
+  /* storyboard banner at very top */
+  .board { position:relative; z-index:10; padding:7rem 2rem 3rem; text-align:center; }
+  .board h1 { font-family:"Orbitron"; font-weight:800; font-size:clamp(1.4rem,4vw,2.2rem);
+    background:linear-gradient(135deg,#ff6b35,#ffd93d); -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent; margin-bottom:.6rem; }
+  .board p { color:var(--dim); font-size:.85rem; max-width:60ch; margin:0 auto 2rem; }
+  .beats { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; max-width:900px; margin:0 auto; }
+  .beat { flex:1 1 150px; max-width:170px; border:1px solid rgba(255,140,66,0.18);
+    border-radius:12px; padding:1rem; background:rgba(255,107,53,0.04); }
+  .beat .n { font-family:"Orbitron"; color:var(--o1); font-size:.7rem; letter-spacing:2px; }
+  .beat h3 { font-size:.95rem; margin:.4rem 0; color:#fff; }
+  .beat p { font-size:.68rem; color:var(--dim); margin:0; }
+  .scrolldown { margin-top:2.5rem; color:var(--o2); font-size:.75rem; letter-spacing:3px;
+    animation: bob 2s ease-in-out infinite; }
+  @keyframes bob { 50% { transform:translateY(8px); } }
+
+  /* ============================================================
+     RESPONSIVE / MOBILE PASS
+     ============================================================ */
+  @media (max-width:680px){
+    nav { padding:.7rem 1rem; }
+    nav .links { gap:.1rem; }
+    nav a { font-size:.7rem; padding:.35rem .55rem; }
+    .stage { padding:5rem 1.25rem 3rem; }
+    .section-title { font-size:clamp(1.6rem,7vw,2rem); }
+    .note { font-size:.66rem; padding:.6rem .8rem; }
+
+    /* experience: shorter constellation, narrower cards */
+    .exp-head { padding:5rem 1.25rem 0; }
+    .exp-flight { height:1080px; padding:0 .5rem; }
+    .exp-card { width:44%; padding:.6rem .7rem; }
+    .exp-card h4 { font-size:.82rem; }
+    .exp-card .co { font-size:.68rem; }
+    .award { font-size:.7rem; padding:.4rem .7rem; }
+
+    /* projects: smaller orbit cards + planet room */
+    .orbit { height:62vh; min-height:430px; }
+    .orbit-card { width:150px; padding:.5rem .55rem; }
+    .orbit-card .thumb { height:46px; }
+    .orbit-arrow { width:38px; height:38px; font-size:1.4rem; }
+
+    /* friends globe scales down */
+    #globe.show { transform:translate(-50%,-50%) scale(.74); }
+    .legend { gap:.4rem; }
+    .legend a { font-size:.66rem; padding:.3rem .55rem; }
+
+    /* archive */
+    .archive-panel { padding:1.2rem 1rem 1.5rem; }
+    .archive-bar { gap:.6rem; }
+    .atab { font-size:.66rem; padding:.4rem .7rem; }
+  }
+
+  /* respect reduced-motion: calm the looping animations */
+  @media (prefers-reduced-motion: reduce){
+    #stars { animation:none; }
+    .scrolldown, .exp-comet { animation:none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- progress -->
+<div id="prog"></div>
+
+<!-- LAYER 0 -->
+<div id="scene">
+  <div id="stars"></div>
+  <div id="planet-wrap">
+    <div id="ring"></div>
+    <div id="planet"></div>
+  </div>
+  <div id="planet-particles"></div>
+  <div id="globe"></div>
+</div>
+
+<!-- LAYER 2 -->
+<nav>
+  <span class="logo">AW</span>
+  <span class="links">
+    <a href="#intro">Intro</a>
+    <a href="#experience">Experience</a>
+    <a href="#projects">Projects</a>
+    <a href="#friends">Friends</a>
+  </span>
+</nav>
+
+<!-- LAYER 1 -->
+<main>
+
+  <!-- STORYBOARD -->
+  <section class="board">
+    <h1>Scrollytelling Storyboard</h1>
+    <p>This is a low-fi mockup of the proposed flow. The planet (Layer&nbsp;0) is faked in CSS
+       just to show choreography — the real one is your Three.js scene. Scroll down: the planet
+       travels and each section animates in place. Orange boxes explain what's happening.</p>
+    <div class="beats">
+      <div class="beat"><div class="n">01 · SPAWN</div><h3>Landing</h3><p>Planet emerges from deep space. Arrival.</p></div>
+      <div class="beat"><div class="n">02 · PILOT</div><h3>Intro</h3><p>Parks right. Who I am.</p></div>
+      <div class="beat"><div class="n">03 · PATH</div><h3>Experience</h3><p>Flight path with role-nodes. Where I've been.</p></div>
+      <div class="beat"><div class="n">04 · CARGO</div><h3>Projects</h3><p>Artifacts orbiting. What I made.</p></div>
+      <div class="beat"><div class="n">05 · NETWORK</div><h3>Friends</h3><p>Dissolves into a constellation. Who I'm with.</p></div>
+    </div>
+    <div class="scrolldown">▼ SCROLL TO PLAY ▼</div>
+  </section>
+
+  <!-- INTRO -->
+  <div class="track" id="intro" style="height:130vh">
+    <div class="stage">
+      <div class="kicker">02 · The Pilot — planet docks far right</div>
+      <div class="name">Anthony&nbsp;Wen</div>
+      <div class="typed">Creative Coder &nbsp;|</div>
+      <div class="socials"><span>GITHUB</span><span>·</span><span>LINKEDIN</span><span>·</span><span>EMAIL</span></div>
+    </div>
+  </div>
+
+  <!-- EXPERIENCE -->
+  <div class="track" id="experience">
+    <div class="note"><b>Experience = the Scorpius constellation</b> (Anthony's a Scorpio). The
+      career path is traced as the star pattern, head → stinger. It <b>scrolls</b> (so cards have
+      room and it scales to any number of roles); the line draws itself, stars ignite, and a comet
+      rides the tip. Overflow roles go in <b>“earlier roles”</b> below.</div>
+
+    <div class="exp-head">
+      <div class="kicker">03 · The Path</div>
+      <div class="section-title">Experience</div>
+      <div class="section-sub">A few honors, then the path that got me here.</div>
+      <div class="awards-label">★ Honors &amp; Awards</div>
+      <div class="awards">
+        <span class="award"><span class="star">★</span> Kildall Scholarship</span>
+        <span class="award"><span class="star">★</span> Dean's List</span>
+        <span class="award"><span class="star">★</span> DubHacks '24 Winner</span>
+        <span class="award"><span class="star">★</span> USACO Gold</span>
+        <span class="award"><span class="star">★</span> VEX Asia 1st</span>
+      </div>
+    </div>
+
+    <div class="exp-flight" id="expFlight">
+      <svg class="exp-svg" id="expSvg" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#ffd93d"/><stop offset="1" stop-color="#ff6b35"/>
+          </linearGradient>
+        </defs>
+        <path id="exp-track" fill="none" stroke="rgba(255,140,66,0.16)" stroke-width="2.5"/>
+        <g id="exp-leaders"></g>
+        <path id="exp-draw" fill="none" stroke="url(#g)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="exp-antares-label" id="expAntares">★ Antares</div>
+      <div class="exp-comet" id="expComet"></div>
+      <!-- stars + cards injected by JS -->
+    </div>
+
+    <div class="exp-more">
+      <button class="exp-more-btn" id="expMoreBtn" aria-expanded="false">＋ Earlier roles <span id="expMoreCount">(3)</span></button>
+      <div class="exp-more-list" id="expMoreList" hidden></div>
+    </div>
+  </div>
+
+  <!-- PROJECTS -->
+  <div class="track" id="projects">
+    <div class="note"><b>Projects = featured in orbit + full archive below.</b> Only your
+      <b>featured</b> work rides the planet's ring (few cards, high-contrast, readable). The complete
+      log lives in a solar-console <b>archive</b> beneath, split <b>Code | Design</b> (code column
+      weighted wider — you have more code).</div>
+
+    <!-- pinned orbit: featured projects only -->
+    <div class="proj-pin">
+      <div class="stage proj-stage">
+        <div class="kicker">04 · The Cargo</div>
+        <div class="section-title">Projects</div>
+        <div class="section-sub">Featured work in orbit — scroll, drag, or use ‹ › to spin &nbsp;·&nbsp; full archive below ↓</div>
+        <div class="orbit-nav">
+          <div class="orbit-dots" id="orbit-dots"></div>
+          <div class="orbit-status"><span id="orbit-count">01 / 10</span> &nbsp;·&nbsp; <span id="orbit-mode">⟳ touring</span></div>
+        </div>
+        <div class="orbit" id="orbit">
+          <div class="orbit-guide single"></div>
+          <button class="orbit-arrow prev" id="orbit-prev" aria-label="Previous project">‹</button>
+          <button class="orbit-arrow next" id="orbit-next" aria-label="Next project">›</button>
+          <!-- featured orbit cards injected by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- full archive: compact rows + filter tabs -->
+    <section class="archive-wrap">
+      <div class="archive-panel">
+        <div class="archive-bar">
+          <div class="archive-head">Project Archive</div>
+          <div class="archive-tabs" id="archTabs">
+            <button class="atab active" data-f="all">All</button>
+            <button class="atab" data-f="code">Coding <span id="cntCode">· 12</span></button>
+            <button class="atab" data-f="design">Design <span id="cntDesign">· 6</span></button>
+          </div>
+        </div>
+        <div class="arch-grid" id="archGrid"></div>
+        <div class="arch-pager" id="archPager">
+          <button class="apage" id="archPrev" aria-label="Previous page">‹</button>
+          <span class="apage-info" id="archPageInfo">1 / 1</span>
+          <button class="apage" id="archNext" aria-label="Next page">›</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- FRIENDS -->
+  <div class="track" id="friends" style="height:170vh">
+    <div class="note"><b>Friends = an interactive constellation globe.</b> Drag to spin it; hover a
+      node (or a name) to highlight; click to open that friend's portfolio. Each lit node is a person.</div>
+    <div class="stage">
+      <div class="friends-top">
+        <div class="kicker">05 · The Network</div>
+        <div class="section-title">Friends</div>
+        <div class="section-sub">People I've met along the way — drag to spin, or hover &amp; click a name below.</div>
+      </div>
+      <div class="legend" id="friendLegend"></div>
+    </div>
+  </div>
+
+  <footer>© 2026 Anthony Wen — end of journey</footer>
+</main>
+
+<script>
+  // ============================================================
+  // Single scroll clock → drives the (fake) planet + per-section reveals.
+  // This mirrors the proposed useScrollProgress hook: one source of truth.
+  // ============================================================
+  const planet = document.getElementById('planet-wrap');
+  const globe  = document.getElementById('globe');
+  const prog   = document.getElementById('prog');
+  const orbit = document.getElementById('orbit');
+  const orbitPin = document.querySelector('#projects .proj-pin');
+  const navLinks = [...document.querySelectorAll('nav a')];
+
+  // experience flight-path
+  const expFlight = document.getElementById('expFlight');
+  const expSvg = document.getElementById('expSvg');
+  const expTrack = document.getElementById('exp-track');
+  const expDraw = document.getElementById('exp-draw');
+  const expComet = document.getElementById('expComet');
+
+  const lerp = (a,b,t) => a + (b-a)*t;
+  const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+  // progress of an element's scroll range: 0 before it starts, 1 after it ends
+  function rangeProgress(el) {
+    const r = el.getBoundingClientRect();
+    const vh = window.innerHeight;
+    // 0 when top hits top of viewport, 1 when bottom leaves
+    const total = r.height - vh;
+    if (total <= 0) return clamp((vh - r.top)/vh, 0, 1);
+    return clamp(-r.top / total, 0, 1);
+  }
+  // progress of an element passing THROUGH the viewport (good for tall scrolling sections)
+  function throughProgress(el) {
+    const r = el.getBoundingClientRect();
+    const vh = window.innerHeight;
+    // 0 as it enters; reaches 1 while the bottom is still ~60% down the viewport
+    // (so the last constellation star lights up while still on screen, not after it leaves)
+    return clamp((vh*0.8 - r.top) / (vh*0.2 + r.height), 0, 1);
+  }
+
+  const secEls = {
+    intro: document.getElementById('intro'),
+    experience: document.getElementById('experience'),
+    projects: document.getElementById('projects'),
+    friends: document.getElementById('friends'),
+  };
+
+  function update() {
+    const doc = document.documentElement;
+    const globalPct = doc.scrollTop / (doc.scrollHeight - window.innerHeight);
+    prog.style.width = (globalPct*100) + '%';
+
+    // ---- PLANET CHOREOGRAPHY (semantic keyframes by section) ----
+    // default: centered (landing/board)
+    let px = 0, py = 0, scale = 1, planetOpacity = 1, ringOpacity = 1;
+
+    const introP = rangeProgress(secEls.intro);
+    const expP   = rangeProgress(secEls.experience);
+    const projP  = rangeProgress(secEls.projects);
+    const pinP   = rangeProgress(orbitPin);   // pinned-orbit portion only
+    const friP   = rangeProgress(secEls.friends);
+
+    const vw = window.innerWidth;
+    // intro: slide center -> right (kept closer to the text — smaller gap)
+    px = lerp(0, vw*0.21, introP);
+    // experience: planet drifts to center as it EXPLODES into particles (burst computed below)
+    if (expP > 0) { px = lerp(vw*0.21, 0, clamp(expP*2,0,1)); py = 0; scale = 1; }
+    // projects: particles REASSEMBLE into a SMALL planet centered ON the orbit ring
+    lastPinP = clamp(pinP, 0, 1);                    // page scroll drives the orbit rotation
+    if (projP > 0) {
+      const z = clamp(pinP*10,0,1);
+      px = 0;
+      const r = orbit.getBoundingClientRect();        // align planet to the orbit's true center
+      py = (r.height ? (r.top + r.height/2) - vh()/2 : 0);
+      scale = lerp(1, 0.5, z);
+    }
+    // friends: keep the planet small and fade it out → globe takes over
+    if (friP > 0) {
+      px = 0; scale = 0.5;
+      planetOpacity = clamp(1 - friP*2.4, 0, 1);
+    }
+
+    // ---- PLANET ↔ PARTICLE BURST ----
+    // burst: 0 = solid planet, 1 = fully scattered into the starfield
+    let burst = 0;
+    if (expP > 0) burst = clamp(expP*1.25, 0, 1);          // explode through Experience
+    if (projP > 0) burst = 1 - clamp(pinP*15, 0, 1);       // reassemble almost immediately — planet present from project 1
+    const solid = planetOpacity * (1 - burst);
+    planet.style.transform = `translate(calc(-50% + ${px}px), calc(-50% + ${py}px)) scale(${scale})`;
+    planet.style.opacity = solid;
+    // scatter/gather the particles around the planet's current center
+    const ox = vw/2 + px, oy = vh()/2 + py;
+    const e = burst<=0.001 ? 0 : (1 - Math.pow(1-burst, 2));   // easeOut
+    for (const p of ppList){
+      if (e <= 0.001){ p.el.style.opacity = 0; continue; }
+      const x = lerp(ox, p.rx*vw, e), y = lerp(oy, p.ry*vh(), e);
+      p.el.style.transform = `translate(${x}px, ${y}px)`;
+      p.el.style.opacity = (lerp(0.95, 0.4, e) * p.a).toFixed(3);
+    }
+    // globe fades in mid-section and fades out before the legend scrolls over it
+    const globeVis = clamp((friP-0.30)/0.13, 0, 1) * (1 - clamp((friP-0.84)/0.12, 0, 1));
+    globe.style.opacity = globeVis.toFixed(3);
+    globe.classList.toggle('show', globeVis > 0.02);
+    globeActive = globeVis > 0.05;
+
+    // ---- EXPERIENCE: trace the Scorpius constellation, ride the comet, ignite stars ----
+    if (expTotalLen) {
+      const flightP = throughProgress(expFlight);
+      const drawn = clamp(flightP,0,1) * expTotalLen;
+      expDraw.style.strokeDashoffset = (expTotalLen - drawn);
+      const head = expDraw.getPointAtLength(drawn);
+      expComet.style.left = head.x + 'px';
+      expComet.style.top  = head.y + 'px';
+      expComet.style.opacity = (flightP > 0.02 && flightP < 0.98) ? 1 : 0;
+      expStars.forEach(item=>{
+        const lit = drawn >= item.len - 2;
+        item.el.classList.toggle('lit', lit);
+        if (item.card) item.card.classList.toggle('lit', lit);
+        if (item.s.bright) expAntares.classList.toggle('lit', lit);
+      });
+    }
+
+    // ---- PROJECTS: the featured orbit runs on its own rAF loop (auto-tour / arrows / drag) ----
+    // (planet zoom above still uses pinP)
+
+    // ---- nav active state ----
+    let active = 'intro';
+    if (expP>0 && expP<1) active='experience';
+    else if (projP>0 && projP<1) active='projects';
+    else if (friP>0) active='friends';
+    else if (introP>0 && introP<1) active='intro';
+    navLinks.forEach(a=> a.classList.toggle('active', a.getAttribute('href')==='#'+active));
+  }
+  function vh(){ return window.innerHeight; }
+
+  // ---- FRIENDS: an interactive, rotating 3D constellation globe ----
+  const friendsData = [
+    {name:'Amelia Li',     url:'https://ameliali.com',          color:'#ff6b35'},
+    {name:'Millor Lei',    url:'https://millorlei.com/',        color:'#ff8c42'},
+    {name:'Marco Guo',     url:'#',                              color:'#ffd08a'},
+    {name:'Joelle Liu',    url:'#',                              color:'#4ecdc4'},
+    {name:'Jessie Xiao',   url:'#',                              color:'#45b7d1'},
+    {name:'Maya Odenheim', url:'#',                              color:'#96ceb4'},
+    {name:'David Gao',     url:'https://www.yuangao.me/',        color:'#c9a0ff'},
+    {name:'Vivian Lu',     url:'https://zifulu.framer.website/', color:'#ffa8c5'},
+    {name:'An Dao',        url:'#',                              color:'#7fd1ff'},
+    {name:'Tony Yang',     url:'#',                              color:'#ffd93d'},
+  ];
+  const gNodes = [], gLines = [], legendItems = [];
+  const G_R = 160, G_C = 190;          // sphere radius + container center (380px box)
+  let gAngY = 0, gAngX = -0.35, gVelY = 0, gVelX = 0, gDrag = false, gLX = 0, gLY = 0, gHot = -1, globeActive = false;
+
+  function setHot(fk){
+    gHot = fk;
+    legendItems.forEach((li,k)=> li.classList.toggle('hot', k === fk));
+    gNodes.forEach(n=>{ if(n.label) n.label.dataset.pin = (n.fk === fk) ? '1' : ''; });
+  }
+  function openFriend(fk){ const f = friendsData[fk]; if (f && f.url && f.url !== '#') window.open(f.url, '_blank', 'noopener'); }
+
+  (function buildGlobe(){
+    const N = 44, svgNS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgNS,'svg'); svg.setAttribute('viewBox','0 0 380 380');
+    globe.appendChild(svg);
+    const nodeToFriend = {};
+    friendsData.forEach((f,k)=> nodeToFriend[Math.floor((k+0.5)/friendsData.length*N)] = k);
+    for (let i=0;i<N;i++){
+      const y = 1 - (i/(N-1))*2, rad = Math.sqrt(Math.max(0,1-y*y));
+      const th = Math.PI*(3-Math.sqrt(5))*i;
+      const x = Math.cos(th)*rad, z = Math.sin(th)*rad;
+      const fk = (i in nodeToFriend) ? nodeToFriend[i] : -1;
+      const f = fk >= 0 ? friendsData[fk] : null;
+      const el = document.createElement('div'); el.className = 'node' + (f ? ' friend' : '');
+      if (f) el.style.background = f.color;
+      globe.appendChild(el);
+      let label = null;
+      if (f){
+        label = document.createElement('div'); label.className = 'flabel'; label.textContent = f.name;
+        globe.appendChild(label);
+        el.addEventListener('pointerenter', ()=> setHot(fk));
+        el.addEventListener('pointerleave', ()=> setHot(-1));
+        el.addEventListener('click', (e)=>{ e.stopPropagation(); openFriend(fk); });
+      }
+      gNodes.push({ x, y, z, el, f, fk, label, sx:G_C, sy:G_C, depth:0 });
+    }
+    // connections by 3D proximity (fixed pairs)
+    for (let i=0;i<gNodes.length;i++) for (let j=i+1;j<gNodes.length;j++){
+      const a=gNodes[i], b=gNodes[j];
+      if (Math.hypot(a.x-b.x, a.y-b.y, a.z-b.z) < 0.6){
+        const l = document.createElementNS(svgNS,'line');
+        l.setAttribute('stroke-width','1'); svg.appendChild(l); gLines.push({a,b,l});
+      }
+    }
+    // legend (synced with the globe)
+    const host = document.getElementById('friendLegend');
+    friendsData.forEach((f,k)=>{
+      const a = document.createElement('a');
+      const hasUrl = f.url && f.url !== '#';
+      a.href = hasUrl ? f.url : '#'; if (hasUrl){ a.target='_blank'; a.rel='noopener'; }
+      a.innerHTML = `<span class="dot" style="background:${f.color}"></span>${f.name}`;
+      a.addEventListener('pointerenter', ()=> setHot(k));
+      a.addEventListener('pointerleave', ()=> setHot(-1));
+      a.addEventListener('click', e=>{ if(!hasUrl) e.preventDefault(); });   // placeholder → no jump
+      host.appendChild(a); legendItems.push(a);
+    });
+  })();
+
+  function layoutGlobe(){
+    const cY=Math.cos(gAngY), sY=Math.sin(gAngY), cX=Math.cos(gAngX), sX=Math.sin(gAngX);
+    for (const n of gNodes){
+      const x1 = n.x*cY + n.z*sY, z1 = -n.x*sY + n.z*cY;
+      const y1 = n.y*cX - z1*sX, z2 = n.y*sX + z1*cX;
+      const sx = G_C + x1*G_R, sy = G_C - y1*G_R, depth = (z2+1)/2;
+      n.sx=sx; n.sy=sy; n.depth=depth;
+      const base = n.f ? 5 : 2.4, size = base + depth*base;
+      n.el.style.left=sx+'px'; n.el.style.top=sy+'px';
+      n.el.style.width=size+'px'; n.el.style.height=size+'px';
+      n.el.style.opacity = (0.22 + depth*0.78).toFixed(2);
+      n.el.style.zIndex = String(Math.round(depth*100));
+      if (n.f){
+        const hot = n.fk === gHot;
+        n.el.style.boxShadow = hot ? `0 0 18px 5px ${n.f.color}` : `0 0 ${5+depth*7}px ${n.f.color}`;
+      }
+      if (n.label){
+        const pin = n.label.dataset.pin === '1';
+        const show = pin || depth > 0.7;
+        n.label.style.left=sx+'px'; n.label.style.top=sy+'px';
+        n.label.style.opacity = show ? (pin ? 1 : (0.3 + depth*0.7)).toFixed(2) : 0;
+        n.label.style.zIndex = String(Math.round(depth*100)+1);
+      }
+    }
+    for (const g of gLines){
+      g.l.setAttribute('x1', g.a.sx.toFixed(1)); g.l.setAttribute('y1', g.a.sy.toFixed(1));
+      g.l.setAttribute('x2', g.b.sx.toFixed(1)); g.l.setAttribute('y2', g.b.sy.toFixed(1));
+      g.l.setAttribute('stroke', `rgba(255,107,53,${(0.04 + ((g.a.depth+g.b.depth)/2)*0.2).toFixed(3)})`);
+    }
+  }
+
+  // drag to spin + hover/click the nodes themselves. Listeners are on WINDOW (the globe
+  // lives in Layer 0 behind the content) and gated to when it's visible; node picking is
+  // done by projecting cursor → globe space (a DOM stand-in for the real raycaster).
+  let gMoved = false;
+  function friendAtPointer(e){
+    if (!globeActive) return -1;
+    const cx = e.clientX - window.innerWidth/2 + G_C;
+    const cy = e.clientY - window.innerHeight/2 + G_C;
+    let best = -1, bestD = 24;
+    for (const n of gNodes){
+      if (n.fk < 0 || n.depth < 0.45) continue;     // only front-facing friend nodes
+      const d = Math.hypot(n.sx - cx, n.sy - cy);
+      if (d < bestD){ bestD = d; best = n.fk; }
+    }
+    return best;
+  }
+  window.addEventListener('pointerdown', e=>{ if(!globeActive) return; if(e.target.closest('a, button')) return; gDrag=true; gMoved=false; gLX=e.clientX; gLY=e.clientY; });
+  window.addEventListener('pointermove', e=>{
+    if (gDrag){
+      const dx=e.clientX-gLX, dy=e.clientY-gLY; gLX=e.clientX; gLY=e.clientY;
+      if (Math.abs(dx)+Math.abs(dy) > 3) gMoved = true;
+      gAngY+=dx*0.008; gAngX+=dy*0.008; gVelY=dx*0.008; gVelX=dy*0.008;
+      return;
+    }
+    if (globeActive) setHot(friendAtPointer(e));     // hover a node → highlight node + legend
+  });
+  window.addEventListener('pointerup', e=>{
+    if (globeActive && !gMoved){ const fk = friendAtPointer(e); if (fk >= 0) openFriend(fk); }
+    gDrag=false;
+  });
+  (function gTick(){
+    requestAnimationFrame(gTick);
+    if (!globeActive) return;     // only run while visible
+    if (!gDrag){
+      if (Math.abs(gVelY) > 0.0002 || Math.abs(gVelX) > 0.0002){ gAngY+=gVelY; gAngX+=gVelX; gVelY*=0.94; gVelX*=0.94; }
+      else gAngY += 0.0014;                              // gentle auto-rotate
+    }
+    gAngX = Math.max(-1.2, Math.min(1.2, gAngX));
+    layoutGlobe();
+  })();
+
+  // build planet-explosion particles (scatter targets across the whole viewport)
+  const ppList = [];
+  (function buildParticles(){
+    const host = document.getElementById('planet-particles');
+    const colors = ['#ffd9c2','#ff8c42','#ffd08a','#ffffff','#ff6b35'];
+    for (let i=0;i<80;i++){
+      const el = document.createElement('div');
+      el.className = 'pp';
+      const size = 1.5 + Math.random()*3;
+      const c = colors[i % colors.length];
+      el.style.width = size+'px'; el.style.height = size+'px';
+      el.style.background = c; el.style.boxShadow = `0 0 ${size*2}px ${c}`;
+      host.appendChild(el);
+      ppList.push({ el, rx: Math.random(), ry: Math.random(), a: 0.5 + Math.random()*0.5 });
+    }
+  })();
+
+  // build FEATURED orbit cards (single ring; ~10 featured, front card blooms)
+  const orbitCards = [];
+  (function buildOrbit(){
+    const featured = [
+      // [role, title, tech, type]
+      ['🏆 DubHacks Winner','TFind','React · Maps · Node','code'],
+      ['Finalist','SmartFuel','Python · INRIX','code'],
+      ['Featured','Aurora','TypeScript · WebGL','code'],
+      ['Featured','Wordplaypen','TypeScript · A11y','code'],
+      ['Featured','Portfolio','Three.js · Vite','code'],
+      ['Featured','GVCC System','JS · MySQL','code'],
+      ['Featured','ML Project','Python · PyTorch','code'],
+      ['Featured','Game FX','Unity · C#','code'],
+      ['Featured · Design','Nebula Brand','Figma','design'],
+      ['Featured · Design','Poster Set','Illustrator','design'],
+    ];
+    featured.forEach((r,i)=>{
+      const el = document.createElement('div');
+      el.className = 'orbit-card ' + r[3];
+      el.innerHTML = `<div class="thumb">[ thumbnail ]</div><div class="role">${r[0]}</div><h4>${r[1]}</h4><p>${r[2]}</p>`;
+      orbit.appendChild(el);
+      orbitCards.push({ el, base:(i/featured.length)*Math.PI*2 });
+    });
+  })();
+
+  // featured ring: rotation is driven by PAGE SCROLL through the pinned section
+  // (scrolling tours the projects), plus a manual offset from drag / arrows / dots.
+  let orbitManual = 0, orbitVel = 0, oDragging = false, oLastX = 0;
+  let snapping = false, snapTarget = 0, lastPinP = 0;
+  const N = orbitCards.length, STEP = (Math.PI*2)/N, ORBIT_REVS = Math.PI*2*1.15;
+  let currentIndex = -1, tourIndex = 0;
+
+  function layoutOrbit(){
+    const a = Math.min(390, window.innerWidth*0.34);  // ring radius scales with viewport
+    const b = a*0.44;                                  // tilt (flattened ellipse)
+    const rot = lastPinP*ORBIT_REVS + orbitManual;   // scroll tours the ring; drag/arrows/dots nudge
+    let best = 0, bestD = -1;
+    orbitCards.forEach((c,i)=>{
+      const ang = c.base + rot;
+      const x = Math.cos(ang)*a, y = Math.sin(ang)*b;
+      const depth = (Math.sin(ang)+1)/2;             // 0 = back of ring, 1 = front
+      const s = 0.55 + depth*0.6;
+      c.el.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(${s})`;
+      c.el.style.opacity = (0.3 + depth*0.7).toFixed(3);
+      c.el.style.zIndex = String(Math.round(depth*100));
+      c.el.classList.toggle('focus', depth > 0.93);
+      if (depth > bestD){ bestD = depth; best = i; }
+    });
+    setIndicator(best);                              // whichever card is frontmost
+  }
+
+  function setIndicator(i){
+    tourIndex = i;
+    if (i === currentIndex) return;
+    currentIndex = i;
+    document.querySelectorAll('#orbit-dots button').forEach((d,di)=> d.classList.toggle('active', di === i));
+    const cnt = document.getElementById('orbit-count');
+    if (cnt) cnt.textContent = String(i+1).padStart(2,'0') + ' / ' + String(N).padStart(2,'0');
+  }
+
+  // jump so card i is at the front, given the current scroll rotation (eased snap of the offset)
+  function goToOrbit(i){
+    i = Math.max(0, Math.min(N-1, i)); oDragging = false; orbitVel = 0;
+    let t = (Math.PI/2 - orbitCards[i].base) - lastPinP*ORBIT_REVS;   // needed manual offset
+    t += Math.round((orbitManual - t)/(2*Math.PI)) * 2*Math.PI;       // nearest equivalent
+    snapTarget = t; snapping = true;
+  }
+  function stepOrbit(dir){ goToOrbit(tourIndex + dir); }
+
+  (function buildDots(){
+    const wrap = document.getElementById('orbit-dots');
+    orbitCards.forEach((c,i)=>{
+      const b = document.createElement('button');
+      b.setAttribute('aria-label', 'Go to project ' + (i+1));
+      b.addEventListener('click', ()=> goToOrbit(i));
+      wrap.appendChild(b);
+    });
+    const om = document.getElementById('orbit-mode'); if (om) om.textContent = 'scroll · drag · ‹ ›';
+  })();
+
+  // drag to spin (manual offset, with coast)
+  orbit.addEventListener('pointerdown', e=>{ if(e.target.closest('.orbit-arrow')) return; oDragging=true; snapping=false; oLastX=e.clientX; orbit.setPointerCapture(e.pointerId); });
+  orbit.addEventListener('pointermove', e=>{ if(!oDragging) return; const dx=e.clientX-oLastX; oLastX=e.clientX; orbitManual+=dx*0.006; orbitVel=dx*0.006; });
+  orbit.addEventListener('pointerup', ()=>{ oDragging=false; });
+  document.getElementById('orbit-prev').addEventListener('click', ()=>stepOrbit(-1));
+  document.getElementById('orbit-next').addEventListener('click', ()=>stepOrbit(1));
+
+  // single rAF renders the ring (rotation = scroll + offset); handles snap + drag-coast
+  (function tick(){
+    requestAnimationFrame(tick);
+    if (snapping){
+      orbitManual += (snapTarget - orbitManual)*0.15;
+      if (Math.abs(snapTarget - orbitManual) < 0.001){ orbitManual = snapTarget; snapping = false; }
+    } else if (!oDragging && Math.abs(orbitVel) > 0.0002){
+      orbitManual += orbitVel; orbitVel *= 0.94;     // coast after a drag
+    }
+    layoutOrbit();
+  })();
+
+  // build the ARCHIVE — compact rows (icon · title · tech), click to expand (date + desc + links)
+  (function buildArchive(){
+    const GH = `<svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 014 0c1.53-1.03 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>`;
+    const LINK = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M17 7H8M17 7v9"/></svg>`;
+    // monochrome line icons (stroke = currentColor; tile sets the warm color)
+    const I = (b)=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${b}</svg>`;
+    const ICONS = {
+      chart:  I('<path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 4-5"/>'),
+      bolt:   I('<path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/>'),
+      fuel:   I('<path d="M3 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16"/><path d="M3 12h10"/><path d="M16 8l3 3v6a2 2 0 0 1-4 0"/>'),
+      brain:  I('<circle cx="9" cy="9" r="3"/><circle cx="15" cy="9" r="3"/><path d="M6 12c-2 1-2 5 1 6m11-6c2 1 2 5-1 6M9 18h6"/>'),
+      phone:  I('<rect x="7" y="3" width="10" height="18" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/>'),
+      chat:   I('<path d="M21 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z"/>'),
+      code:   I('<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>'),
+      globe:  I('<circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18"/>'),
+      db:     I('<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/>'),
+      hash:   I('<line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/>'),
+      game:   I('<rect x="2" y="7" width="20" height="10" rx="5"/><line x1="6" y1="12" x2="8" y2="12"/><line x1="7" y1="11" x2="7" y2="13"/><circle cx="16" cy="11" r="1"/><circle cx="18" cy="13" r="1"/>'),
+      palette:I('<circle cx="12" cy="12" r="9"/><circle cx="8.5" cy="10" r="1"/><circle cx="12" cy="8" r="1"/><circle cx="15.5" cy="10" r="1"/>'),
+      star:   I('<path d="M12 3l2.4 6 6.6.5-5 4 1.6 6.3L12 16.8 5.4 19.8 7 13.5l-5-4 6.6-.5z"/>'),
+      image:  I('<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/>'),
+      layout: I('<rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/>'),
+      film:   I('<rect x="3" y="3" width="18" height="18" rx="2"/><line x1="7" y1="3" x2="7" y2="21"/><line x1="17" y1="3" x2="17" y2="21"/><line x1="3" y1="12" x2="21" y2="12"/>'),
+      news:   I('<path d="M4 4h12v16H4z"/><path d="M16 8h4v10a2 2 0 0 1-2 2"/><line x1="7" y1="8" x2="13" y2="8"/><line x1="7" y1="12" x2="13" y2="12"/><line x1="7" y1="16" x2="11" y2="16"/>'),
+    };
+    // {icon,title,tech[],date,desc,github,demo}
+    const code = [
+      {icon:'chart',title:'Data Viz Dashboard', tech:['React','D3','FastAPI'], date:'Feb 2025', desc:'Interactive dashboard for exploring large datasets in the browser.', github:1, demo:1},
+      {icon:'bolt',title:'TFind', tech:['React Native','Firebase'], date:'Oct 2024', desc:'Real-time campus transit finder — DubHacks T-Mobile & Nokia track winner.', github:1, demo:1},
+      {icon:'fuel',title:'SmartFuel', tech:['Python','Maps API'], date:'Oct 2023', desc:'Route fuel-cost optimizer. INRIX × Amazon hackathon finalist.', github:1, demo:0},
+      {icon:'brain',title:'Signal Classifier', tech:['PyTorch','NumPy'], date:'2025', desc:'ML model classifying signals from real-world data.', github:1, demo:0},
+      {icon:'phone',title:'Habit Tracker', tech:['Swift','SwiftUI'], date:'2024', desc:'iOS app for building and tracking daily habits.', github:1, demo:0},
+      {icon:'chat',title:'Chatroom Server', tech:['Node','WebSockets'], date:'2024', desc:'Realtime multi-room chat backend with presence.', github:1, demo:0},
+      {icon:'code',title:'Wordplaypen', tech:['TypeScript','A11y'], date:'2024', desc:'Accessibility work for a tool lowering language barriers in learning to code.', github:1, demo:0},
+      {icon:'globe',title:'This Portfolio', tech:['Three.js','Vite'], date:'2026', desc:'The cosmic scrollytelling site you’re looking at now.', github:1, demo:1},
+      {icon:'db',title:'DB Models', tech:['SQL'], date:'2024', desc:'Schema design + query work for a data-models course.', github:1, demo:0},
+      {icon:'hash',title:'DSA Suite', tech:['Java'], date:'2024', desc:'Implementations of core data structures & algorithms.', github:1, demo:0},
+      {icon:'game',title:'Game FX', tech:['Unity','C#'], date:'Dec 2020', desc:'Rain simulation & effects on a front-end team at a major studio.', github:0, demo:0},
+      {icon:'palette',title:'Color Naming', tech:['p5.js','D3'], date:'2025', desc:'Research on multilingual color-naming visualization.', github:0, demo:1},
+    ];
+    const design = [
+      {icon:'star',title:'Nebula Brand', tech:['Figma'], date:'2025', desc:'Identity system: logo, palette, usage guidelines.', github:0, demo:1},
+      {icon:'image',title:'Poster Set', tech:['Illustrator'], date:'2024', desc:'Event poster series with a cohesive cosmic language.', github:0, demo:1},
+      {icon:'layout',title:'UI Case Study', tech:['Figma'], date:'2025', desc:'End-to-end product design case study with prototypes.', github:0, demo:1},
+      {icon:'palette',title:'Illustration', tech:['Vector'], date:'2023', desc:'Vector illustration set in warm celestial themes.', github:0, demo:1},
+      {icon:'film',title:'Motion Reel', tech:['After Effects'], date:'2024', desc:'Short motion-graphics promo with kinetic typography.', github:0, demo:1},
+      {icon:'news',title:'Editorial', tech:['InDesign'], date:'2022', desc:'Print editorial layout — silver-award competition piece.', github:0, demo:1},
+    ];
+    const nojump = `onclick="event.preventDefault();event.stopPropagation()"`;
+    const row = (p, type) => {
+      const links =
+        (p.github ? `<a href="#" ${nojump} title="GitHub" aria-label="GitHub">${GH}</a>` : ``) +
+        (p.demo   ? `<a href="#" ${nojump} title="Live demo" aria-label="Live demo">${LINK}</a>` : ``);
+      return `<div class="arch-row" data-type="${type}">
+        <div class="arch-ico">${ICONS[p.icon] || ICONS.code}</div>
+        <div class="arch-main"><h5>${p.title}</h5><div class="tech">${p.tech.join(' · ')}</div></div>
+        <div class="arch-links">${links}</div>
+        <div class="arch-detail"><div class="inner"><span class="d-date">${p.date}</span>${p.desc}</div></div>
+      </div>`;
+    };
+    const all = code.map(p=>({...p,type:'code'})).concat(design.map(p=>({...p,type:'design'})));
+    document.getElementById('cntCode').textContent = '· ' + code.length;
+    document.getElementById('cntDesign').textContent = '· ' + design.length;
+
+    const grid = document.getElementById('archGrid');
+    const prevBtn = document.getElementById('archPrev');
+    const nextBtn = document.getElementById('archNext');
+    const pageInfo = document.getElementById('archPageInfo');
+    const PAGE = 6;                 // rows shown per page (keeps the table compact)
+    let filter = 'all', page = 0;
+
+    const visible = () => filter === 'all' ? all : all.filter(p => p.type === filter);
+    function render(){
+      const list = visible();
+      const pages = Math.max(1, Math.ceil(list.length / PAGE));
+      page = Math.min(page, pages - 1);
+      grid.innerHTML = list.slice(page*PAGE, page*PAGE + PAGE).map(p => row(p, p.type)).join('');
+      pageInfo.textContent = (page+1) + ' / ' + pages;
+      prevBtn.disabled = page <= 0;
+      nextBtn.disabled = page >= pages - 1;
+      document.getElementById('archPager').style.visibility = pages > 1 ? 'visible' : 'hidden';
+    }
+
+    // click a row to expand its detail (delegated; survives re-render — grid element persists)
+    grid.addEventListener('click', e=>{
+      if (e.target.closest('.arch-links')) return;
+      const r = e.target.closest('.arch-row'); if (r) r.classList.toggle('open');
+    });
+    prevBtn.addEventListener('click', ()=>{ if(page>0){ page--; render(); } });
+    nextBtn.addEventListener('click', ()=>{ page++; render(); });
+
+    // filter tabs: All / Coding / Design  (reset to page 1)
+    document.getElementById('archTabs').addEventListener('click', e=>{
+      const b = e.target.closest('.atab'); if (!b) return;
+      [...e.currentTarget.children].forEach(x=> x.classList.toggle('active', x===b));
+      filter = b.dataset.f; page = 0; render();
+    });
+
+    render();
+  })();
+
+  // ---- EXPERIENCE = the SCORPIUS constellation (head → body → stinger) ----
+  // Normalized star map (x,y in 0..1, y down). mag = relative size.
+  // `role` stars carry an experience card; `bright` = Antares, the heart.
+  const expAntares = document.getElementById('expAntares');
+  // Accurate-ish Scorpius: claw/head arc (top) → Antares → body sweeps left → tail hooks
+  // back right & up into the stinger (Shaula/Lesath). Names per real bright stars.
+  // 7 roles ride the bright stars; head → stinger = newest → oldest. Antares = heart.
+  const scorpius = [
+    { x:0.64, y:0.05,  mag:2.2, role:{when:'Dec 2025 — Present', title:'Data Visualization Lead TA', co:'UW iSchool · CSE 442', tags:['p5.js','D3.js','Teaching']} }, // β Acrab (head)
+    { x:0.55, y:0.085, mag:1.7 }, // δ Dschubba
+    { x:0.47, y:0.125, mag:1.5 }, // π
+    { x:0.55, y:0.20,  mag:1.9, role:{when:'Sep 2025 — Dec 2025', title:'Software Engineer Intern', co:'Standard · NY (Remote)', tags:['Python']} }, // σ
+    { x:0.585,y:0.275, mag:3.3, bright:true, role:{when:'Dec 2025 — Present', title:'Full-stack Developer Intern', co:'Gekko · Capstone', tags:['Docker','IBM']} }, // α Antares (heart)
+    { x:0.585,y:0.355, mag:1.5 }, // τ
+    { x:0.55, y:0.45,  mag:2,   role:{when:'Mar 2025 — Aug 2025', title:'Front-end Dev TA', co:'UW iSchool · INFO 340', tags:['React','HTML/CSS']} }, // ε
+    { x:0.49, y:0.535, mag:1.6 }, // μ
+    { x:0.435,y:0.62,  mag:2,   role:{when:'Jan 2024 — Jun 2024', title:'Software Developer', co:'Wordplaypen', tags:['TypeScript','A11y']} }, // ζ
+    { x:0.385,y:0.695, mag:1.6 }, // η
+    { x:0.37, y:0.775, mag:2,   role:{when:'May 2023 — Nov 2023', title:'Software Engineer Intern', co:'GVCC', tags:['JS','MySQL']} }, // θ Sargas (leftmost)
+    { x:0.43, y:0.83,  mag:1.5 }, // ι  (tail hooks right…)
+    { x:0.53, y:0.865, mag:1.6 }, // κ
+    { x:0.62, y:0.85,  mag:2.7, role:{when:'Dec 2020', title:'Software Engineer Intern', co:'37Games · China', tags:['Unity','Lua','C#']} }, // λ Shaula (stinger)
+    { x:0.665,y:0.81,  mag:2.1 }, // υ Lesath (stinger tip, curls up)
+  ];
+  const expStars = [];
+  let expTotalLen = 0;
+
+  const leadersG = document.getElementById('exp-leaders');
+  (function buildFlight(){
+    let roleIdx = 0;
+    scorpius.forEach((s)=>{
+      const el = document.createElement('div');
+      el.className = 'exp-star' + (s.bright ? ' bright' : '');
+      expFlight.appendChild(el);
+      let card = null, leader = null, side = null;
+      if (s.role){
+        side = (roleIdx % 2 === 0) ? 'right' : 'left';   // alternate by role order = even split, no overlap
+        roleIdx++;
+        card = document.createElement('div');
+        card.className = 'exp-card ' + side;
+        card.innerHTML = `<div class="when">${s.role.when}</div><h4>${s.role.title}</h4><div class="co">${s.role.co}</div>`
+          + `<div class="tags">${s.role.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>`;
+        expFlight.appendChild(card);
+        leader = document.createElementNS('http://www.w3.org/2000/svg','line');
+        leadersG.appendChild(leader);
+      }
+      expStars.push({ s, el, card, leader, side, len:0 });
+    });
+  })();
+
+  function layoutFlight(){
+    const w = expFlight.clientWidth, h = expFlight.clientHeight;
+    if (!w || !h) return;
+    expSvg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+    // connect-the-dots polyline through the stars, in order
+    const px = s => s.x*w, py = s => s.y*h;
+    let d = `M ${px(scorpius[0])} ${py(scorpius[0])}`;
+    for (let i=1;i<scorpius.length;i++) d += ` L ${px(scorpius[i])} ${py(scorpius[i])}`;
+    expTrack.setAttribute('d', d);
+    expDraw.setAttribute('d', d);
+    expTotalLen = expDraw.getTotalLength();
+    expDraw.style.strokeDasharray = expTotalLen;
+    expDraw.style.strokeDashoffset = expTotalLen;
+    // cumulative length to each star (straight segments)
+    let acc = 0;
+    expStars.forEach((item,i)=>{
+      if (i>0) acc += Math.hypot(px(item.s)-px(expStars[i-1].s), py(item.s)-py(expStars[i-1].s));
+      item.len = acc;
+      const X = px(item.s), Y = py(item.s);
+      const size = 5 + item.s.mag*2.2;
+      item.el.style.left = X+'px'; item.el.style.top = Y+'px';
+      item.el.style.width = size+'px'; item.el.style.height = size+'px';
+      if (item.card){
+        item.card.style.top = Y+'px';
+        const cw = item.card.offsetWidth || 220;
+        // cards sit in fixed edge columns; leader connects star -> card
+        let lx;
+        if (item.side === 'right'){ item.card.style.left='auto'; item.card.style.right='0px'; lx = w - cw; }
+        else { item.card.style.left='0px'; item.card.style.right='auto'; lx = cw; }
+        item.leader.setAttribute('x1', X); item.leader.setAttribute('y1', Y);
+        item.leader.setAttribute('x2', lx); item.leader.setAttribute('y2', Y);
+      }
+      if (item.s.bright){ expAntares.style.left = (X+10)+'px'; expAntares.style.top = Y+'px'; }
+    });
+  }
+  layoutFlight();
+
+  // ---- "earlier roles" overflow list (constellation holds the bright stars; rest live here) ----
+  (function buildMore(){
+    const earlier = [
+      {title:'Server-side Development TA', co:'UW iSchool · INFO 441', yr:'Sep 2025'},
+      {title:'LMS Consultant', co:'University of Washington', yr:'Jul 2024'},
+    ];
+    const list = document.getElementById('expMoreList');
+    list.innerHTML = earlier.map(r=>`<div class="row"><div><h5>${r.title}</h5><div class="co">${r.co}</div></div><div class="yr">${r.yr}</div></div>`).join('');
+    document.getElementById('expMoreCount').textContent = '(' + earlier.length + ')';
+    const btn = document.getElementById('expMoreBtn');
+    btn.addEventListener('click', ()=>{
+      const hidden = list.hasAttribute('hidden');
+      if (hidden){ list.removeAttribute('hidden'); btn.setAttribute('aria-expanded','true'); btn.firstChild.textContent = '－ Earlier roles '; }
+      else { list.setAttribute('hidden',''); btn.setAttribute('aria-expanded','false'); btn.firstChild.textContent = '＋ Earlier roles '; }
+    });
+  })();
+
+  let ticking=false;
+  addEventListener('scroll', ()=>{ if(!ticking){requestAnimationFrame(()=>{update();ticking=false;});ticking=true;} });
+  addEventListener('resize', ()=>{ layoutFlight(); update(); });
+  // re-layout once fonts/sizes settle
+  setTimeout(()=>{ layoutFlight(); update(); }, 300);
+  update();
+</script>
+</body>
+</html>

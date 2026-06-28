@@ -1,0 +1,137 @@
+/* Education — mission patches */
+
+.education-section {
+  position: relative;
+  padding: 5rem 0 4rem;
+}
+
+.education-head {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  text-align: center;
+}
+
+.education-head .section-title {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  color: #fff;
+  margin: 0 0 0.4rem;
+}
+
+.education-head .section-sub {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.85rem;
+  margin: 0 0 2rem;
+}
+
+.patch-grid {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  gap: 2.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.mission-patch {
+  flex: 0 1 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  transition: transform 0.25s ease;
+}
+
+.mission-patch:hover { transform: translateY(-4px); }
+
+.patch-badge {
+  position: relative;
+  width: 118px;
+  height: 118px;
+  border-radius: 50%;
+  padding: 5px;
+  background: conic-gradient(
+    from 210deg,
+    #c25a1e,
+    #ff8c42,
+    #ffd93d,
+    #ff6b35,
+    #c25a1e
+  );
+  box-shadow:
+    0 0 28px rgba(255, 107, 53, 0.28),
+    inset 0 0 12px rgba(0, 0, 0, 0.35);
+}
+
+.patch-stitch {
+  position: absolute;
+  inset: 9px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(255, 224, 190, 0.35);
+  pointer-events: none;
+}
+
+.patch-face {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.14), transparent 42%),
+    radial-gradient(circle at 70% 78%, rgba(0, 0, 0, 0.45), transparent 50%),
+    linear-gradient(145deg, #3a2218 0%, #1a100c 100%);
+  border: 2px solid rgba(255, 200, 140, 0.22);
+  overflow: hidden;
+}
+
+.patch-face img { width: 62%; height: 62%; object-fit: contain; }
+
+.patch-mark {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  font-size: 1.35rem;
+  letter-spacing: 1px;
+  color: #ffe2c2;
+  text-shadow: 0 0 14px rgba(255, 140, 66, 0.45);
+}
+
+.patch-caption { text-align: center; max-width: 260px; }
+
+.patch-school {
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.92rem;
+  line-height: 1.25;
+}
+
+.patch-degree {
+  color: #ff8c42;
+  font-size: 0.78rem;
+  margin-top: 0.3rem;
+  line-height: 1.35;
+}
+
+.patch-meta {
+  font-family: var(--font-sans);
+  color: #b89a86;
+  font-size: 0.64rem;
+  margin-top: 0.35rem;
+}
+
+.patch-honors {
+  color: #ffd93d;
+  font-size: 0.66rem;
+  margin-top: 0.25rem;
+}
+
+@media (max-width: 680px) {
+  .education-section { padding: 4rem 0 3rem; }
+  .patch-grid { gap: 2rem; }
+  .mission-patch { flex: 0 1 220px; }
+  .patch-badge { width: 100px; height: 100px; }
+}

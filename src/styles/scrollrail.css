@@ -1,0 +1,114 @@
+/* Constellation progress rail + recurring scroll cue */
+
+.scroll-rail {
+  position: fixed;
+  top: 50%;
+  right: 1.5rem;
+  transform: translateY(-50%);
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.6rem;
+  padding: 0.5rem 0;
+}
+
+/* faint full-height track + the bright "drawn" portion */
+.rail-track {
+  position: absolute;
+  top: 0.6rem;
+  bottom: 0.6rem;
+  width: 2px;
+  background: rgba(255, 140, 66, 0.16);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.rail-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(255, 140, 66, 0.65);
+  transition: height 0.4s ease;
+}
+
+.rail-dot {
+  position: relative;
+  z-index: 1;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background: #3a2418;
+  box-shadow: 0 0 0 1px rgba(255, 140, 66, 0.3);
+  transition: background 0.3s, box-shadow 0.3s, transform 0.3s;
+}
+.rail-dot.past {
+  background: rgba(255, 208, 138, 0.75);
+}
+.rail-dot.active {
+  background: #ffa755;
+  box-shadow: 0 0 9px 2px rgba(255, 107, 53, 0.55);
+  transform: scale(1.25);
+}
+.rail-dot:hover {
+  transform: scale(1.2);
+}
+.rail-dot.active:hover {
+  transform: scale(1.25);
+}
+
+/* label — only one visible at a time (controlled by .show-label in JS) */
+.rail-label {
+  position: absolute;
+  right: 150%;
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  font-family: var(--font-sans);
+  font-size: 0.62rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #ffd9c2;
+  background: rgba(10, 7, 5, 0.8);
+  border: 1px solid rgba(255, 140, 66, 0.3);
+  border-radius: 10px;
+  padding: 0.15rem 0.5rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.rail-dot.show-label .rail-label {
+  opacity: 1;
+}
+
+/* recurring "keep scrolling" cue */
+.scroll-cue {
+  position: fixed;
+  bottom: 1.6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  color: rgba(255, 140, 66, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+.scroll-cue.show {
+  opacity: 1;
+  animation: cueBounce 2s ease-in-out infinite;
+}
+@keyframes cueBounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(6px); }
+}
+
+@media (max-width: 680px) {
+  .scroll-rail { right: 0.8rem; gap: 1.1rem; }
+  .rail-label { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue.show { animation: none; }
+}

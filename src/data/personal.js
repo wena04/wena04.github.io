@@ -37,6 +37,8 @@ export const siteMetadata = {
 export const navItems = [
   { id: "intro", label: "Intro", href: "#intro" },
   { id: "experience", label: "Experience", href: "#experience" },
+  { id: "research", label: "Research", href: "#research" },
+  { id: "education", label: "Education", href: "#education" },
   { id: "projects", label: "Projects", href: "#projects" },
   { id: "friends", label: "Friends", href: "#friends" },
 ];

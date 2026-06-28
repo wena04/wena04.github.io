@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { navItems } from "../data/personal.js";
 import "../styles/navbar.css";
 
 export default function Navbar({ scrollPercent = 0 }) {
@@ -10,7 +11,7 @@ export default function Navbar({ scrollPercent = 0 }) {
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ["intro", "experience", "projects", "friends"];
+      const sections = navItems.map((item) => item.id);
       const scrollPosition = window.scrollY + 150; // Offset for navbar height
 
       for (const section of sections) {
@@ -39,13 +40,6 @@ export default function Navbar({ scrollPercent = 0 }) {
     }
     setIsMenuOpen(false);
   };
-
-  const navItems = [
-    { id: "intro", label: "Intro" },
-    { id: "experience", label: "Experience" },
-    { id: "projects", label: "Projects" },
-    { id: "friends", label: "Friends" },
-  ];
 
   return (
     <nav

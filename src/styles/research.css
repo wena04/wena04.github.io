@@ -1,0 +1,234 @@
+/* Research — decision-tree (dashed slanted branches, like Experience leaders) */
+
+.research-section {
+  position: relative;
+  padding: 5rem 0 4rem;
+  min-height: 55vh;
+}
+
+.research-head {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  text-align: center;
+}
+
+.research-head .section-title {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  color: #fff;
+  margin: 0 0 0.4rem;
+}
+
+.research-head .section-sub {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.85rem;
+  margin: 0 0 2rem;
+}
+
+.research-timeline {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 0 1.75rem;
+}
+
+.rt-tree {
+  --rt-gap: 3.25rem;
+  --rt-dot: 12px;
+  --rt-branch-h: 3.75rem;
+  position: relative;
+}
+
+/* dashed slanted branches — matches .exp-leaders line style */
+.rt-branches {
+  position: absolute;
+  top: 7px; /* vertical center of root dot */
+  left: 0;
+  width: 100%;
+  height: var(--rt-branch-h);
+  pointer-events: none;
+  z-index: 0;
+  overflow: visible;
+}
+
+.rt-branch-line {
+  stroke: rgba(255, 140, 66, 0.42);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 4;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+/* glowing round nodes */
+.rt-dot {
+  display: block;
+  width: var(--rt-dot);
+  height: var(--rt-dot);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff 0%, #ffd93d 45%, #ff8c42 100%);
+  box-shadow: 0 0 14px 3px rgba(255, 217, 61, 0.55);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.rt-dot--root {
+  width: 14px;
+  height: 14px;
+  box-shadow: 0 0 18px 4px rgba(255, 107, 53, 0.65);
+}
+
+.rt-root {
+  display: flex;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+}
+
+/* leaves start where branch lines end (25% / 75% x, bottom of svg) */
+.rt-leaves {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: var(--rt-gap);
+  align-items: stretch;
+  margin-top: calc(var(--rt-branch-h) - 13px);
+  position: relative;
+  z-index: 1;
+}
+
+.rt-leaf {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.rt-leaf:first-child,
+.rt-leaf:last-child { padding-inline: 0.35rem; }
+
+.rt-joint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* dashed drop into card — same dash rhythm as branches */
+.rt-stem {
+  width: 0;
+  height: 0.85rem;
+  border-left: 1.5px dashed rgba(255, 140, 66, 0.42);
+}
+
+.rt-body {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-top: -1px;
+  padding: 0.95rem 1.1rem 1.05rem;
+  text-align: left;
+  border: 1.5px dashed rgba(255, 140, 66, 0.45);
+  border-radius: 12px;
+  background: transparent;
+  min-height: 11.5rem;
+}
+
+.rt-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: auto;
+  padding-top: 0.55rem;
+}
+
+.rt-lab {
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.92rem;
+  line-height: 1.25;
+}
+
+.rt-role {
+  color: #ffb066;
+  font-size: 0.76rem;
+  font-weight: 600;
+  margin: 0.22rem 0 0;
+  line-height: 1.35;
+}
+
+.rt-advisor { color: #ff8c42; font-weight: 500; }
+
+.rt-when {
+  font-family: var(--font-sans);
+  color: #c7a98f;
+  font-size: 0.66rem;
+  letter-spacing: 0.3px;
+  margin-top: 0.35rem;
+}
+
+.rt-desc {
+  color: #d8ccc0;
+  font-size: 0.74rem;
+  line-height: 1.55;
+  margin: 0.5rem 0 0;
+}
+
+
+.rt-tag {
+  background: rgba(255, 107, 53, 0.14);
+  color: #ff8c42;
+  font-size: 0.62rem;
+  padding: 0.14rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 140, 66, 0.22);
+}
+
+@media (max-width: 680px) {
+  .research-section { padding: 4rem 0 3rem; min-height: 0; }
+  .research-timeline { padding: 0 1.25rem; }
+
+  .rt-branches { display: none; }
+
+  .rt-root {
+    justify-content: flex-start;
+    margin-left: 0.35rem;
+  }
+
+  .rt-leaves {
+    grid-template-columns: 1fr;
+    row-gap: 1.25rem;
+    margin-top: 0.75rem;
+    padding-left: 1.1rem;
+    margin-left: 0.35rem;
+    border-left: 1.5px dashed rgba(255, 140, 66, 0.42);
+  }
+
+  .rt-leaf {
+    align-items: stretch;
+    padding-inline: 0;
+  }
+
+  .rt-leaf:first-child,
+  .rt-leaf:last-child { padding-inline: 0; }
+
+  .rt-joint {
+    flex-direction: row;
+    align-items: center;
+    margin-left: -1.1rem;
+  }
+
+  .rt-stem {
+    width: 0.65rem;
+    height: 0;
+    border-left: none;
+    border-top: 1.5px dashed rgba(255, 140, 66, 0.42);
+  }
+
+  .rt-body {
+    border: 1.5px dashed rgba(255, 140, 66, 0.42);
+    border-radius: 0 10px 10px 0;
+    min-height: 0;
+  }
+}

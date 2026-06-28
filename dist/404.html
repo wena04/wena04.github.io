@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>404 — Lost in space · Anthony Wen</title>
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<meta name="theme-color" content="#0a0a14" />
+<style>
+  @font-face {
+    font-family: "Space Grotesk";
+    font-style: normal;
+    font-display: swap;
+    font-weight: 300 700;
+    src: url("/fonts/space-grotesk-latin.woff2") format("woff2-variations");
+  }
+  * { margin: 0; box-sizing: border-box; }
+  body {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 1.4rem; text-align: center; padding: 2rem;
+    font-family: "Space Grotesk", system-ui, sans-serif; color: #fff;
+    background:
+      radial-gradient(900px 700px at 50% 42%, rgba(194, 90, 30, 0.22), transparent 60%),
+      #07060a;
+  }
+  .orb {
+    position: relative; width: 84px; height: 84px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #ffb37a 0%, #e0701f 38%, #c25a1e 62%, #7a3208 100%);
+    box-shadow: 0 0 50px 8px rgba(255, 107, 53, 0.35);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  .orb::after { /* a stray "moon" */
+    content: ""; position: absolute; top: -18px; right: -26px;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: #ffd08a; box-shadow: 0 0 14px #ffd08a;
+  }
+  .code {
+    font-weight: 800;
+    font-size: clamp(3rem, 14vw, 6rem); letter-spacing: 0.06em; line-height: 1;
+    background: linear-gradient(135deg, #ff6b35, #ff8c42, #ffd93d);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .title { font-weight: 700; font-size: 1.1rem; letter-spacing: 0.05em; color: #fff; }
+  .sub { font-size: 0.82rem; letter-spacing: 1px; color: rgba(255, 200, 160, 0.6); max-width: 42ch; line-height: 1.6; }
+  .home {
+    margin-top: 0.6rem; text-decoration: none;
+    font-size: 0.78rem; letter-spacing: 2px; text-transform: uppercase; color: #ff8c42;
+    border: 1px solid rgba(255, 140, 66, 0.4); border-radius: 24px; padding: 0.7rem 1.4rem;
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+  .home:hover { background: rgba(255, 107, 53, 0.16); box-shadow: 0 0 18px rgba(255, 107, 53, 0.3); }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 50px 8px rgba(255, 107, 53, 0.35); }
+    50% { transform: scale(1.07); box-shadow: 0 0 66px 12px rgba(255, 107, 53, 0.5); }
+  }
+  @media (prefers-reduced-motion: reduce) { .orb { animation: none; } }
+</style>
+</head>
+<body>
+  <div class="orb"></div>
+  <div class="code">404</div>
+  <div class="title">Lost in space</div>
+  <p class="sub">This page drifted off into the void. Let's get you back to the system.</p>
+  <a class="home" href="/">← Return home</a>
+</body>
+</html>

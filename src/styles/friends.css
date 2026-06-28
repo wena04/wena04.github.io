@@ -1,0 +1,139 @@
+/* Friends — heading + legend (the globe itself is Layer 0 / CelestialScene) */
+
+/* Friends is the last section. The section itself is just scroll space; the title +
+   legend live in a FIXED overlay whose opacity is tied (in Friends.jsx) to the same
+   #friends position the globe uses — so names + globe appear / stay / fade together. */
+.friends-section {
+  position: relative;
+  height: 110vh;
+  pointer-events: none; /* let drags pass through to the 3D globe (Layer 0) */
+}
+.friends-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none; /* let drags reach the globe (Layer 0); children re-enable */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* title + legend above the centered globe */
+  text-align: center;
+  gap: 1rem;
+  padding: 5rem 1.5rem 0;
+  transition: opacity 0.25s ease;
+}
+.friends-overlay .friends-head,
+.friends-overlay .friends-legend {
+  pointer-events: auto;
+}
+
+.friends-head .kicker {
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  font-size: 0.7rem;
+  color: #ff6b35;
+  opacity: 0.85;
+  margin-bottom: 0.4rem;
+}
+.friends-head .section-title {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  color: #fff;
+  margin: 0 0 0.3rem;
+}
+.friends-head .section-sub {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.85rem;
+  max-width: 44ch;
+  margin: 0 auto;
+}
+
+.friends-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  justify-content: center;
+  max-width: 640px;
+}
+.flegend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  color: #ddd;
+  text-decoration: none;
+  border: 1px solid rgba(255, 208, 138, 0.25);
+  padding: 0.35rem 0.7rem;
+  border-radius: 20px;
+  transition: 0.2s;
+}
+.flegend-item:hover {
+  border-color: #ffd08a;
+  color: #fff;
+  background: rgba(255, 208, 138, 0.1);
+}
+.flegend-item.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.flegend-item .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+@media (max-width: 768px) {
+  .friends-section {
+    height: 100vh;
+  }
+
+  .friends-overlay {
+    padding: 4.5rem 1rem 0;
+    gap: 0.75rem;
+  }
+
+  .friends-head .kicker {
+    font-size: 0.62rem;
+    letter-spacing: 2px;
+  }
+
+  .friends-head .section-sub {
+    font-size: 0.78rem;
+    padding: 0 0.5rem;
+  }
+
+  .friends-legend {
+    max-width: 100%;
+    gap: 0.4rem;
+    padding: 0 0.25rem;
+  }
+
+  .flegend-item {
+    font-size: 0.68rem;
+    padding: 0.4rem 0.65rem;
+    min-height: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .friends-overlay {
+    padding-top: 3.75rem;
+  }
+
+  .friends-head .section-title {
+    font-size: 1.65rem;
+  }
+
+  .flegend-item {
+    flex: 0 1 calc(50% - 0.4rem);
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .friends-overlay {
+    transition: none;
+  }
+}

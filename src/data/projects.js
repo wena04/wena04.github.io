@@ -277,7 +277,17 @@ export const designProjects = [
 // =============================================================================
 // COMBINED EXPORTS
 // =============================================================================
-export const allProjects = [...codingProjects, ...designProjects];
+// Link slots per project: github, website (demo/link aliases), youtube — null until set.
+const withLinks = (p) => ({
+  ...p,
+  github: p.github ?? null,
+  website: p.website ?? p.demo ?? p.link ?? null,
+  youtube: p.youtube ?? null,
+});
+
+export const allProjects = [...codingProjects, ...designProjects].map(withLinks);
+export const codingProjectsNorm = codingProjects.map(withLinks);
+export const designProjectsNorm = designProjects.map(withLinks);
 
 export const featuredProjects = allProjects.filter((p) => p.featured);
 

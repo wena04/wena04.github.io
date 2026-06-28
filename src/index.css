@@ -1,8 +1,7 @@
-@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@300;400;500&display=swap");
-
 /* Base Styles - Dark Theme for 3D Background */
 :root {
-  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  --font-sans: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--font-sans);
   background-color: transparent;
 
   /* New Palette */
@@ -54,6 +53,7 @@ h3 {
 .section-title {
   font-size: 2.5rem;
   font-weight: 700;
+  letter-spacing: 0.02em;
   margin-bottom: 2rem;
 }
 

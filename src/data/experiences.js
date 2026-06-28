@@ -74,15 +74,6 @@ export const experiences = [
     skills: ["HTML/CSS", "React.js", "JavaScript", "Teaching"],
   },
   {
-    id: 8,
-    date: "Jan 2024 - Jun 2024",
-    title: "Software Developer",
-    company: "Wordplaypen",
-    description:
-      "Designed and developed solutions to bugs in the Wordplaypen Program using TypeScript. Collaborated in a team led by Professor Amy J. Ko to make learning programming more accessible to people with language barriers.",
-    skills: ["TypeScript", "Web Development", "Open Source", "Accessibility"],
-  },
-  {
     id: 9,
     date: "May 2023 - Nov 2023",
     title: "Software Engineer Intern",
@@ -132,6 +123,38 @@ export const education = [
       "Software Engineering Career Club",
       "UW BIA",
     ],
+  },
+  {
+    id: 2,
+    date: "Grad. 2023",
+    school: "American International School of Guangzhou",
+    degree: "IB Diploma",
+    minor: "",
+    honors: "HL Math AA, Physics, Computer Science",
+  },
+];
+
+// Research roles — shown in the Research section (`sections/Research.jsx`).
+export const research = [
+  {
+    id: 1,
+    title: "Research Assistant",
+    company: "UW Interactive Data Lab",
+    advisor: "Kyle Thayer",
+    date: "2025 - Present",
+    description:
+      "Multi-lingual color naming research — exploring how different languages name and categorize colors.",
+    skills: ["Data Visualization", "p5.js", "Research"],
+  },
+  {
+    id: 2,
+    title: "Software Developer",
+    company: "Wordplaypen",
+    advisor: "Prof. Amy J. Ko",
+    date: "Jan 2024 - Jun 2024",
+    description:
+      "Accessibility work on an inclusive programming language & IDE — making learning to code accessible across language barriers.",
+    skills: ["TypeScript", "Accessibility", "Open Source"],
   },
 ];
 

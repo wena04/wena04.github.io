@@ -1,0 +1,8 @@
+/* Single variable font — latin subset only (~22KB), self-hosted for fast load + PWA cache */
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 300 700;
+  src: url("/fonts/space-grotesk-latin.woff2") format("woff2-variations");
+}
