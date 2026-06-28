@@ -7,7 +7,37 @@
 export const codingProjects = [
   // Featured / Hackathon Projects
   {
+    id: 14,
+    title: "Recall",
+    role: "AI / Full Stack",
+    award: "Photon Track 1st Place · Second Prize @ USC Build with TRAE & MiniMax 2026",
+    description:
+      "AI-powered “second brain” that transforms unstructured chat history, browser history, links, and screenshots into structured, searchable memories — with proactive location-based recall and a personalized RAG chatbot.",
+    technologies: ["RAG", "Vector Databases", "LLMs", "Python", "AI"],
+    github: null,
+    demo: null,
+    image: "/images/recall.png",
+    date: "Mar 2026",
+    featured: true,
+    type: "coding",
+  },
+  {
     id: 1,
+    title: "Breakpoint",
+    role: "Full Stack",
+    collaborators: ["David Gao"],
+    description:
+      "Trader prediction bot for sports betting markets — soccer and tennis — built for CSeed. Analyzes match data to surface betting insights and predictions.",
+    technologies: ["Python", "Machine Learning", "APIs", "Data Analysis"],
+    github: null,
+    demo: null,
+    image: "/images/breakpoint.png",
+    date: "2026",
+    featured: true,
+    type: "coding",
+  },
+  {
+    id: 2,
     title: "AWS Pilot",
     role: "Full Stack",
     description:
@@ -21,7 +51,7 @@ export const codingProjects = [
     type: "coding",
   },
   {
-    id: 2,
+    id: 3,
     title: "TFind",
     role: "3D Visualization",
     award: "T-Mobile & Nokia Track Winner @ DubHacks 2024",
@@ -36,7 +66,7 @@ export const codingProjects = [
     type: "coding",
   },
   {
-    id: 3,
+    id: 4,
     title: "SmartFuel",
     role: "Full Stack",
     award: "INRIX Hackathon Finalist",
@@ -53,7 +83,7 @@ export const codingProjects = [
 
   // Course Projects
   {
-    id: 4,
+    id: 5,
     title: "Mini Google",
     role: "Systems Programming",
     course: "CSE 333",
@@ -68,7 +98,7 @@ export const codingProjects = [
     type: "coding",
   },
   {
-    id: 5,
+    id: 6,
     title: "KACK FoodBank",
     role: "Frontend Developer",
     course: "INFO 340",
@@ -83,7 +113,7 @@ export const codingProjects = [
     type: "coding",
   },
   {
-    id: 6,
+    id: 7,
     title: "Global Economy & Climate Change",
     role: "Data Visualization",
     course: "INFO 201",
@@ -98,7 +128,7 @@ export const codingProjects = [
     type: "coding",
   },
   {
-    id: 7,
+    id: 8,
     title: "Social Justice Art Archive",
     role: "Database Design",
     course: "INFO 330",
@@ -113,7 +143,7 @@ export const codingProjects = [
     type: "coding",
   },
   {
-    id: 8,
+    id: 9,
     title: "HuskyMap",
     role: "Data Structures",
     course: "CSE 373",
@@ -130,7 +160,7 @@ export const codingProjects = [
 
   // Open Source / Other
   {
-    id: 9,
+    id: 10,
     title: "SWECC Website",
     role: "Contributor",
     description:
@@ -144,7 +174,7 @@ export const codingProjects = [
     type: "coding",
   },
   {
-    id: 10,
+    id: 11,
     title: "Wordplay",
     role: "Contributor",
     description:
@@ -158,7 +188,7 @@ export const codingProjects = [
     type: "coding",
   },
   {
-    id: 11,
+    id: 12,
     title: "PetSwipe",
     role: "iOS Developer",
     course: "INFO 449",
@@ -173,7 +203,21 @@ export const codingProjects = [
     type: "coding",
   },
   {
-    id: 12,
+    id: 15,
+    title: "华大课友社团官网",
+    role: "Technical Team Lead",
+    description:
+      "Official website for the Organization of Hua Classmates at UW — built and maintained by the technical team.",
+    technologies: ["React", "Web Development", "UI/UX"],
+    github: null,
+    demo: null,
+    image: "/images/ohcc-website.png",
+    date: "2025",
+    featured: false,
+    type: "coding",
+  },
+  {
+    id: 13,
     title: "Portfolio 2026",
     role: "Creative Dev",
     description:

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="UW Information School">
+  <rect width="64" height="64" rx="10" fill="#4b2e83"/>
+  <text x="32" y="27" text-anchor="middle" fill="#b7a57a" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="11">iSchool</text>
+  <path fill="#b7a57a" d="M18 34h7v14h-7zm11 0h7l5 9 5-9h7L43 48h-8l-5-9-5 9h-8l8-14z"/>
+</svg>

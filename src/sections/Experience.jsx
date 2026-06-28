@@ -13,8 +13,8 @@ const byId = (id) => experiences.find((e) => e.id === id);
 
 // All work roles ride the constellation, in path order (newest -> oldest by date).
 // (Wordplaypen moved to research.) "Earlier roles" kept for future overflow.
-const CONSTELLATION_IDS = [1, 2, 5, 6, 7, 3, 9, 10];
-const EARLIER_IDS = [];
+const CONSTELLATION_IDS = [11, 12, 1, 6, 2, 5, 7, 3];
+const EARLIER_IDS = [9, 10];
 
 // Scorpius star map: x,y normalized (0..1, y down), mag = relative size.
 // `role` indexes into CONSTELLATION_IDS; `bright` = Antares (the heart).
@@ -204,7 +204,14 @@ export default function Experience() {
               {isRole && exp && (
                 <div className={"exp-card " + side} ref={setCardRef(i)}>
                   <div className="exp-card-head">
-                    <div className="exp-logo" aria-hidden="true">
+                    <div
+                      className={
+                        "exp-logo" +
+                        (exp.logo ? " has-img" : "") +
+                        (exp.logoDark ? " dark-bg" : "")
+                      }
+                      aria-hidden="true"
+                    >
                       {exp.logo ? (
                         <img src={exp.logo} alt="" />
                       ) : (
@@ -251,11 +258,27 @@ export default function Experience() {
                 if (!e) return null;
                 return (
                   <div className="row" key={id}>
-                    <div>
-                      <h5>{e.title}</h5>
-                      <div className="co">
-                        {e.company}
-                        {e.course ? ` · ${e.course}` : ""}
+                    <div className="row-main">
+                      <div
+                        className={
+                          "exp-logo sm" +
+                          (e.logo ? " has-img" : "") +
+                          (e.logoDark ? " dark-bg" : "")
+                        }
+                        aria-hidden="true"
+                      >
+                        {e.logo ? (
+                          <img src={e.logo} alt="" />
+                        ) : (
+                          <span>{initialOf(e.company)}</span>
+                        )}
+                      </div>
+                      <div>
+                        <h5>{e.title}</h5>
+                        <div className="co">
+                          {e.company}
+                          {e.course ? ` · ${e.course}` : ""}
+                        </div>
                       </div>
                     </div>
                     <div className="yr">{e.date}</div>

@@ -1,4 +1,4 @@
-import{r as z,c as it,j as w,f as rt}from"./index-BGpz1I1S.js";import{M as be,O as at,B as Se,F as He,e as F,U as Me,f as y,W as re,H as ae,g as ot,h as Ne,C as U,V,A as Ce,c as nt,i as Ge,j as Oe,k as ne,P as Ye,a as Xe,G as lt,l as ct,S as Ve,d as ht,m as L,n as ut,o as ft,p as dt,q as pt,r as mt,s as gt,t as vt}from"./three-CMw2AZwd.js";import"./react-vendor-CYXFpJKG.js";const oe={name:"CopyShader",uniforms:{tDiffuse:{value:null},opacity:{value:1}},vertexShader:`
+import{r as z,c as it,j as w,f as rt}from"./index-D9JCJmso.js";import{M as be,O as at,B as Se,F as He,e as F,U as Me,f as y,W as re,H as ae,g as ot,h as Ne,C as U,V,A as Ce,c as nt,i as Ge,j as Oe,k as ne,P as Ye,a as Xe,G as lt,l as ct,S as Ve,d as ht,m as L,n as ut,o as ft,p as dt,q as pt,r as mt,s as gt,t as vt}from"./three-CMw2AZwd.js";import"./react-vendor-CYXFpJKG.js";const oe={name:"CopyShader",uniforms:{tDiffuse:{value:null},opacity:{value:1}},vertexShader:`
 
 		varying vec2 vUv;
 

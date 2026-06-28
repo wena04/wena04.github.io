@@ -32,18 +32,19 @@ export const friends = [
     url: "https://sites.google.com/uw.edu/jessie-xiao/home",
     color: "#ffb066",
   },
-  {
-    id: 6,
-    name: "Maya Odenheim",
-    url: null,
-    color: "#b86a38",
-  },
-  {
-    id: 7,
-    name: "An Dao",
-    url: null,
-    color: "#a85a32",
-  },
+  // Portfolio not ready — re-enable when live
+  // {
+  //   id: 6,
+  //   name: "Maya Odenheim",
+  //   url: null,
+  //   color: "#b86a38",
+  // },
+  // {
+  //   id: 7,
+  //   name: "An Dao",
+  //   url: null,
+  //   color: "#a85a32",
+  // },
   {
     id: 8,
     name: "David Gao",
@@ -59,7 +60,7 @@ export const friends = [
   {
     id: 10,
     name: "Patricia Wen",
-    url: null,
+    url: "https://patriciawen.kw.com/",
     color: "#d9a066",
   },
   {
@@ -67,5 +68,11 @@ export const friends = [
     name: "Tony Yang",
     url: "https://github.com/yct2004-cmd/Tony-Yang",
     color: "#c25a1e",
+  },
+  {
+    id: 12,
+    name: "Alley Wu",
+    url: "https://alleywu.com/",
+    color: "#b88850",
   },
 ];
