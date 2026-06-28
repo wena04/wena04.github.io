@@ -1,7 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
-import { obfuscatePlugin } from "./vite-plugins/obfuscate.js";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -23,10 +22,9 @@ export default defineConfig({
     }),
   ],
   build: {
-    // No source maps in production — bundled logic is not mapped back to source files.
+    // No source maps in production.
     sourcemap: false,
     rollupOptions: {
-      plugins: [obfuscatePlugin()],
       output: {
         manualChunks: {
           three: ["three"],
