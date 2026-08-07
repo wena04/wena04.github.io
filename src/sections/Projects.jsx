@@ -9,6 +9,34 @@ import "../styles/projects-orbit.css";
 
 const techOf = (p) => p.technologies || p.tools || [];
 const FEATURED = allProjects.filter((p) => p.featured);
+const initialsOf = (title = "") =>
+  title
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((word) => word.charAt(0))
+    .join("")
+    .toUpperCase() || "·";
+
+function ProjectThumb({ project, compact = false }) {
+  const [failed, setFailed] = useState(false);
+  const showImage = Boolean(project.image) && !failed;
+
+  return (
+    <div
+      className={`${compact ? "arch-ico" : "thumb"} project-thumb ${project.type}`}
+      aria-hidden="true"
+    >
+      <span className="thumb-fallback">
+        <strong>{initialsOf(project.title)}</strong>
+        {!compact && <small>{project.type === "design" ? "design" : "code"}</small>}
+      </span>
+      {showImage && (
+        <img src={project.image} alt="" onError={() => setFailed(true)} />
+      )}
+    </div>
+  );
+}
 
 const ICON_GH = (
   <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 014 0c1.53-1.03 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z" /></svg>
@@ -47,17 +75,6 @@ function ArchiveLink({ href, label, icon }) {
   );
 }
 
-const ICON_CODE = (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" />
-  </svg>
-);
-const ICON_DESIGN = (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="9" /><circle cx="8.5" cy="10" r="1" /><circle cx="12" cy="8" r="1" /><circle cx="15.5" cy="10" r="1" />
-  </svg>
-);
-
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
 export default function Projects() {
@@ -92,8 +109,19 @@ export default function Projects() {
       raf = requestAnimationFrame(layout);
       const orbit = orbitRef.current;
       if (!orbit) return;
-      const a = Math.min(360, window.innerWidth * 0.32);
-      const b = a * 0.42;
+      const baseCard = cardEls.current[0];
+      const cardWidth = baseCard?.offsetWidth || 188;
+      const cardHeight = baseCard?.offsetHeight || 132;
+      const maxHorizontalRadius = Math.max(
+        72,
+        (orbit.clientWidth - cardWidth * 1.15) / 2 - 12,
+      );
+      const maxVerticalRadius = Math.max(
+        12,
+        (orbit.clientHeight - cardHeight * 1.15) / 2 - 10,
+      );
+      const a = Math.min(360, window.innerWidth * 0.32, maxHorizontalRadius);
+      const b = Math.min(a * 0.42, maxVerticalRadius);
       // settle drag coast
       if (!dragging.current && Math.abs(vel.current) > 0.0002) {
         manual.current += vel.current;
@@ -192,7 +220,7 @@ export default function Projects() {
                   }
                 }}
               >
-                <div className="thumb">{p.type === "design" ? "◷ design" : "◆ code"}</div>
+                <ProjectThumb project={p} />
                 <div className="role">{p.award ? "🏆 " + p.role : p.role}</div>
                 <h4>{p.title}</h4>
               </div>
@@ -237,7 +265,7 @@ export default function Projects() {
               const isOpen = open === id;
               return (
                 <div key={id} className={"arch-row" + (isOpen ? " open" : "")} onClick={() => setOpen(isOpen ? null : id)}>
-                  <div className="arch-ico">{p.type === "design" ? ICON_DESIGN : ICON_CODE}</div>
+                  <ProjectThumb project={p} compact />
                   <div className="arch-main">
                     <h5>{p.title}</h5>
                     <div className="tech">{techOf(p).slice(0, 3).join(" · ")}</div>

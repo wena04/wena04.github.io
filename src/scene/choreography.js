@@ -30,6 +30,11 @@ export const sectionStarts = (ids) => {
 // -> friends (come closer, crossfade to globe).
 export const planetFromScroll = (sp, starts, opts = {}) => {
   const xScale = opts.xScale ?? 1;
+  const friendsXScale = opts.friendsXScale ?? xScale;
+  const contentScale = opts.contentScale ?? 1;
+  const contentZOffset = opts.contentZOffset ?? 0;
+  const friendsScale = opts.friendsScale ?? contentScale;
+  const ringsOpacityScale = opts.ringsOpacityScale ?? 1;
   const introS = starts.intro ?? 0.1;
   const expS = starts.experience ?? 0.22;
   const resS = starts.research ?? 0.38;
@@ -39,13 +44,13 @@ export const planetFromScroll = (sp, starts, opts = {}) => {
 
   const keys = [
     { at: 0, x: 0, z: -15, s: 1 }, // deep space, centered
-    { at: introS * 0.85, x: 6, z: -5, s: 1 }, // dock right (during landing)
-    { at: expS, x: 6, z: -5, s: 1 }, // hold through experience
+    { at: introS * 0.85, x: 6 * xScale, z: -5, s: 1 }, // dock right (during landing)
+    { at: expS, x: 6 * xScale, z: -5, s: 1 }, // hold through experience
     { at: resS, x: 0, z: -7, s: 1 }, // drift toward center entering research
-    { at: eduS, x: -7, z: -9, s: 1 }, // recede during education
+    { at: eduS, x: -7 * xScale, z: -9, s: 1 }, // recede during education
     { at: projS, x: 0, z: -7, s: 1 }, // center + small for the projects orbit
-    { at: friS, x: -4.6, z: -2.5, s: 1.3 }, // small rim crescent, off to the left
-    { at: 1, x: -5.1, z: -2.4, s: 1.4 },
+    { at: friS, x: -4.6 * friendsXScale, z: -2.5, s: 1.3 }, // small rim crescent, off to the left
+    { at: 1, x: -5.1 * friendsXScale, z: -2.4, s: 1.4 },
   ];
 
   let x = keys[0].x, z = keys[0].z, s = keys[0].s;
@@ -86,13 +91,20 @@ export const planetFromScroll = (sp, starts, opts = {}) => {
   // content during the scroll-in), and fades back out near the very end.
   const friendsP = sp >= friS ? clamp((sp - friS) / Math.max(1 - friS, 1e-4), 0, 1) : 0;
   const globeVis = clamp((friendsP - 0.14) / 0.18, 0, 1);
+  const contentBlend = clamp((sp - introS) / Math.max(expS - introS, 1e-4), 0, 1);
+  const friendsBlend = clamp((sp - projS) / Math.max(friS - projS, 1e-4), 0, 1);
+  const responsiveScale = lerp(
+    lerp(1, contentScale, contentBlend),
+    friendsScale,
+    friendsBlend,
+  );
 
   return {
-    x: x * xScale,
-    z,
-    scale: s,
+    x,
+    z: z + contentZOffset * contentBlend,
+    scale: s * responsiveScale,
     friendsActive: sp >= friS,
-    ringsOpacity,
+    ringsOpacity: ringsOpacity * lerp(1, ringsOpacityScale, contentBlend),
     crescent,
     planetOpacity,
     globeVis,

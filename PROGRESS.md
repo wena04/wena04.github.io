@@ -1,8 +1,8 @@
 # Progress Log
 
 **Owner:** Anthony Wen  
-**Branch:** `main` (scrollytelling redesign lives in **working tree**, not yet committed)  
-**Last updated:** June 27, 2026
+**Branch:** `feat/scrollytelling-port` (`HEAD` matches `origin/main` at `f193d0b`; responsive polish remains local)
+**Last updated:** July 22, 2026
 
 A running log of the scrollytelling redesign — from mockup → design spec → ported
 into the real React + Three.js site. See also `docs/scrollytelling-design.md`
@@ -71,6 +71,8 @@ Split out of the monolithic `CelestialScene.jsx`:
 - Work roles on bright stars (newest → oldest). `Earlier roles` overflow hidden until needed.
 - Honors row pinned above the constellation.
 - Cards: logo/initial + company (bold) + title + date + tags.
+- Narrow layouts measure every card and space constellation nodes from the rendered
+  card heights, avoiding fixed-position overlaps from 320px upward.
 
 ### Research — done (own section)
 - **Standalone section** `#research` — not nested under Experience.
@@ -88,11 +90,18 @@ Split out of the monolithic `CelestialScene.jsx`:
 ### Projects — done
 - **Featured orbit:** tilted ring, scroll/drag/arrows/dots, front card blooms.
 - **Solar archive:** All · Coding · Design tabs, compact rows, click-to-expand, 6/page.
+- Orbit radii respond to both available width and height; portrait and short-landscape
+  controls stay outside the active card.
+- Thumbnail component supports real images and falls back to compact project initials
+  while the image assets are still missing.
 
 ### Friends — done
 - Crescent planet (left) via lighting; constellation globe (center).
 - Names on front-facing nodes + hover; click → portfolio.
 - Title + legend fixed overlay synced to `#friends` scroll position.
+- Mobile uses a two-row horizontal friend strip and hides duplicate projected labels;
+  short landscape uses one row. Globe scale/position and the planet crescent respond
+  to the viewport and share the same reveal clock.
 
 ---
 
@@ -107,7 +116,7 @@ Split out of the monolithic `CelestialScene.jsx`:
 | 404 page | done | `public/404.html` |
 | **Favicons (AW mark)** | done | `public/favicon.*`, `site.webmanifest`, `index.html` |
 | Reduced-motion passes | partial | CSS in section stylesheets |
-| Responsive | partial | Mobile passes in Experience, Research, Projects |
+| Responsive | validated | 320×568, 390×844, 430×932, 768×1024, 844×390, 1024×768, 1440×900 |
 
 ---
 
@@ -150,7 +159,7 @@ docs/                       # design spec + mockup + PROJECT-PLAN
 
 ---
 
-## 8. Repo health (June 27 cleanup — done)
+## 8. Repo health
 
 ### What's working well
 - Clear **3-layer model** (scene / content / nav) matches `PROJECT-PLAN.md`.
@@ -166,25 +175,54 @@ docs/                       # design spec + mockup + PROJECT-PLAN
 
 ### Optional later
 - Split `research` / `education` into separate data files (nice-to-have)
-- Code-split Three.js bundle (~736 kB) if Lighthouse flags it
 - Add `public/og-image.png` for Open Graph
+- Code-split or further trim the Three.js chunk if the current ~520 kB build warning
+  affects real-device performance.
 
 ---
 
 ## 9. Outstanding / TODO
 
 ### Content
-- [ ] Real **project thumbnails** in `public/images/`
-- [ ] Real **company logos** via `logo:` in `experiences.js`
-- [ ] **School logos** on mission patches (`education[].logo`)
-- [ ] Fill missing **friend portfolio URLs**
+- [x] Real **project thumbnails** in `public/images/` for Recall, AWS Pilot, TFind,
+  SmartFuel (sourced from Devpost/repo screenshots, downscaled to ~1200px wide)
+- [x] Real **company logos** via `logo:` in `experiences.js`
+- [x] **School logos** on mission patches (`education[].logo`)
+- [x] Portfolio URLs for every friend currently shown
+- [x] GitHub/demo links wired in for Recall (own repo + live Vercel demo), TFind and
+  AWS Pilot (Devpost as demo since no live deploy exists), SmartFuel (Devpost demo
+  added; GitHub already pointed at teammate's repo)
+- [x] Custom logo graphics (hand-authored SVG, not screenshots) for projects with no
+  public/real UI to show: `breakpoint.svg` (chart + tennis-ball motif), `mini-google.svg`
+  (mock search-result UI), `kack-foodbank.svg` (pink theme + Seattle skyline, per Anthony's
+  direction) — confirmed Breakpoint is private (no repo to link) and AWS Pilot's
+  teammate-owned repo (`Marc0Guo/Dubhacks2025`) is fine to keep linked
+- [ ] **Still missing — need from Anthony:**
+  - **TFind**: GitHub link in the data (`RandolphTang/StreeGLTMobileCollab`) 404s —
+    repo was likely deleted/renamed/made private by the teammate; either get a
+    working link from the team or leave `github: null` (currently set to null,
+    Devpost used as the demo link instead)
+  - Logos still wanted for the remaining non-featured course/side projects (Mini
+    Google and KACK FoodBank now have custom logos; Global Economy & Climate Change,
+    Social Justice Art Archive, HuskyMap, SWECC Website, Wordplay, 华大课友社团官网,
+    Portfolio 2026, and the design projects still fall back to text initials)
+  - General: `mini-google.png`, `kack-foodbank.png`, `climate-viz.png`,
+    `art-archive.png`, `huskymap.png`, `swecc.png`, `wordplay.png`,
+    `ohcc-website.png`, `portfolio.png`, `tempad.png` and other non-featured
+    project images still don't exist in `public/images/`
+  - Replace remaining placeholder project copy (e.g. `designProjects` entries
+    with literal `// TODO` comments in `projects.js`)
 
 ### Polish
-- [ ] **Mobile** 3D position fine-tuning across aspect ratios
-- [ ] Visual tuning of planet/globe sizes once content is final
-- [ ] **Ready Player One** loading screen (Phase 4 — current loader is minimal orb+ring)
+- [x] **Mobile** 3D position and collision pass across portrait/tablet/landscape
+- [x] Responsive planet/globe scale, crescent timing, and friend-label behavior
+- [ ] Recheck visual tuning after final project thumbnails and content are present
 - [ ] SEO / Open Graph (`siteMetadata.image` points to missing `/og-image.png`)
+- [ ] Add automated browser smoke checks for the responsive collision matrix
+- [x] Stop tracking generated `node_modules/` and `dist/` artifacts — confirmed
+  deploy is CI-built (`.github/workflows/deploy.yml` runs `npm ci && npm run build`),
+  so the committed copies were unused; `git rm -r --cached`, `dist` added to `.gitignore`
 
 ### Ship
-- [ ] **Commit** scrollytelling working tree to `main`
+- [ ] **Commit** current responsive, dependency, and drag-direction changes
 - [ ] Deploy to GitHub Pages / anthonywen.dev

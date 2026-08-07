@@ -139,4 +139,5 @@
   .patch-grid { gap: 2rem; }
   .mission-patch { flex: 0 1 220px; }
   .patch-badge { width: 100px; height: 100px; }
+  .patch-caption { text-shadow: 0 2px 9px rgba(0, 0, 0, 0.95); }
 }

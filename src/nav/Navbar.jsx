@@ -69,7 +69,7 @@ export default function Navbar({ scrollPercent = 0 }) {
           </a>
         </div>
 
-        <div className={`navbar-menu ${isMenuOpen ? "active" : ""}`}>
+        <div id="primary-navigation" className={`navbar-menu ${isMenuOpen ? "active" : ""}`}>
           {navItems.map((item) => (
             <a
               key={item.id}
@@ -85,14 +85,18 @@ export default function Navbar({ scrollPercent = 0 }) {
           ))}
         </div>
 
-        <div
+        <button
+          type="button"
           className="navbar-toggle"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
+          aria-label={isMenuOpen ? "Close navigation" : "Open navigation"}
+          aria-expanded={isMenuOpen}
+          aria-controls="primary-navigation"
         >
           <span className="bar"></span>
           <span className="bar"></span>
           <span className="bar"></span>
-        </div>
+        </button>
       </div>
     </nav>
   );

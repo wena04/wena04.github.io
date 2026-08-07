@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 120" role="img" aria-label="KACK FoodBank">
+  <defs>
+    <linearGradient id="kk-bg" x1="0" y1="0" x2="320" y2="120" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ff5da2"/>
+      <stop offset="1" stop-color="#ff8fc0"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="320" height="120" rx="10" fill="url(#kk-bg)"/>
+  <rect x="1" y="1" width="318" height="118" rx="9" fill="none" stroke="#ffffff" stroke-opacity="0.25" stroke-width="1.5"/>
+
+  <!-- Seattle skyline silhouette, subtle -->
+  <g fill="#ffffff" fill-opacity="0.16">
+    <rect x="0" y="90" width="320" height="30"/>
+    <rect x="20" y="70" width="16" height="50"/>
+    <rect x="44" y="80" width="14" height="40"/>
+    <rect x="250" y="76" width="18" height="44"/>
+    <rect x="274" y="86" width="14" height="34"/>
+    <!-- Space Needle -->
+    <path d="M186 92 L190 60 L182 60 Z"/>
+    <ellipse cx="186" cy="58" rx="14" ry="5"/>
+    <rect x="184" y="58" width="4" height="34"/>
+  </g>
+
+  <!-- heart-in-hands mark -->
+  <g transform="translate(50,60)">
+    <path d="M -26 6 C -30 -6 -12 -12 -2 0 C 8 -12 26 -6 22 6 C 18 16 0 26 -2 28 C -4 26 -22 16 -26 6 Z"
+      fill="#ffffff"/>
+    <path d="M -30 18 Q -34 30 -22 34 L 22 34 Q 34 30 30 18"
+      fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
+  </g>
+
+  <text x="92" y="56" font-family="Arial,Helvetica,sans-serif" font-weight="800" font-size="26" letter-spacing="1" fill="#ffffff">KACK</text>
+  <text x="92" y="76" font-family="Arial,Helvetica,sans-serif" font-weight="600" font-size="13" letter-spacing="2" fill="#fff0f7">FOODBANK</text>
+  <text x="92" y="94" font-family="Arial,Helvetica,sans-serif" font-weight="500" font-size="10" letter-spacing="1.5" fill="#ffffff" fill-opacity="0.75">SEATTLE, WA</text>
+</svg>

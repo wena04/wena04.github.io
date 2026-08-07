@@ -17,6 +17,7 @@ _site/
 # Details at https://github.com/github/pages-gem/issues/768
 Gemfile.lock
 node_modules
+dist
 
 # macOS
 .DS_Store
