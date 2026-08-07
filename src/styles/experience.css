@@ -241,10 +241,37 @@
 
 @media (max-width: 680px) {
   .exp-head { padding: 5rem 1.25rem 0; }
-  .exp-flight { height: 1080px; padding: 0 0.5rem; }
-  .exp-card { width: 44%; padding: 0.6rem 0.7rem; }
-  .exp-card h4 { font-size: 0.82rem; }
-  .exp-card .co { font-size: 0.68rem; }
+  .awards { gap: 0.45rem; }
+  .exp-flight {
+    height: auto;
+    margin-top: 2rem;
+    padding: 0 0.5rem;
+  }
+  .exp-card {
+    width: calc(100% - 86px);
+    max-width: none;
+    padding: 0.72rem 0.8rem;
+    transform: translate(0, -50%);
+  }
+  .exp-card.left,
+  .exp-card.right {
+    --sx: 0px;
+    border-left: 3px solid #ff6b35;
+  }
+  .exp-card-head { align-items: flex-start; }
+  .exp-logo {
+    flex-basis: 32px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+  }
+  .exp-company {
+    font-size: 0.88rem;
+    overflow-wrap: anywhere;
+  }
+  .exp-role-title { font-size: 0.72rem; }
+  .exp-card .when { font-size: 0.64rem; }
+  .exp-card .tag { font-size: 0.58rem; }
   .award { font-size: 0.7rem; padding: 0.4rem 0.7rem; }
 }
 

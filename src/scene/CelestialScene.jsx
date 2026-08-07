@@ -92,8 +92,12 @@ const CelestialScene = ({ scrollPercent = 0, onReady }) => {
     // 4. FRIENDS NETWORK GLOBE (Initially Hidden)
     // ------------------------------------------------------------------------
     const friendsGlobe = createNetworkGlobe(friends);
-    friendsGlobe.position.set(0, -0.55, 0); // centered + dropped below the names list
-    friendsGlobe.scale.setScalar(0.74); // smaller so the title + globe fit one screen
+    const applyFriendsLayout = () => {
+      const viewport = profileRef.current;
+      friendsGlobe.position.set(0, viewport.globeY, 0);
+      friendsGlobe.scale.setScalar(viewport.globeScale);
+    };
+    applyFriendsLayout();
 
     // Store base opacities and hide all globe materials at start
     friendsGlobe.traverse((child) => {
@@ -232,18 +236,18 @@ const CelestialScene = ({ scrollPercent = 0, onReady }) => {
       }
 
       if (sceneStateRef.current.friendsActive) {
-        friendsGlobe.rotation.y -= deltaX * 0.005;
-        friendsGlobe.rotation.x -= deltaY * 0.005;
+        friendsGlobe.rotation.y += deltaX * 0.005;
+        friendsGlobe.rotation.x += deltaY * 0.005;
         globeVelocity = {
-          x: -deltaY * 0.005,
-          y: -deltaX * 0.005,
+          x: deltaY * 0.005,
+          y: deltaX * 0.005,
         };
       } else {
-        celestialGroup.rotation.y -= deltaX * 0.005;
-        celestialGroup.rotation.x -= deltaY * 0.005;
+        celestialGroup.rotation.y += deltaX * 0.005;
+        celestialGroup.rotation.x += deltaY * 0.005;
         planetVelocity = {
-          x: -deltaY * 0.005,
-          y: -deltaX * 0.005,
+          x: deltaY * 0.005,
+          y: deltaX * 0.005,
         };
       }
 
@@ -275,6 +279,11 @@ const CelestialScene = ({ scrollPercent = 0, onReady }) => {
       const starts = sectionStarts(["intro", "experience", "research", "education", "projects", "friends"]);
       const choreo = planetFromScroll(scrollRef.current, starts, {
         xScale: profileRef.current.xScale,
+        friendsXScale: profileRef.current.friendsXScale,
+        contentScale: profileRef.current.contentScale,
+        contentZOffset: profileRef.current.contentZOffset,
+        friendsScale: profileRef.current.friendsScale,
+        ringsOpacityScale: profileRef.current.ringsOpacityScale,
       });
       const { x, z, ringsOpacity } = choreo;
       celestialGroup.position.z = z;
@@ -322,19 +331,6 @@ const CelestialScene = ({ scrollPercent = 0, onReady }) => {
       // ------------------------------------------------------------------------
       // PLANET (crescent via lighting in Friends) · rings (fade from Projects) · globe
       // ------------------------------------------------------------------------
-      // Crescent in Friends: fade the planet BODY dark + drop its fill light, so only
-      // the lit rim + atmosphere glow show (the atmosphere shader is untouched = rim).
-      planetBodyOpacity = THREE.MathUtils.lerp(planetBodyOpacity, choreo.planetOpacity, 0.1);
-      planet.material.opacity = (planet.material.userData?.baseOpacity ?? 1) * planetBodyOpacity;
-      planet.material.transparent = true;
-      planet.material.emissiveIntensity = THREE.MathUtils.lerp(0.15, 0.005, choreo.crescent);
-      ambientLight.intensity = THREE.MathUtils.lerp(0.3, 0.05, choreo.crescent);
-      rings.material.opacity = (rings.material.userData?.baseOpacity ?? 0.6) * ringsOpacity;
-      rings.material.transparent = true;
-
-      // Globe fades IN as the Friends section rises into view and then STAYS (Friends
-      // is the last section, so it's the final view) — only fades out if you scroll
-      // back up. Tied to the section's position so it never floats without the names.
       let gv = 0;
       const frEl = document.getElementById("friends");
       if (frEl) {
@@ -342,6 +338,22 @@ const CelestialScene = ({ scrollPercent = 0, onReady }) => {
         const top = frEl.getBoundingClientRect().top;
         gv = THREE.MathUtils.clamp((vh * 0.3 - top) / (vh * 0.32), 0, 1);
       }
+      const friendsCrescent = Math.max(choreo.crescent, gv);
+
+      // Crescent in Friends: fade the planet BODY dark + drop its fill light, so only
+      // the lit rim + atmosphere glow show (the atmosphere shader is untouched = rim).
+      const targetPlanetOpacity = THREE.MathUtils.lerp(1, 0.14, friendsCrescent);
+      planetBodyOpacity = THREE.MathUtils.lerp(planetBodyOpacity, targetPlanetOpacity, 0.1);
+      planet.material.opacity = (planet.material.userData?.baseOpacity ?? 1) * planetBodyOpacity;
+      planet.material.transparent = true;
+      planet.material.emissiveIntensity = THREE.MathUtils.lerp(0.15, 0.005, friendsCrescent);
+      ambientLight.intensity = THREE.MathUtils.lerp(0.3, 0.05, friendsCrescent);
+      rings.material.opacity = (rings.material.userData?.baseOpacity ?? 0.6) * ringsOpacity;
+      rings.material.transparent = true;
+
+      // Globe fades IN as the Friends section rises into view and then STAYS (Friends
+      // is the last section, so it's the final view) — only fades out if you scroll
+      // back up. Tied to the section's position so it never floats without the names.
       friendsGlobe.visible = globeOpacity > 0.01;
       globeOpacity = THREE.MathUtils.lerp(globeOpacity, gv, 0.06);
       // Interact when globe is actually on screen (not only at scroll % threshold)
@@ -401,13 +413,14 @@ const CelestialScene = ({ scrollPercent = 0, onReady }) => {
 
     const handleResize = () => {
       profileRef.current = getViewportProfile();
+      applyFriendsLayout();
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setPixelRatio(
-        Math.min(window.devicePixelRatio, profileRef.current.pixelRatioCap),
-      );
+      const pixelRatio = Math.min(window.devicePixelRatio, profileRef.current.pixelRatioCap);
+      renderer.setPixelRatio(pixelRatio);
       if (composer) {
+        composer.setPixelRatio(pixelRatio);
         composer.setSize(window.innerWidth, window.innerHeight);
       }
     };
@@ -570,6 +583,9 @@ const CelestialScene = ({ scrollPercent = 0, onReady }) => {
           content: " ↗";
           color: #ff8c42;
           font-size: 0.58rem;
+        }
+        @media (max-width: 680px), (max-height: 560px) {
+          .friend-label { display: none; }
         }
       `}</style>
     </>

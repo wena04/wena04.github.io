@@ -61,13 +61,57 @@ export default function Experience() {
 
     const layout = () => {
       const w = flight.clientWidth;
-      const h = flight.clientHeight;
-      if (!w || !h) return;
+      if (!w) return;
+
+      const isNarrow = window.matchMedia("(max-width: 680px)").matches;
+      let h;
+      let points;
+
+      if (isNarrow) {
+        const roleIndexes = STARS.reduce((out, star, index) => {
+          if (star.role !== undefined) out.push(index);
+          return out;
+        }, []);
+        const roleY = new Map();
+        let cursor = 24;
+
+        roleIndexes.forEach((index) => {
+          const cardHeight = starRefs.current[index]?.card?.offsetHeight || 160;
+          roleY.set(index, cursor + cardHeight / 2);
+          cursor += cardHeight + 28;
+        });
+
+        h = Math.ceil(cursor + 12);
+        flight.style.height = `${h}px`;
+
+        const minX = Math.min(...STARS.map((star) => star.x));
+        const maxX = Math.max(...STARS.map((star) => star.x));
+        const pointY = (index) => {
+          if (roleY.has(index)) return roleY.get(index);
+
+          const previous = [...roleIndexes].reverse().find((roleIndex) => roleIndex < index);
+          const next = roleIndexes.find((roleIndex) => roleIndex > index);
+          if (previous === undefined) return roleY.get(next) - (next - index) * 24;
+          if (next === undefined) return roleY.get(previous) + (index - previous) * 24;
+
+          const t = (index - previous) / (next - previous);
+          return roleY.get(previous) + (roleY.get(next) - roleY.get(previous)) * t;
+        };
+
+        points = STARS.map((star, index) => ({
+          x: 22 + ((star.x - minX) / (maxX - minX || 1)) * 34,
+          y: pointY(index),
+        }));
+      } else {
+        flight.style.height = "";
+        h = flight.clientHeight;
+        if (!h) return;
+        points = STARS.map((star) => ({ x: star.x * w, y: star.y * h }));
+      }
+
       svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
-      const px = (s) => s.x * w;
-      const py = (s) => s.y * h;
-      let d = `M ${px(STARS[0])} ${py(STARS[0])}`;
-      for (let i = 1; i < STARS.length; i++) d += ` L ${px(STARS[i])} ${py(STARS[i])}`;
+      let d = `M ${points[0].x} ${points[0].y}`;
+      for (let i = 1; i < points.length; i++) d += ` L ${points[i].x} ${points[i].y}`;
       track.setAttribute("d", d);
       draw.setAttribute("d", d);
       const total = draw.getTotalLength();
@@ -77,22 +121,41 @@ export default function Experience() {
 
       let acc = 0;
       STARS.forEach((s, i) => {
-        if (i > 0) acc += Math.hypot(px(s) - px(STARS[i - 1]), py(s) - py(STARS[i - 1]));
+        if (i > 0) {
+          acc += Math.hypot(
+            points[i].x - points[i - 1].x,
+            points[i].y - points[i - 1].y,
+          );
+        }
         const ref = starRefs.current[i];
         if (!ref) return;
         ref.len = acc;
-        const X = px(s), Y = py(s);
+        const X = points[i].x;
+        const Y = points[i].y;
         const size = 5 + s.mag * 2.2;
         ref.el.style.left = X + "px";
         ref.el.style.top = Y + "px";
         ref.el.style.width = size + "px";
         ref.el.style.height = size + "px";
         if (ref.card) {
-          const cw = ref.card.offsetWidth || 220;
           ref.card.style.top = Y + "px";
           let lx;
-          if (ref.side === "right") { ref.card.style.left = "auto"; ref.card.style.right = "0px"; lx = w - cw; }
-          else { ref.card.style.left = "0px"; ref.card.style.right = "auto"; lx = cw; }
+          if (isNarrow) {
+            ref.card.style.left = "76px";
+            ref.card.style.right = "auto";
+            lx = 76;
+          } else {
+            const cw = ref.card.offsetWidth || 220;
+            if (ref.side === "right") {
+              ref.card.style.left = "auto";
+              ref.card.style.right = "0px";
+              lx = w - cw;
+            } else {
+              ref.card.style.left = "0px";
+              ref.card.style.right = "auto";
+              lx = cw;
+            }
+          }
           if (ref.leader) {
             ref.leader.setAttribute("x1", X); ref.leader.setAttribute("y1", Y);
             ref.leader.setAttribute("x2", lx); ref.leader.setAttribute("y2", Y);

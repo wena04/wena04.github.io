@@ -293,7 +293,7 @@ export const awards = [
     id: 7,
     title: "INRIX Amazon University Hackathon Finalist",
     issuer: "INRIX",
-    date: "Oct 2023",
+    date: "Dec 2023",
     project: "SmartFuel",
   },
   {

@@ -184,11 +184,34 @@ docs/                       # design spec + mockup + PROJECT-PLAN
 ## 9. Outstanding / TODO
 
 ### Content
-- [ ] Real **project thumbnails** in `public/images/`
+- [x] Real **project thumbnails** in `public/images/` for Recall, AWS Pilot, TFind,
+  SmartFuel (sourced from Devpost/repo screenshots, downscaled to ~1200px wide)
 - [x] Real **company logos** via `logo:` in `experiences.js`
 - [x] **School logos** on mission patches (`education[].logo`)
 - [x] Portfolio URLs for every friend currently shown
-- [ ] Replace remaining placeholder project copy and add missing GitHub/demo links
+- [x] GitHub/demo links wired in for Recall (own repo + live Vercel demo), TFind and
+  AWS Pilot (Devpost as demo since no live deploy exists), SmartFuel (Devpost demo
+  added; GitHub already pointed at teammate's repo)
+- [x] Custom logo graphics (hand-authored SVG, not screenshots) for projects with no
+  public/real UI to show: `breakpoint.svg` (chart + tennis-ball motif), `mini-google.svg`
+  (mock search-result UI), `kack-foodbank.svg` (pink theme + Seattle skyline, per Anthony's
+  direction) — confirmed Breakpoint is private (no repo to link) and AWS Pilot's
+  teammate-owned repo (`Marc0Guo/Dubhacks2025`) is fine to keep linked
+- [ ] **Still missing — need from Anthony:**
+  - **TFind**: GitHub link in the data (`RandolphTang/StreeGLTMobileCollab`) 404s —
+    repo was likely deleted/renamed/made private by the teammate; either get a
+    working link from the team or leave `github: null` (currently set to null,
+    Devpost used as the demo link instead)
+  - Logos still wanted for the remaining non-featured course/side projects (Mini
+    Google and KACK FoodBank now have custom logos; Global Economy & Climate Change,
+    Social Justice Art Archive, HuskyMap, SWECC Website, Wordplay, 华大课友社团官网,
+    Portfolio 2026, and the design projects still fall back to text initials)
+  - General: `mini-google.png`, `kack-foodbank.png`, `climate-viz.png`,
+    `art-archive.png`, `huskymap.png`, `swecc.png`, `wordplay.png`,
+    `ohcc-website.png`, `portfolio.png`, `tempad.png` and other non-featured
+    project images still don't exist in `public/images/`
+  - Replace remaining placeholder project copy (e.g. `designProjects` entries
+    with literal `// TODO` comments in `projects.js`)
 
 ### Polish
 - [x] **Mobile** 3D position and collision pass across portrait/tablet/landscape
