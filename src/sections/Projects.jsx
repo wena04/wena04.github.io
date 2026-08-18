@@ -291,7 +291,7 @@ export default function Projects() {
                   <div className="arch-links" onClick={(e) => e.stopPropagation()}>
                     <ArchiveLink href={p.github} label="GitHub" icon={ICON_GH} />
                     <ArchiveLink href={p.website} label="Website" icon={ICON_WEB} />
-                    <ArchiveLink href={p.youtube} label="YouTube demo" icon={ICON_YT} />
+                    <ArchiveLink href={p.youtube} label="Demo video" icon={ICON_YT} />
                   </div>
                   <div className="arch-detail">
                     <div className="inner">
