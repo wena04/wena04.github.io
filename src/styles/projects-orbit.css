@@ -115,6 +115,7 @@
 }
 .orbit-card.coding { border-left: 3px solid #ff6b35; }
 .orbit-card.design { border-left: 3px solid #ffd93d; }
+.orbit-card.art { border-left: 3px solid #7eb8ff; }
 .orbit-card .thumb {
   height: 60px; border-radius: 7px; margin-bottom: 0.5rem;
   background: linear-gradient(135deg, rgba(255, 107, 53, 0.3), rgba(255, 217, 61, 0.12));
@@ -140,6 +141,11 @@
     radial-gradient(circle at 72% 24%, rgba(255, 217, 61, 0.26), transparent 34%),
     linear-gradient(145deg, rgba(86, 65, 35, 0.7), rgba(18, 12, 9, 0.9));
 }
+.project-thumb.art::after {
+  background:
+    radial-gradient(circle at 72% 24%, rgba(126, 184, 255, 0.28), transparent 34%),
+    linear-gradient(145deg, rgba(40, 55, 80, 0.75), rgba(18, 12, 9, 0.9));
+}
 .project-thumb img {
   position: absolute;
   inset: 0;
@@ -147,6 +153,13 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+.project-thumb.fit-contain {
+  background: #f4f1ea;
+}
+.project-thumb.fit-contain img {
+  object-fit: contain;
+  padding: 4px;
 }
 .thumb-fallback {
   display: flex;

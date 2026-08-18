@@ -47,6 +47,7 @@ export const codingProjects = [
     github: "https://github.com/Marc0Guo/Dubhacks2025",
     demo: "https://devpost.com/software/airesearch",
     image: "/images/aws-pilot.png",
+    imageFit: "contain",
     date: "Oct 2025",
     featured: true,
     type: "coding",
@@ -63,6 +64,7 @@ export const codingProjects = [
     github: null,
     demo: "https://devpost.com/software/tfind-0qaop5",
     image: "/images/tfind.png",
+    imageFit: "contain",
     date: "Oct 2024",
     featured: true,
     type: "coding",
@@ -78,6 +80,7 @@ export const codingProjects = [
     github: "https://github.com/FRCroboSam/inrix-amazon-hack-23",
     demo: "https://devpost.com/software/fuel-maps",
     image: "/images/smartfuel.png",
+    imageFit: "contain",
     date: "Dec 2023",
     featured: true,
     type: "coding",
@@ -194,12 +197,13 @@ export const codingProjects = [
     title: "PetSwipe",
     role: "iOS Developer",
     course: "INFO 449",
+    collaborators: ["Jessica Wang", "Amelia Li", "George Lee", "Marco Guo"],
     description:
-      "iOS mobile app that helps users discover and match with adoptable pets through a swipe-based interface.",
+      "INFO 449 iOS app (Swift / UIKit / Firebase) that reimagines pet adoption with a swipe-to-match interface, preference filters, and location-aware discovery so adopters can find shelter pets more easily.",
     technologies: ["Swift", "UIKit", "Firebase", "iOS Development"],
-    github: "https://github.com/wena04/Petswipe",
+    github: "https://github.com/wena04/petswipe",
     demo: null,
-    image: "/images/petswipe.png",
+    image: "/images/petswipe.jpg",
     date: "2024",
     featured: false,
     type: "coding",
@@ -236,6 +240,7 @@ export const codingProjects = [
 
 // =============================================================================
 // DESIGN PROJECTS (UI/UX)
+// Covers only on-site; full case-study PDFs stay private (available on request).
 // =============================================================================
 export const designProjects = [
   {
@@ -245,9 +250,9 @@ export const designProjects = [
     event: "DubsTech Protothon 2024",
     collaborators: ["Amelia Li"],
     description:
-      "Time travel application inspired by the TV series Loki. Designed user interfaces based on time travel theme during DubsTech's two-day protothon.",
+      "Time travel application inspired by Loki. Designed themed UI and end-to-end flows during DubsTech’s two-day protothon.",
     tools: ["Figma"],
-    link: null, // TODO: Add live demo link
+    link: "https://www.figma.com/proto/LwjP9jGd7bmgFA2xF9OAOr/TEMPAD-2.0?node-id=59-106&t=oSMGhQG6OhaQq6dN-1&starting-point-node-id=59%3A106",
     image: "/images/tempad.png",
     date: "2024",
     featured: true,
@@ -258,11 +263,11 @@ export const designProjects = [
     title: "PAC: Play & Cure",
     role: "Product Design",
     description:
-      "Personal product design project.", // TODO: Add full description
-    tools: ["Figma", "Adobe AI"],
+      "Music-therapy app paired with an interactive toy for children with autism—session planning for guardians and therapists, plus an Arduino-linked prototype for play-based engagement.",
+    tools: ["Arduino", "Adobe AI", "Adobe PS"],
     link: null,
-    image: "/images/pac.png",
-    date: "2024",
+    image: "/images/pac.jpg",
+    date: "2022",
     featured: true,
     type: "design",
   },
@@ -271,11 +276,11 @@ export const designProjects = [
     title: "SWIMPLE",
     role: "Product Design",
     description:
-      "Swim app and smart goggles concept. Created 3D diagrams of swimming positions, wireframes and mock-ups for a swim application.",
-    tools: ["Adobe AI", "Adobe PS", "Figma"],
+      "Swim-training concept pairing an app with AR smart goggles: posture guidance, in-swim stats, tutorials, and goal tracking for more efficient practice.",
+    tools: ["Adobe AI", "Adobe PS"],
     link: null,
-    image: "/images/swimple.png",
-    date: "2023",
+    image: "/images/swimple.jpg",
+    date: "2022",
     featured: true,
     type: "design",
   },
@@ -284,11 +289,11 @@ export const designProjects = [
     title: "EXTENT: Height App",
     role: "Product Design",
     description:
-      "Mobile app design for height tracking and visualization.", // TODO: Add full description
-    tools: ["Figma"],
+      "Height-focused mobile UX for training, growth management, and using stature to advantage in athletic and social contexts—tutorials, tracking, community, and shop flows.",
+    tools: ["Adobe AI", "Adobe PS"],
     link: null,
-    image: "/images/extent.png",
-    date: "2024",
+    image: "/images/extent.jpg",
+    date: "2022",
     featured: false,
     type: "design",
   },
@@ -297,11 +302,11 @@ export const designProjects = [
     title: "Temporary Plastic Viewing Device",
     role: "Sustainability Design",
     description:
-      "Product design project focused on sustainability and reducing plastic waste.", // TODO: Add full description
-    tools: ["Figma", "Adobe AI"],
+      "Team project fabricating bioplastics from food waste and building a viewing device that makes biodegradable materials tangible—research, material experiments, and an educational installation.",
+    tools: ["Bioplastics", "Adobe AI"],
     link: null,
-    image: "/images/plastic-device.png",
-    date: "2024",
+    image: "/images/plastic-device.jpg",
+    date: "2022",
     featured: false,
     type: "design",
   },
@@ -310,13 +315,46 @@ export const designProjects = [
     title: "GVCC Internal Business Automation",
     role: "UI/UX Design",
     description:
-      "Designed internal business automation system for GVCC after conducting user research, resolving 10+ bugs and UX issues through cross-departmental collaborations.",
+      "Internal case-management UI for GVCC: role-based login and workflows after user research, fixing 10+ UX issues across departments.",
     tools: ["Adobe AI", "Figma"],
     link: null,
-    image: "/images/gvcc-design.png",
+    image: "/images/gvcc-design.jpg",
     date: "2023",
     featured: false,
     type: "design",
+  },
+];
+
+// =============================================================================
+// FINE ART (covers only — mid-res composites, no full case PDFs)
+// =============================================================================
+export const artProjects = [
+  {
+    id: 201,
+    title: "White Cloud & Sparkle Wave",
+    role: "Acrylic Painting",
+    award: "Silver · Int'l Contemporary Youth Art Design Competition",
+    description:
+      "Two acrylic landscapes on contrast and stillness: White Cloud (night sky, mountain glow) and Sparkle Wave (surf with bright foam against dark water).",
+    tools: ["Acrylic", "Pencil"],
+    link: null,
+    image: "/images/white-cloud-sparkle-wave.jpg",
+    date: "2022",
+    featured: false,
+    type: "art",
+  },
+  {
+    id: 202,
+    title: "Doomsday Alley · Configuration · Cupcake Afterparty",
+    role: "Drawing / Mixed Media",
+    description:
+      "Three works from one sunset session—alley perspective, geometric still life, and stacked cupcake forms—playing with RGB emotion through colored pencil and watercolor.",
+    tools: ["Colored pencil", "Watercolor", "Outliner"],
+    link: null,
+    image: "/images/doomsday-configuration-cupcake.jpg",
+    date: "2022",
+    featured: false,
+    type: "art",
   },
 ];
 
@@ -331,9 +369,10 @@ const withLinks = (p) => ({
   youtube: p.youtube ?? null,
 });
 
-export const allProjects = [...codingProjects, ...designProjects].map(withLinks);
+export const allProjects = [...codingProjects, ...designProjects, ...artProjects].map(withLinks);
 export const codingProjectsNorm = codingProjects.map(withLinks);
 export const designProjectsNorm = designProjects.map(withLinks);
+export const artProjectsNorm = artProjects.map(withLinks);
 
 export const featuredProjects = allProjects.filter((p) => p.featured);
 

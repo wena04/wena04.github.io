@@ -1,5 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
-import { codingProjects, designProjects, allProjects, codingProjectsNorm, designProjectsNorm } from "../data/projects";
+import {
+  codingProjects,
+  designProjects,
+  artProjects,
+  allProjects,
+  codingProjectsNorm,
+  designProjectsNorm,
+  artProjectsNorm,
+} from "../data/projects";
 import "../styles/projects-orbit.css";
 
 // ============================================================================
@@ -24,12 +32,16 @@ function ProjectThumb({ project, compact = false }) {
 
   return (
     <div
-      className={`${compact ? "arch-ico" : "thumb"} project-thumb ${project.type}`}
+      className={`${compact ? "arch-ico" : "thumb"} project-thumb ${project.type}${project.imageFit === "contain" ? " fit-contain" : ""}`}
       aria-hidden="true"
     >
       <span className="thumb-fallback">
         <strong>{initialsOf(project.title)}</strong>
-        {!compact && <small>{project.type === "design" ? "design" : "code"}</small>}
+        {!compact && (
+          <small>
+            {project.type === "design" ? "design" : project.type === "art" ? "art" : "code"}
+          </small>
+        )}
       </span>
       {showImage && (
         <img src={project.image} alt="" onError={() => setFailed(true)} />
@@ -181,10 +193,18 @@ export default function Projects() {
   const [page, setPage] = useState(0);
   const [open, setOpen] = useState(null);
   const PAGE = 6;
-  const list = filter === "all" ? allProjects : filter === "code" ? codingProjectsNorm : designProjectsNorm;
+  const list =
+    filter === "all"
+      ? allProjects
+      : filter === "code"
+        ? codingProjectsNorm
+        : filter === "design"
+          ? designProjectsNorm
+          : artProjectsNorm;
   const pages = Math.max(1, Math.ceil(list.length / PAGE));
   const pageItems = list.slice(page * PAGE, page * PAGE + PAGE);
   const setF = (f) => { setFilter(f); setPage(0); setOpen(null); };
+  const tabCount = { code: codingProjects.length, design: designProjects.length, art: artProjects.length };
 
   return (
     <section id="projects" className="projects-orbit-section">
@@ -248,12 +268,10 @@ export default function Projects() {
           <div className="archive-bar">
             <div className="archive-head">Project Archive</div>
             <div className="archive-tabs">
-              {[["all", "All"], ["code", "Coding"], ["design", "Design"]].map(([f, label]) => (
+              {[["all", "All"], ["code", "Coding"], ["design", "Design"], ["art", "Art"]].map(([f, label]) => (
                 <button key={f} className={"atab" + (filter === f ? " active" : "")} onClick={() => setF(f)}>
                   {label}
-                  {f !== "all" && (
-                    <span> · {(f === "code" ? codingProjects : designProjects).length}</span>
-                  )}
+                  {f !== "all" && <span> · {tabCount[f]}</span>}
                 </button>
               ))}
             </div>
